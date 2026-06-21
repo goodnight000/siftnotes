@@ -369,7 +369,7 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                       className="relative w-24 h-1 bg-sunken rounded-full"
                     >
                       <div
-                        className="absolute h-full bg-blue-500 rounded-full"
+                        className="absolute h-full bg-clay rounded-full"
                         style={{ width: `${progress}%` }}
                       />
                     </div>

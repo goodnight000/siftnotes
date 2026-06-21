@@ -251,7 +251,7 @@ export default function PageContent({
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className="flex flex-col h-screen bg-paper"
     >
-      <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-white px-4 py-2">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-surface px-4 py-2">
         <Input
           value={meetingData.project}
           onChange={(event) => meetingData.setProject(event.target.value)}
