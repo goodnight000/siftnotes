@@ -4,7 +4,8 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { useUpdateCheck } from '@/hooks/useUpdateCheck';
 import { UpdateInfo } from '@/services/updateService';
 import { UpdateDialog } from './UpdateDialog';
-import { setUpdateDialogCallback, showUpdateNotification } from './UpdateNotification';
+import { shouldOpenUpdateDialog } from '@/lib/update-prompt-policy';
+import { setUpdateDialogCallback } from './UpdateNotification';
 
 interface UpdateCheckContextType {
   updateInfo: UpdateInfo | null;
@@ -24,10 +25,11 @@ export function UpdateCheckProvider({ children }: { children: React.ReactNode })
 
   const { updateInfo, isChecking, checkForUpdates } = useUpdateCheck({
     checkOnMount: true,
-    showNotification: true,
+    showNotification: false,
     onUpdateAvailable: (info) => {
-      // Show notification, dialog will be shown when user clicks notification
-      showUpdateNotification(info, handleShowDialog);
+      if (shouldOpenUpdateDialog(info)) {
+        handleShowDialog();
+      }
     },
   });
 

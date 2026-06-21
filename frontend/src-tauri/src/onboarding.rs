@@ -169,7 +169,7 @@ pub async fn reset_onboarding_status_cmd<R: Runtime>(
 
 pub fn mark_api_key_onboarding_status_complete(status: &mut OnboardingStatus) {
     status.completed = true;
-    status.current_step = 4;
+    status.current_step = 3;
 }
 
 #[tauri::command]
@@ -285,7 +285,7 @@ mod tests {
         mark_api_key_onboarding_status_complete(&mut status);
 
         assert!(status.completed);
-        assert_eq!(status.current_step, 4);
+        assert_eq!(status.current_step, 3);
         assert_eq!(status.model_status.parakeet, "not_downloaded");
         assert_eq!(status.model_status.summary, "not_downloaded");
         assert_eq!(

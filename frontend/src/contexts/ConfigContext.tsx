@@ -7,6 +7,12 @@ import { configService, ModelConfig } from '@/services/configService';
 import { invoke } from '@tauri-apps/api/core';
 import Analytics from '@/lib/analytics';
 import { BetaFeatures, BetaFeatureKey, loadBetaFeatures, saveBetaFeatures } from '@/types/betaFeatures';
+import {
+  getDefaultSummaryModel,
+  getDefaultTranscriptionModel,
+  resolveApiFirstSummaryConfig,
+  resolveApiFirstTranscriptionConfig,
+} from '@/lib/settings-provider-options';
 
 export interface OllamaModel {
   name: string;
@@ -99,16 +105,16 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 export function ConfigProvider({ children }: { children: ReactNode }) {
   // Model configuration state
   const [modelConfig, setModelConfig] = useState<ModelConfig>({
-    provider: 'ollama',
-    model: 'llama3.2:latest',
+    provider: 'openrouter',
+    model: getDefaultSummaryModel('openrouter'),
     whisperModel: 'large-v3',
     ollamaEndpoint: null
   });
 
   // Transcript model configuration state
   const [transcriptModelConfig, setTranscriptModelConfig] = useState<TranscriptModelProps>({
-    provider: 'parakeet',
-    model: 'parakeet-tdt-0.6b-v3-int8',
+    provider: 'elevenLabs',
+    model: getDefaultTranscriptionModel('elevenLabs'),
     apiKey: null
   });
 
@@ -178,6 +184,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   // Load Ollama models (uses saved endpoint, re-runs when endpoint changes after config load)
   useEffect(() => {
     const loadModels = async () => {
+      if (modelConfig.provider !== 'ollama') {
+        setModels([]);
+        setError('');
+        return;
+      }
+
       try {
         const endpoint = modelConfig.ollamaEndpoint || null;
         const modelList = await invoke<OllamaModel[]>('get_ollama_models', { endpoint });
@@ -189,7 +201,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       }
     };
     loadModels();
-  }, [modelConfig.ollamaEndpoint]);
+  }, [modelConfig.ollamaEndpoint, modelConfig.provider]);
 
   // Load transcript configuration on mount
   useEffect(() => {
@@ -198,11 +210,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         const config = await configService.getTranscriptConfig();
         if (config) {
           console.log('[ConfigContext] Loaded saved transcript config:', config);
-          setTranscriptModelConfig({
-            provider: config.provider || 'parakeet',
-            model: config.model || 'parakeet-tdt-0.6b-v3-int8',
-            apiKey: config.apiKey || null
-          });
+          setTranscriptModelConfig(resolveApiFirstTranscriptionConfig(config) as TranscriptModelProps);
         }
       } catch (error) {
         console.error('[ConfigContext] Failed to load transcript config:', error);
@@ -230,8 +238,10 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       try {
         const data = await configService.getModelConfig();
         if (data && data.provider) {
+          const apiFirstData = resolveApiFirstSummaryConfig(data) as ModelConfig;
+
           // If provider is custom-openai, fetch the additional config
-          if (data.provider === 'custom-openai') {
+          if (apiFirstData.provider === 'custom-openai') {
             try {
               const customConfig = await configService.getCustomOpenAIConfig();
               if (customConfig) {
@@ -240,12 +250,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
                   endpoint: customConfig.endpoint,
                   model: customConfig.model,
                 });
-                const resolvedModel = customConfig.model || data.model || '';
+                const resolvedModel = customConfig.model || apiFirstData.model || '';
                 setModelConfig(prev => ({
                   ...prev,
-                  provider: data.provider,
+                  provider: apiFirstData.provider,
                   model: resolvedModel || prev.model,
-                  whisperModel: data.whisperModel || prev.whisperModel,
+                  whisperModel: apiFirstData.whisperModel || prev.whisperModel,
                   customOpenAIEndpoint: customConfig.endpoint,
                   customOpenAIModel: customConfig.model,
                   customOpenAIApiKey: customConfig.apiKey,
@@ -257,7 +267,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
                 // Seed per-provider model cache from DB
                 if (resolvedModel) {
                   const map = JSON.parse(localStorage.getItem('providerModelMap') || '{}');
-                  map[data.provider] = resolvedModel;
+                  map[apiFirstData.provider] = resolvedModel;
                   localStorage.setItem('providerModelMap', JSON.stringify(map));
                 }
 
@@ -271,16 +281,16 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
           // For non-custom-openai providers, just set base config
           setModelConfig(prev => ({
             ...prev,
-            provider: data.provider,
-            model: data.model || prev.model,
-            whisperModel: data.whisperModel || prev.whisperModel,
-            ollamaEndpoint: data.ollamaEndpoint,
+            provider: apiFirstData.provider,
+            model: apiFirstData.model || prev.model,
+            whisperModel: apiFirstData.whisperModel || prev.whisperModel,
+            ollamaEndpoint: apiFirstData.ollamaEndpoint,
           }));
 
           // Seed per-provider model cache from DB
-          if (data.model) {
+          if (apiFirstData.model) {
             const map = JSON.parse(localStorage.getItem('providerModelMap') || '{}');
-            map[data.provider] = data.model;
+            map[apiFirstData.provider] = apiFirstData.model;
             localStorage.setItem('providerModelMap', JSON.stringify(map));
           }
         }

@@ -170,7 +170,9 @@ export default function PageContent({
       Analytics.trackFeatureUsed('markdown_export');
     } catch (error) {
       console.error('Failed to export Markdown:', error);
-      toast.error('Failed to export Markdown');
+      toast.error('Failed to export Markdown', {
+        description: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 

@@ -61,9 +61,21 @@ export class UpdateService {
 
     try {
       const currentVersion = await getVersion();
+      const update = await check({ timeout: 10_000 });
+
+      if (!update) {
+        return {
+          available: false,
+          currentVersion,
+        };
+      }
+
       return {
-        available: false,
-        currentVersion,
+        available: true,
+        currentVersion: update.currentVersion || currentVersion,
+        version: update.version,
+        date: update.date,
+        body: update.body,
       };
     } catch (error) {
       console.error('Failed to check for updates:', error);

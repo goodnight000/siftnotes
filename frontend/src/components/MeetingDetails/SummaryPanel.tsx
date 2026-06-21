@@ -10,7 +10,7 @@ import { SummaryUpdaterButtonGroup } from './SummaryUpdaterButtonGroup';
 import Analytics from '@/lib/analytics';
 import { useEffect, useRef, useState, RefObject } from 'react';
 import { toast } from 'sonner';
-import { Languages, ChevronDown } from 'lucide-react';
+import { Languages, ChevronDown, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { LanguagePickerPopover } from '@/components/LanguagePickerPopover';
@@ -227,6 +227,7 @@ export function SummaryPanel({
   };
 
   const isSummaryLoading = summaryStatus === 'processing' || summaryStatus === 'summarizing' || summaryStatus === 'regenerating';
+  const canExportMarkdown = transcripts.length > 0 || !!aiSummary;
 
   const languageSlot = (
     <Popover open={langPickerOpen} onOpenChange={setLangPickerOpen}>
@@ -306,6 +307,7 @@ export function SummaryPanel({
                 }}
                 onOpenFolder={onOpenFolder}
                 hasSummary={!!aiSummary}
+                canExportMarkdown={canExportMarkdown}
                 onExportMarkdown={onExportMarkdown}
               />
             </div>
@@ -364,6 +366,20 @@ export function SummaryPanel({
               onOpenModelSettings={onOpenModelSettings}
               languageSlot={transcripts.length > 0 ? languageSlot : undefined}
             />
+            {transcripts.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                title="Export Markdown"
+                onClick={() => {
+                  Analytics.trackButtonClick('export_markdown', 'meeting_details');
+                  void onExportMarkdown();
+                }}
+              >
+                <FileDown />
+                <span className="hidden lg:inline">Export</span>
+              </Button>
+            )}
           </div>
           {/* Empty state message */}
           <EmptyStateSummary

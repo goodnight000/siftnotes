@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { Cloud, HardDriveDownload, KeyRound, Loader2, Mic2 } from 'lucide-react';
+import { Cloud, KeyRound, Loader2, Mic2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,10 +15,10 @@ import {
 import { OnboardingContainer } from '../OnboardingContainer';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 
-const PARAKEET_MODEL = 'parakeet-tdt-0.6b-v3-int8';
 const XAI_ENDPOINT = 'https://api.x.ai/v1';
 
 type SummaryProvider = 'openrouter' | 'xai' | 'custom-openai' | 'openai' | 'claude' | 'groq';
+type TranscriptionProvider = 'elevenLabs' | 'groq' | 'openai';
 
 const SUMMARY_PROVIDER_OPTIONS: Record<
   SummaryProvider,
@@ -69,30 +69,77 @@ const SUMMARY_PROVIDER_OPTIONS: Record<
   },
 };
 
+const TRANSCRIPTION_PROVIDER_OPTIONS: Record<
+  TranscriptionProvider,
+  {
+    label: string;
+    provider: 'elevenLabs' | 'groq' | 'openai';
+    defaultModel: string;
+  }
+> = {
+  elevenLabs: {
+    label: 'ElevenLabs Scribe',
+    provider: 'elevenLabs',
+    defaultModel: 'scribe_v2',
+  },
+  groq: {
+    label: 'Groq',
+    provider: 'groq',
+    defaultModel: 'whisper-large-v3-turbo',
+  },
+  openai: {
+    label: 'OpenAI',
+    provider: 'openai',
+    defaultModel: 'gpt-4o-mini-transcribe',
+  },
+};
+
 export function ApiKeySetupStep() {
   const { goToStep, setSetupMode } = useOnboarding();
   const [summaryProvider, setSummaryProvider] = useState<SummaryProvider>('openrouter');
-  const [model, setModel] = useState(SUMMARY_PROVIDER_OPTIONS.openrouter.defaultModel);
+  const [summaryModel, setSummaryModel] = useState(SUMMARY_PROVIDER_OPTIONS.openrouter.defaultModel);
   const [customEndpoint, setCustomEndpoint] = useState('');
-  const [apiKey, setApiKey] = useState('');
+  const [summaryApiKey, setSummaryApiKey] = useState('');
+  const [transcriptionProvider, setTranscriptionProvider] = useState<TranscriptionProvider>('elevenLabs');
+  const [transcriptionModel, setTranscriptionModel] = useState(
+    TRANSCRIPTION_PROVIDER_OPTIONS.elevenLabs.defaultModel,
+  );
+  const [transcriptionApiKey, setTranscriptionApiKey] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  const selectedProvider = SUMMARY_PROVIDER_OPTIONS[summaryProvider];
-  const endpoint = selectedProvider.endpoint ?? customEndpoint.trim();
-  const needsEndpoint = selectedProvider.provider === 'custom-openai';
+  const selectedSummaryProvider = SUMMARY_PROVIDER_OPTIONS[summaryProvider];
+  const selectedTranscriptionProvider = TRANSCRIPTION_PROVIDER_OPTIONS[transcriptionProvider];
+  const endpoint = selectedSummaryProvider.endpoint ?? customEndpoint.trim();
+  const needsEndpoint = selectedSummaryProvider.provider === 'custom-openai';
 
   const canSave = useMemo(() => {
-    if (!model.trim()) return false;
-    if (selectedProvider.requiresKey && !apiKey.trim()) return false;
+    if (!summaryModel.trim()) return false;
+    if (selectedSummaryProvider.requiresKey && !summaryApiKey.trim()) return false;
     if (needsEndpoint && !endpoint) return false;
+    if (!transcriptionModel.trim()) return false;
+    if (!transcriptionApiKey.trim()) return false;
     return true;
-  }, [apiKey, endpoint, model, needsEndpoint, selectedProvider.requiresKey]);
+  }, [
+    endpoint,
+    needsEndpoint,
+    selectedSummaryProvider.requiresKey,
+    summaryApiKey,
+    summaryModel,
+    transcriptionApiKey,
+    transcriptionModel,
+  ]);
 
-  const handleProviderChange = (value: SummaryProvider) => {
+  const handleSummaryProviderChange = (value: SummaryProvider) => {
     const nextProvider = SUMMARY_PROVIDER_OPTIONS[value];
     setSummaryProvider(value);
-    setModel(nextProvider.defaultModel);
+    setSummaryModel(nextProvider.defaultModel);
     setCustomEndpoint(nextProvider.endpoint ?? '');
+  };
+
+  const handleTranscriptionProviderChange = (value: TranscriptionProvider) => {
+    const nextProvider = TRANSCRIPTION_PROVIDER_OPTIONS[value];
+    setTranscriptionProvider(value);
+    setTranscriptionModel(nextProvider.defaultModel);
   };
 
   const saveApiKeySetup = async () => {
@@ -100,14 +147,16 @@ export function ApiKeySetupStep() {
 
     setIsSaving(true);
     try {
-      const modelName = model.trim();
-      const trimmedApiKey = apiKey.trim();
+      const summaryModelName = summaryModel.trim();
+      const trimmedSummaryApiKey = summaryApiKey.trim();
+      const transcriptionModelName = transcriptionModel.trim();
+      const trimmedTranscriptionApiKey = transcriptionApiKey.trim();
 
-      if (selectedProvider.provider === 'custom-openai') {
+      if (selectedSummaryProvider.provider === 'custom-openai') {
         await invoke('api_save_custom_openai_config', {
           endpoint,
-          apiKey: trimmedApiKey || null,
-          model: modelName,
+          apiKey: trimmedSummaryApiKey || null,
+          model: summaryModelName,
           maxTokens: null,
           temperature: null,
           topP: null,
@@ -115,21 +164,24 @@ export function ApiKeySetupStep() {
       }
 
       await invoke('api_save_model_config', {
-        provider: selectedProvider.provider,
-        model: modelName,
+        provider: selectedSummaryProvider.provider,
+        model: summaryModelName,
         whisperModel: 'large-v3',
-        apiKey: selectedProvider.provider === 'custom-openai' ? null : trimmedApiKey || null,
+        apiKey:
+          selectedSummaryProvider.provider === 'custom-openai'
+            ? null
+            : trimmedSummaryApiKey || null,
         ollamaEndpoint: null,
       });
 
       await invoke('api_save_transcript_config', {
-        provider: 'parakeet',
-        model: PARAKEET_MODEL,
-        apiKey: null,
+        provider: selectedTranscriptionProvider.provider,
+        model: transcriptionModelName,
+        apiKey: trimmedTranscriptionApiKey,
       });
 
       setSetupMode('api');
-      toast.success('Summary provider saved');
+      toast.success('Provider keys saved');
       goToStep(3);
     } catch (error) {
       console.error('Failed to save API-key onboarding setup:', error);
@@ -141,40 +193,30 @@ export function ApiKeySetupStep() {
     }
   };
 
-  const skipApiKey = () => {
-    setSetupMode('api');
-    goToStep(3);
-  };
-
-  const useLocalModels = () => {
-    setSetupMode('local');
-    goToStep(3);
-  };
-
   return (
     <OnboardingContainer
-      title="Choose Summary Provider"
-      description="Use your own API key for meeting summaries."
+      title="Connect Your Providers"
+      description="Use your own API keys for transcription and summaries."
       step={2}
-      totalSteps={4}
+      totalSteps={3}
       showNavigation={true}
     >
-      <div className="mx-auto w-full max-w-lg space-y-5">
+      <div className="mx-auto w-full max-w-lg space-y-4">
         <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
               <KeyRound className="h-4 w-4 text-gray-700" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-gray-900">Summary API key</h2>
+              <h2 className="text-sm font-medium text-gray-900">Summary provider</h2>
               <p className="text-sm text-gray-500">OpenRouter is selected by default.</p>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="summary-provider">Provider</Label>
-              <Select value={summaryProvider} onValueChange={handleProviderChange}>
+              <Select value={summaryProvider} onValueChange={handleSummaryProviderChange}>
                 <SelectTrigger id="summary-provider">
                   <SelectValue />
                 </SelectTrigger>
@@ -188,8 +230,18 @@ export function ApiKeySetupStep() {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="summary-model">Model</Label>
+              <Input
+                id="summary-model"
+                value={summaryModel}
+                onChange={(event) => setSummaryModel(event.target.value)}
+                placeholder="Provider model name"
+              />
+            </div>
+
             {needsEndpoint && (
-              <div className="space-y-2">
+              <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="summary-endpoint">Endpoint</Label>
                 <Input
                   id="summary-endpoint"
@@ -201,73 +253,87 @@ export function ApiKeySetupStep() {
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="summary-model">Model</Label>
-              <Input
-                id="summary-model"
-                value={model}
-                onChange={(event) => setModel(event.target.value)}
-                placeholder="Provider model name"
-              />
-            </div>
-
-            <div className="space-y-2">
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="summary-api-key">
-                API key{selectedProvider.requiresKey ? '' : ' (optional)'}
+                API key{selectedSummaryProvider.requiresKey ? '' : ' (optional)'}
               </Label>
               <Input
                 id="summary-api-key"
                 type="password"
-                value={apiKey}
-                onChange={(event) => setApiKey(event.target.value)}
-                placeholder="Paste your provider key"
+                value={summaryApiKey}
+                onChange={(event) => setSummaryApiKey(event.target.value)}
+                placeholder="Paste your summary provider key"
               />
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <div className="flex gap-3">
-            <div className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-100">
+        <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
               <Mic2 className="h-4 w-4 text-gray-700" />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-900">Transcription stays local</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Live recording currently uses Parakeet on your Mac. Cloud transcription keys can be added once the recording adapter supports them.
-              </p>
+              <h2 className="text-sm font-medium text-gray-900">Transcription provider</h2>
+              <p className="text-sm text-gray-500">ElevenLabs Scribe is selected by default.</p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="transcription-provider">Provider</Label>
+              <Select
+                value={transcriptionProvider}
+                onValueChange={handleTranscriptionProviderChange}
+              >
+                <SelectTrigger id="transcription-provider">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(TRANSCRIPTION_PROVIDER_OPTIONS).map(([value, option]) => (
+                    <SelectItem key={value} value={value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="transcription-model">Model</Label>
+              <Input
+                id="transcription-model"
+                value={transcriptionModel}
+                onChange={(event) => setTranscriptionModel(event.target.value)}
+                placeholder="Transcription model"
+              />
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="transcription-api-key">API key</Label>
+              <Input
+                id="transcription-api-key"
+                type="password"
+                value={transcriptionApiKey}
+                onChange={(event) => setTranscriptionApiKey(event.target.value)}
+                placeholder="Paste your transcription provider key"
+              />
             </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          <Button
-            onClick={saveApiKeySetup}
-            disabled={!canSave || isSaving}
-            className="h-11 w-full bg-gray-900 text-white hover:bg-gray-800"
-          >
-            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Cloud className="mr-2 h-4 w-4" />}
-            Continue with API Key
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={useLocalModels}
-            className="h-11 w-full"
-          >
-            <HardDriveDownload className="mr-2 h-4 w-4" />
-            Set Up Local Models Instead
-          </Button>
-
-          <button
-            type="button"
-            onClick={skipApiKey}
-            className="w-full text-center text-sm text-gray-500 transition-colors hover:text-gray-800"
-          >
-            Skip API key for now
-          </button>
-        </div>
+        <Button
+          onClick={saveApiKeySetup}
+          disabled={!canSave || isSaving}
+          className="h-11 w-full bg-gray-900 text-white hover:bg-gray-800"
+        >
+          {isSaving ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Cloud className="mr-2 h-4 w-4" />
+          )}
+          Continue
+        </Button>
       </div>
     </OnboardingContainer>
   );

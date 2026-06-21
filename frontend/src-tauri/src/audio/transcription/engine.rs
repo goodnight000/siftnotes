@@ -2,6 +2,7 @@
 //
 // TranscriptionEngine enum and model initialization/validation logic.
 
+use super::cloud_provider::CloudTranscriptionProvider;
 use super::provider::TranscriptionProvider;
 use log::{info, warn};
 use std::sync::Arc;
@@ -88,6 +89,14 @@ pub async fn validate_transcription_model_ready<R: Runtime>(app: &AppHandle<R>) 
 
     // Validate based on provider
     match config.provider.as_str() {
+        provider if is_cloud_transcription_provider(provider) => {
+            validate_cloud_transcription_config(&config)?;
+            info!(
+                "✅ Cloud transcription config validation successful: {} / {}",
+                config.provider, config.model
+            );
+            Ok(())
+        }
         "localWhisper" => {
             info!("🔍 Validating Whisper model...");
             // Ensure whisper engine is initialized first
@@ -138,7 +147,7 @@ pub async fn validate_transcription_model_ready<R: Runtime>(app: &AppHandle<R>) 
         other => {
             warn!("❌ Unsupported transcription provider for local recording: {}", other);
             Err(format!(
-                "Provider '{}' is not supported for local transcription. Please select 'localWhisper' or 'parakeet'.",
+                "Provider '{}' is not supported for transcription. Please select ElevenLabs Scribe, Groq, OpenAI, localWhisper, or parakeet.",
                 other
             ))
         }
@@ -184,6 +193,18 @@ pub async fn get_or_init_transcription_engine<R: Runtime>(
 
     // Initialize the appropriate engine based on provider
     match config.provider.as_str() {
+        provider if is_cloud_transcription_provider(provider) => {
+            validate_cloud_transcription_config(&config)?;
+            info!(
+                "☁️ Initializing cloud transcription provider: {} / {}",
+                config.provider, config.model
+            );
+
+            let api_key = config.api_key.clone().unwrap_or_default();
+            let provider = CloudTranscriptionProvider::new(config.provider, config.model, api_key)?;
+
+            Ok(TranscriptionEngine::Provider(Arc::new(provider)))
+        }
         "parakeet" => {
             info!("🦜 Initializing Parakeet transcription engine");
 
@@ -212,11 +233,52 @@ pub async fn get_or_init_transcription_engine<R: Runtime>(
                 }
             }
         }
-        "localWhisper" | _ => {
+        "localWhisper" => {
             info!("🎤 Initializing Whisper transcription engine");
             let whisper_engine = get_or_init_whisper(app).await?;
             Ok(TranscriptionEngine::Whisper(whisper_engine))
         }
+        other => Err(format!(
+            "Provider '{}' is not supported for transcription. Please select ElevenLabs Scribe, Groq, OpenAI, localWhisper, or parakeet.",
+            other
+        )),
+    }
+}
+
+fn is_cloud_transcription_provider(provider: &str) -> bool {
+    matches!(provider, "elevenLabs" | "groq" | "openai")
+}
+
+fn validate_cloud_transcription_config(config: &crate::api::api::TranscriptConfig) -> Result<(), String> {
+    if config.model.trim().is_empty() {
+        return Err(format!(
+            "{} transcription requires a model.",
+            cloud_provider_label(&config.provider)
+        ));
+    }
+
+    let api_key = config
+        .api_key
+        .as_deref()
+        .map(str::trim)
+        .unwrap_or_default();
+
+    if api_key.is_empty() {
+        return Err(format!(
+            "{} transcription requires an API key.",
+            cloud_provider_label(&config.provider)
+        ));
+    }
+
+    Ok(())
+}
+
+fn cloud_provider_label(provider: &str) -> &'static str {
+    match provider {
+        "elevenLabs" => "ElevenLabs Scribe",
+        "groq" => "Groq",
+        "openai" => "OpenAI",
+        _ => "Cloud",
     }
 }
 
@@ -440,4 +502,48 @@ pub async fn get_or_init_whisper<R: Runtime>(
     }
 
     Ok(engine)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn transcript_config(
+        provider: &str,
+        model: &str,
+        api_key: Option<&str>,
+    ) -> crate::api::api::TranscriptConfig {
+        crate::api::api::TranscriptConfig {
+            provider: provider.to_string(),
+            model: model.to_string(),
+            api_key: api_key.map(str::to_string),
+        }
+    }
+
+    #[test]
+    fn recognizes_cloud_transcription_providers() {
+        assert!(is_cloud_transcription_provider("elevenLabs"));
+        assert!(is_cloud_transcription_provider("groq"));
+        assert!(is_cloud_transcription_provider("openai"));
+        assert!(!is_cloud_transcription_provider("parakeet"));
+        assert!(!is_cloud_transcription_provider("localWhisper"));
+    }
+
+    #[test]
+    fn validates_elevenlabs_transcription_config() {
+        let config = transcript_config("elevenLabs", "scribe_v2", Some("test-key"));
+
+        validate_cloud_transcription_config(&config)
+            .expect("ElevenLabs should validate with a model and API key");
+    }
+
+    #[test]
+    fn cloud_transcription_validation_requires_api_key() {
+        let config = transcript_config("elevenLabs", "scribe_v2", None);
+
+        let error = validate_cloud_transcription_config(&config)
+            .expect_err("cloud transcription must require an API key");
+
+        assert!(error.contains("API key"));
+    }
 }

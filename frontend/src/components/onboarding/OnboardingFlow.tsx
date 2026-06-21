@@ -4,7 +4,6 @@ import {
   WelcomeStep,
   ApiKeySetupStep,
   PermissionsStep,
-  DownloadProgressStep,
 } from './steps';
 
 interface OnboardingFlowProps {
@@ -33,7 +32,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   }, []);
 
   useEffect(() => {
-    if (!platformReady || currentStep !== 4 || isMac || autoCompletedRef.current) return;
+    if (!platformReady || currentStep !== 3 || isMac || autoCompletedRef.current) return;
 
     autoCompletedRef.current = true;
     completeOnboarding()
@@ -48,8 +47,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     <div className="onboarding-flow">
       {currentStep === 1 && <WelcomeStep />}
       {currentStep === 2 && <ApiKeySetupStep />}
-      {currentStep === 3 && <DownloadProgressStep />}
-      {currentStep === 4 && isMac && <PermissionsStep />}
+      {currentStep === 3 && isMac && <PermissionsStep />}
     </div>
   );
 }

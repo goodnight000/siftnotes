@@ -63,6 +63,7 @@
                         "store:default",
                         "notification:default",
                         "notification:allow-is-permission-granted",
+                        "dialog:allow-save",
                         "updater:default",
                         "process:default",
                         {
@@ -88,7 +89,7 @@
             "app",
             "dmg"
         ],
-        "createUpdaterArtifacts": false,
+        "createUpdaterArtifacts": true,
         "icon": [
             "icons/icon.png",
             "icons/app_icon.icns",
@@ -113,7 +114,9 @@
     "plugins": {
         "updater": {
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVDQTYzMUQ3ODc5N0M4MkEKUldRcXlKZUgxekdtN09DRkVWSHNpZlJseEVOUmpNd1dDSTNaLzZ3MXJGTnY3WW1pdnlOYjBpbkIK",
-            "endpoints": []
+            "endpoints": [
+                "https://github.com/charleszheng/siftnotes/releases/latest/download/latest.json"
+            ]
         }
     }
 }

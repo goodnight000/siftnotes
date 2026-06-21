@@ -84,11 +84,11 @@ export function SettingsModals({
 
             {/* Divider */}
             <div className="border-t pt-8">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">AI Model Configuration</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Summary API provider</h4>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Summarization Model
+                    Provider
                   </label>
                   <div className="flex space-x-2">
                     <select
@@ -103,12 +103,12 @@ export function SettingsModals({
                         });
                       }}
                     >
-                      <option value="builtin-ai">Built-in AI</option>
-                      <option value="claude">Claude</option>
-                      <option value="groq">Groq</option>
-                      <option value="ollama">Ollama</option>
                       <option value="openrouter">OpenRouter</option>
                       <option value="openai">OpenAI</option>
+                      <option value="claude">Claude</option>
+                      <option value="groq">Groq</option>
+                      <option value="builtin-ai">Built-in AI</option>
+                      <option value="ollama">Ollama</option>
                     </select>
 
                     <select
@@ -248,7 +248,7 @@ export function SettingsModals({
           {/* Fixed Header */}
           <div className="flex justify-between items-center p-6 pb-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">
-              {messages.modelSelector ? 'Speech Recognition Setup Required' : 'Transcription Model Settings'}
+              {messages.modelSelector ? 'Transcription API setup required' : 'Transcription API settings'}
             </h3>
             <button
               onClick={() => onClose('modelSelector')}

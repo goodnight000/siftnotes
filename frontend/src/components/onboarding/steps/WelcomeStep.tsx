@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyRound, Lock, Mic2 } from 'lucide-react';
+import { FileText, KeyRound, Mic2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OnboardingContainer } from '../OnboardingContainer';
 import { useOnboarding } from '@/contexts/OnboardingContext';
@@ -14,18 +14,18 @@ export function WelcomeStep() {
     },
     {
       icon: Mic2,
-      title: 'Local transcription for meeting capture',
+      title: 'Bring your own transcription API key',
     },
     {
-      icon: Lock,
-      title: 'Meeting notes stay on this Mac',
+      icon: FileText,
+      title: 'Export meeting notes as local Markdown',
     },
   ];
 
   return (
     <OnboardingContainer
       title="Welcome to SiftNotes"
-      description="Record locally. Summarize with your own provider."
+      description="Record meetings with your own transcription and summary providers."
       step={1}
       hideProgress={true}
     >

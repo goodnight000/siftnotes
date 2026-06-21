@@ -10,7 +10,10 @@ import { useConfig } from '@/contexts/ConfigContext';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -29,6 +32,12 @@ import {
 } from '@/components/ui/command';
 import { cn, isOllamaNotInstalledError } from '@/lib/utils';
 import { toast } from 'sonner';
+import {
+  getAdvancedSummaryProviderOptions,
+  getDefaultSummaryModel,
+  getPrimarySummaryProviderOptions,
+  getSummaryProviderLabel,
+} from '@/lib/settings-provider-options';
 
 export interface ModelConfig {
   provider: 'ollama' | 'groq' | 'claude' | 'openai' | 'openrouter' | 'builtin-ai' | 'custom-openai';
@@ -814,12 +823,15 @@ export function ModelSettingsModal({
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Model Settings</h3>
+        <div>
+          <h3 className="text-lg font-semibold">Summary provider</h3>
+          <p className="text-sm text-gray-600">Use a cloud API key for meeting summaries.</p>
+        </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <Label>Summarization Model</Label>
+          <Label>Provider</Label>
           <div className="flex space-x-2 mt-1">
             <Select
               value={modelConfig.provider}
@@ -841,7 +853,7 @@ export function ModelSettingsModal({
                 const providerModels = modelOptions[provider];
                 const defaultModel = providerModels && providerModels.length > 0
                   ? providerModels[0]
-                  : '';
+                  : getDefaultSummaryModel(provider);
                 const model = (savedModel && providerModels?.includes(savedModel))
                   ? savedModel
                   : defaultModel;
@@ -884,13 +896,23 @@ export function ModelSettingsModal({
                 <SelectValue placeholder="Select provider" />
               </SelectTrigger>
               <SelectContent className="max-h-64 overflow-y-auto">
-                <SelectItem value="builtin-ai">Built-in AI (Offline, No API needed)</SelectItem>
-                <SelectItem value="claude">Claude</SelectItem>
-                <SelectItem value="custom-openai">Custom Server (OpenAI)</SelectItem>
-                <SelectItem value="groq">Groq</SelectItem>
-                <SelectItem value="ollama">Ollama</SelectItem>
-                <SelectItem value="openai">OpenAI</SelectItem>
-                <SelectItem value="openrouter">OpenRouter</SelectItem>
+                <SelectGroup>
+                  <SelectLabel>API providers</SelectLabel>
+                  {getPrimarySummaryProviderOptions().map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+                <SelectSeparator />
+                <SelectGroup>
+                  <SelectLabel>Advanced local fallback</SelectLabel>
+                  {getAdvancedSummaryProviderOptions().map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
 
@@ -1093,7 +1115,7 @@ export function ModelSettingsModal({
 
         {requiresApiKey && (
           <div>
-            <Label>API Key</Label>
+            <Label>{getSummaryProviderLabel(modelConfig.provider)} API key</Label>
             <div className="relative mt-1">
               <Input
                 type={showApiKey ? 'text' : 'password'}

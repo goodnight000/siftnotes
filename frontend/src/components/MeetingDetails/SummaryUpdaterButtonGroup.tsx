@@ -13,6 +13,7 @@ interface SummaryUpdaterButtonGroupProps {
   onFind?: () => void;
   onOpenFolder: () => Promise<void>;
   hasSummary: boolean;
+  canExportMarkdown?: boolean;
   onExportMarkdown: () => Promise<void>;
 }
 
@@ -24,6 +25,7 @@ export function SummaryUpdaterButtonGroup({
   onFind,
   onOpenFolder,
   hasSummary,
+  canExportMarkdown = hasSummary,
   onExportMarkdown
 }: SummaryUpdaterButtonGroupProps) {
   return (
@@ -77,7 +79,7 @@ export function SummaryUpdaterButtonGroup({
           Analytics.trackButtonClick('export_markdown', 'meeting_details');
           onExportMarkdown();
         }}
-        disabled={!hasSummary}
+        disabled={!canExportMarkdown}
         className="cursor-pointer"
       >
         <FileDown />

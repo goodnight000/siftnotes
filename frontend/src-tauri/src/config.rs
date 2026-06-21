@@ -11,6 +11,12 @@ pub const DEFAULT_WHISPER_MODEL: &str = "large-v3-turbo";
 /// This is the quantized version optimized for speed.
 pub const DEFAULT_PARAKEET_MODEL: &str = "parakeet-tdt-0.6b-v3-int8";
 
+/// Default API-first transcription provider when no preference is configured.
+pub const DEFAULT_TRANSCRIPTION_PROVIDER: &str = "elevenLabs";
+
+/// Default API-first transcription model when no preference is configured.
+pub const DEFAULT_TRANSCRIPTION_MODEL: &str = "scribe_v2";
+
 /// Whisper model catalog with metadata for all supported models.
 /// Used by both WhisperEngine::discover_models() and discover_models_standalone().
 ///
@@ -34,3 +40,14 @@ pub const WHISPER_MODEL_CATALOG: &[(&str, &str, u32, &str, &str, &str)] = &[
     ("large-v3-turbo-q5_0", "ggml-large-v3-turbo-q5_0.bin", 547, "High", "Medium", "Quantized large model, best balance"),
     ("large-v3-q5_0", "ggml-large-v3-q5_0.bin", 1031, "High", "Slow", "Quantized large model, high accuracy"),
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_transcription_provider_is_api_first() {
+        assert_eq!(DEFAULT_TRANSCRIPTION_PROVIDER, "elevenLabs");
+        assert_eq!(DEFAULT_TRANSCRIPTION_MODEL, "scribe_v2");
+    }
+}

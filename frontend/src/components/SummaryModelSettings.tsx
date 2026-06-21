@@ -7,6 +7,7 @@ import { ModelConfig, ModelSettingsModal } from '@/components/ModelSettingsModal
 import { SummaryLanguageSettings } from '@/components/SummaryLanguageSettings';
 import { Switch } from './ui/switch';
 import { useConfig } from '@/contexts/ConfigContext';
+import { getDefaultSummaryModel, resolveApiFirstSummaryConfig } from '@/lib/settings-provider-options';
 
 interface SummaryModelSettingsProps {
   refetchTrigger?: number; // Change this to trigger refetch
@@ -14,8 +15,8 @@ interface SummaryModelSettingsProps {
 
 export function SummaryModelSettings({ refetchTrigger }: SummaryModelSettingsProps) {
   const [modelConfig, setModelConfig] = useState<ModelConfig>({
-    provider: 'ollama',
-    model: 'llama3.2:latest',
+    provider: 'openrouter',
+    model: getDefaultSummaryModel('openrouter'),
     whisperModel: 'large-v3',
     apiKey: null,
     ollamaEndpoint: null
@@ -58,7 +59,7 @@ export function SummaryModelSettings({ refetchTrigger }: SummaryModelSettingsPro
             console.error('Failed to fetch custom OpenAI config:', err);
           }
         }
-        setModelConfig(data);
+        setModelConfig(resolveApiFirstSummaryConfig(data) as ModelConfig);
       }
     } catch (error) {
       console.error('Failed to fetch model config:', error);
@@ -128,7 +129,7 @@ export function SummaryModelSettings({ refetchTrigger }: SummaryModelSettingsPro
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Auto Summary</h3>
-            <p className="text-sm text-gray-600">Auto Generating summary after meeting completion(Stopping)</p>
+            <p className="text-sm text-gray-600">Automatically generate a summary after a meeting stops.</p>
           </div>
           <Switch checked={isAutoSummary} onCheckedChange={toggleIsAutoSummary} />
         </div>
@@ -137,9 +138,9 @@ export function SummaryModelSettings({ refetchTrigger }: SummaryModelSettingsPro
       <SummaryLanguageSettings />
 
       <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">Summary Model Configuration</h3>
+        <h3 className="text-lg font-semibold mb-4">Summary API provider</h3>
         <p className="text-sm text-gray-600 mb-6">
-          Configure the AI model used for generating meeting summaries.
+          Choose the cloud provider and model used for meeting summaries.
         </p>
 
         <ModelSettingsModal

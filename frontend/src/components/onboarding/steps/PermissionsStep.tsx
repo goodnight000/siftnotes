@@ -115,7 +115,7 @@ export function PermissionsStep() {
     <OnboardingContainer
       title="Grant Permissions"
       description="SiftNotes needs access to your microphone and system audio to record meetings"
-      step={4}
+      step={3}
       hideProgress={true}
       showNavigation={allPermissionsGranted}
       canGoNext={allPermissionsGranted}

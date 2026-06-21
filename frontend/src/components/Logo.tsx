@@ -1,36 +1,35 @@
 import React from "react";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { VisuallyHidden } from "./ui/visually-hidden";
-import { About } from "./About";
 
 interface LogoProps {
     isCollapsed: boolean;
 }
 
-const Logo = React.forwardRef<HTMLButtonElement, LogoProps>(({ isCollapsed }, ref) => {
+const Logo = React.forwardRef<HTMLDivElement, LogoProps>(({ isCollapsed }, ref) => {
   return (
-    <Dialog aria-describedby={undefined}>
-      {isCollapsed ? (
-        <DialogTrigger asChild>
-          <button ref={ref} className="flex items-center justify-start mb-2 cursor-pointer bg-transparent border-none p-0 hover:opacity-80 transition-opacity">
-            <Image src="/logo-collapsed.png" alt="Logo" width={40} height={32} />
-          </button>
-        </DialogTrigger>
-      ) : (
-        <DialogTrigger asChild>
-          <span className="text-lg text-center border rounded-full bg-blue-50 border-white font-semibold text-gray-700 mb-2 block items-center cursor-pointer hover:opacity-80 transition-opacity">
-            <span>SiftNotes</span>
-          </span>
-        </DialogTrigger>
+    <div
+      ref={ref}
+      aria-label="SiftNotes"
+      className={
+        isCollapsed
+          ? "flex items-center justify-center mb-2"
+          : "mb-3 flex items-center gap-2 px-2 py-1.5"
+      }
+    >
+      <Image
+        src="/brand/siftnotes-mark.png"
+        alt="SiftNotes logo"
+        width={isCollapsed ? 40 : 32}
+        height={isCollapsed ? 40 : 32}
+        className="shrink-0"
+        priority
+      />
+      {!isCollapsed && (
+        <span className="text-lg font-semibold text-gray-800 leading-none">
+          SiftNotes
+        </span>
       )}
-      <DialogContent>
-        <VisuallyHidden>
-          <DialogTitle>About SiftNotes</DialogTitle>
-        </VisuallyHidden>
-        <About />
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 });
 

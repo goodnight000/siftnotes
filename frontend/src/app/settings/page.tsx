@@ -12,13 +12,14 @@ import { SummaryModelSettings } from '@/components/SummaryModelSettings';
 import { BetaSettings } from '@/components/BetaSettings';
 import { useConfig } from '@/contexts/ConfigContext';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { resolveApiFirstTranscriptionConfig } from '@/lib/settings-provider-options';
 
 // Tabs configuration (constant)
 const TABS = [
   { value: 'general', label: 'General', icon: Settings2 },
   { value: 'recording', label: 'Recordings', icon: Mic },
-  { value: 'Transcriptionmodels', label: 'Transcription', icon: DatabaseIcon },
-  { value: 'summaryModels', label: 'Summary', icon: SparkleIcon },
+  { value: 'Transcriptionmodels', label: 'Transcription API', icon: DatabaseIcon },
+  { value: 'summaryModels', label: 'Summary API', icon: SparkleIcon },
   { value: 'beta', label: 'Beta', icon: FlaskConical }
 ] as const;
 
@@ -38,11 +39,7 @@ export default function SettingsPage() {
         const config = await invoke('api_get_transcript_config') as any;
         if (config) {
           console.log('Loaded saved transcript config:', config);
-          setTranscriptModelConfig({
-            provider: config.provider || 'localWhisper',
-            model: config.model || 'large-v3',
-            apiKey: config.apiKey || null
-          });
+          setTranscriptModelConfig(resolveApiFirstTranscriptionConfig(config));
         }
       } catch (error) {
         console.error('Failed to load transcript config:', error);
