@@ -6,12 +6,18 @@ import { BlockNoteSummaryView, BlockNoteSummaryViewRef } from '@/components/AISu
 import { EmptyStateSummary } from '@/components/EmptyStateSummary';
 import { ModelConfig } from '@/components/ModelSettingsModal';
 import { SummaryGeneratorButtonGroup } from './SummaryGeneratorButtonGroup';
-import { SummaryUpdaterButtonGroup } from './SummaryUpdaterButtonGroup';
 import Analytics from '@/lib/analytics';
 import { useEffect, useRef, useState, RefObject } from 'react';
 import { toast } from 'sonner';
-import { Languages, ChevronDown, FileDown } from 'lucide-react';
+import { Languages, ChevronDown, FileDown, MoreHorizontal, Sparkles, Save, Copy, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { LanguagePickerPopover } from '@/components/LanguagePickerPopover';
 import { useRecentLanguages } from '@/hooks/useRecentLanguages';
@@ -40,6 +46,7 @@ interface SummaryPanelProps {
   onCopySummary: () => Promise<void>;
   onOpenFolder: () => Promise<void>;
   onExportMarkdown: () => Promise<void>;
+  onExportPdf: () => Promise<void>;
   aiSummary: Summary | null;
   summaryStatus: 'idle' | 'processing' | 'summarizing' | 'regenerating' | 'completed' | 'error';
   transcripts: Transcript[];
@@ -78,6 +85,7 @@ export function SummaryPanel({
   onCopySummary,
   onOpenFolder,
   onExportMarkdown,
+  onExportPdf,
   aiSummary,
   summaryStatus,
   transcripts,
@@ -240,7 +248,7 @@ export function SummaryPanel({
         >
           <Languages size={18} />
           <span className="hidden lg:inline">{effectiveLangLabel}</span>
-          <ChevronDown size={14} className="text-gray-400" />
+          <ChevronDown size={14} className="text-ink-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -257,63 +265,112 @@ export function SummaryPanel({
     </Popover>
   );
 
+  const isDirty = isTitleDirty || (summaryRef.current?.isDirty || false);
+
   return (
-    <div className="flex-1 min-w-0 flex flex-col bg-white overflow-hidden">
-      {/* Title area */}
-      <div className="p-4 border-b border-gray-200">
-        {/* <EditableTitle
-          title={meetingTitle}
-          isEditing={isEditingTitle}
-          onStartEditing={onStartEditTitle}
-          onFinishEditing={onFinishEditTitle}
-          onChange={onTitleChange}
-        /> */}
-
-        {/* Button groups - only show when summary exists */}
-        {aiSummary && !isSummaryLoading && (
-          <div className="flex items-center justify-center w-full pt-0 gap-2">
-            {/* Left-aligned: Summary Generator Button Group */}
-            <div className="flex-shrink-0">
-              <SummaryGeneratorButtonGroup
-                modelConfig={modelConfig}
-                setModelConfig={setModelConfig}
-                onSaveModelConfig={onSaveModelConfig}
-                onGenerateSummary={onGenerateSummary}
-                onStopGeneration={onStopGeneration}
-                customPrompt={customPrompt}
-                summaryStatus={summaryStatus}
-                availableTemplates={availableTemplates}
-                selectedTemplate={selectedTemplate}
-                onTemplateSelect={onTemplateSelect}
-                onTemplatesChanged={onTemplatesChanged}
-                hasTranscripts={transcripts.length > 0}
-                hasSummary={!!aiSummary}
-                isModelConfigLoading={isModelConfigLoading}
-                onOpenModelSettings={onOpenModelSettings}
-                languageSlot={languageSlot}
-              />
-            </div>
-
-            {/* Right-aligned: Summary Updater Button Group */}
-            <div className="flex-shrink-0">
-              <SummaryUpdaterButtonGroup
-                isSaving={isSaving}
-                isDirty={isTitleDirty || (summaryRef.current?.isDirty || false)}
-                onSave={onSaveAll}
-                onCopy={onCopySummary}
-                onFind={() => {
-                  // TODO: Implement find in summary functionality
-                  console.log('Find in summary clicked');
-                }}
-                onOpenFolder={onOpenFolder}
-                hasSummary={!!aiSummary}
-                canExportMarkdown={canExportMarkdown}
-                onExportMarkdown={onExportMarkdown}
-              />
-            </div>
+    <div className="flex-1 min-w-0 flex flex-col bg-paper overflow-hidden">
+      {/* Header / toolbar - only show when summary exists */}
+      {aiSummary && !isSummaryLoading && (
+        <div className="no-drag flex items-center justify-between gap-6 border-b border-border px-6 py-4">
+          {/* Title block */}
+          <div className="min-w-0">
+            <h2 className="truncate font-display text-h2 text-ink">{meetingTitle}</h2>
           </div>
-        )}
-      </div>
+
+          {/* Actions: Regenerate + Save + overflow menu.
+              flex-none keeps the title from squeezing the actions; flex-wrap is a
+              safety fallback so the cluster can never clip on narrow panels. */}
+          <div className="flex flex-none flex-wrap items-center justify-end gap-2">
+            {/* Generator cluster: Regenerate (primary) + Language + AI Model + Template.
+                Kept as a unit because it owns the model-readiness gating and the
+                model/template dialogs (a non-editable sub-component). */}
+            <SummaryGeneratorButtonGroup
+              modelConfig={modelConfig}
+              setModelConfig={setModelConfig}
+              onSaveModelConfig={onSaveModelConfig}
+              onGenerateSummary={onGenerateSummary}
+              onStopGeneration={onStopGeneration}
+              customPrompt={customPrompt}
+              summaryStatus={summaryStatus}
+              availableTemplates={availableTemplates}
+              selectedTemplate={selectedTemplate}
+              onTemplateSelect={onTemplateSelect}
+              onTemplatesChanged={onTemplatesChanged}
+              hasTranscripts={transcripts.length > 0}
+              hasSummary={!!aiSummary}
+              isModelConfigLoading={isModelConfigLoading}
+              onOpenModelSettings={onOpenModelSettings}
+              languageSlot={languageSlot}
+            />
+
+            {/* Save (ghost) - preserves dirty/saving state */}
+            <Button
+              variant="ghost"
+              size="sm"
+              title={isSaving ? 'Saving' : 'Save changes'}
+              onClick={() => {
+                Analytics.trackButtonClick('save_changes', 'meeting_details');
+                void onSaveAll();
+              }}
+              disabled={isSaving}
+              className={isDirty ? 'text-clay' : undefined}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  <span className="hidden lg:inline">Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save />
+                  <span className="hidden lg:inline">Save</span>
+                </>
+              )}
+            </Button>
+
+            {/* Overflow menu: secondary actions */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" title="More actions" aria-label="More actions">
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  disabled={!aiSummary}
+                  onClick={() => {
+                    Analytics.trackButtonClick('copy_summary', 'meeting_details');
+                    void onCopySummary();
+                  }}
+                >
+                  <Copy />
+                  <span>Copy summary</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={!canExportMarkdown}
+                  onClick={() => {
+                    Analytics.trackButtonClick('export_markdown', 'meeting_details');
+                    void onExportMarkdown();
+                  }}
+                >
+                  <FileDown />
+                  <span>Export Markdown</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={!canExportMarkdown}
+                  onClick={() => {
+                    Analytics.trackButtonClick('export_pdf', 'meeting_details');
+                    void onExportPdf();
+                  }}
+                >
+                  <FileDown />
+                  <span>Export PDF</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      )}
 
       {isSummaryLoading ? (
         <div className="flex flex-col h-full">
@@ -339,8 +396,8 @@ export function SummaryPanel({
           {/* Loading spinner */}
           <div className="flex items-center justify-center flex-1">
             <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-              <p className="text-gray-600">Generating AI Summary...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-clay mb-4"></div>
+              <p className="text-ink-2">Generating AI Summary...</p>
             </div>
           </div>
         </div>
@@ -367,18 +424,32 @@ export function SummaryPanel({
               languageSlot={transcripts.length > 0 ? languageSlot : undefined}
             />
             {transcripts.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                title="Export Markdown"
-                onClick={() => {
-                  Analytics.trackButtonClick('export_markdown', 'meeting_details');
-                  void onExportMarkdown();
-                }}
-              >
-                <FileDown />
-                <span className="hidden lg:inline">Export</span>
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  title="Export Markdown"
+                  onClick={() => {
+                    Analytics.trackButtonClick('export_markdown', 'meeting_details');
+                    void onExportMarkdown();
+                  }}
+                >
+                  <FileDown />
+                  <span className="hidden lg:inline">Markdown</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  title="Export PDF"
+                  onClick={() => {
+                    Analytics.trackButtonClick('export_pdf', 'meeting_details');
+                    void onExportPdf();
+                  }}
+                >
+                  <FileDown />
+                  <span className="hidden lg:inline">PDF</span>
+                </Button>
+              </>
             )}
           </div>
           {/* Empty state message */}
@@ -391,35 +462,35 @@ export function SummaryPanel({
       ) : transcripts?.length > 0 && (
         <div className="flex-1 overflow-y-auto min-h-0">
           {summaryResponse && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-4 max-h-1/3 overflow-y-auto">
-              <h3 className="text-lg font-semibold mb-2">Meeting Summary</h3>
+            <div className="fixed bottom-0 left-0 right-0 bg-surface shadow-lg p-4 max-h-1/3 overflow-y-auto">
+              <h3 className="text-lg font-display text-ink mb-2">Meeting Summary</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h4 className="font-medium mb-1">Key Points</h4>
+                <div className="bg-surface p-4 rounded-lg shadow-sm">
+                  <h4 className="font-medium mb-1 text-ink">Key Points</h4>
                   <ul className="list-disc pl-4">
                     {summaryResponse.summary.key_points.blocks.map((block, i) => (
-                      <li key={i} className="text-sm">{block.content}</li>
+                      <li key={i} className="text-sm text-ink">{block.content}</li>
                     ))}
                   </ul>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm mt-4">
-                  <h4 className="font-medium mb-1">Action Items</h4>
+                <div className="bg-surface p-4 rounded-lg shadow-sm mt-4">
+                  <h4 className="font-medium mb-1 text-ink">Action Items</h4>
                   <ul className="list-disc pl-4">
                     {summaryResponse.summary.action_items.blocks.map((block, i) => (
-                      <li key={i} className="text-sm">{block.content}</li>
+                      <li key={i} className="text-sm text-ink">{block.content}</li>
                     ))}
                   </ul>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm mt-4">
-                  <h4 className="font-medium mb-1">Decisions</h4>
+                <div className="bg-surface p-4 rounded-lg shadow-sm mt-4">
+                  <h4 className="font-medium mb-1 text-ink">Decisions</h4>
                   <ul className="list-disc pl-4">
                     {summaryResponse.summary.decisions.blocks.map((block, i) => (
-                      <li key={i} className="text-sm">{block.content}</li>
+                      <li key={i} className="text-sm text-ink">{block.content}</li>
                     ))}
                   </ul>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm mt-4">
-                  <h4 className="font-medium mb-1">Main Topics</h4>
+                <div className="bg-surface p-4 rounded-lg shadow-sm mt-4">
+                  <h4 className="font-medium mb-1 text-ink">Main Topics</h4>
                   <ul className="list-disc pl-4">
                     {summaryResponse.summary.main_topics.blocks.map((block, i) => (
                       <li key={i} className="text-sm">{block.content}</li>
@@ -429,8 +500,8 @@ export function SummaryPanel({
               </div>
               {summaryResponse.raw_summary ? (
                 <div className="mt-4">
-                  <h4 className="font-medium mb-1">Full Summary</h4>
-                  <p className="text-sm whitespace-pre-wrap">{summaryResponse.raw_summary}</p>
+                  <h4 className="font-medium mb-1 text-ink">Full Summary</h4>
+                  <p className="text-sm whitespace-pre-wrap text-ink">{summaryResponse.raw_summary}</p>
                 </div>
               ) : null}
             </div>

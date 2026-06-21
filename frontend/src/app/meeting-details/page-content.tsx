@@ -10,6 +10,9 @@ import { toast } from 'sonner';
 import { TranscriptPanel } from '@/components/MeetingDetails/TranscriptPanel';
 import { SummaryPanel } from '@/components/MeetingDetails/SummaryPanel';
 import { ModelConfig } from '@/components/ModelSettingsModal';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Archive, Pin, Save } from 'lucide-react';
 
 // Custom hooks
 import { useMeetingData } from '@/hooks/meeting-details/useMeetingData';
@@ -26,6 +29,10 @@ function buildMarkdownExportName(title: string) {
     .replace(/\s+/g, ' ')
     .slice(0, 80);
   return `${cleaned || fallback}.md`;
+}
+
+function buildPdfExportName(title: string) {
+  return buildMarkdownExportName(title).replace(/\.md$/i, '.pdf');
 }
 
 export default function PageContent({
@@ -176,6 +183,38 @@ export default function PageContent({
     }
   };
 
+  const handleExportPdf = async () => {
+    try {
+      const outputPath = await save({
+        title: 'Export PDF',
+        defaultPath: buildPdfExportName(meetingData.meetingTitle || meeting.title || ''),
+        filters: [
+          {
+            name: 'PDF',
+            extensions: ['pdf'],
+          },
+        ],
+      });
+
+      if (!outputPath) return;
+
+      await invoke<string>('api_export_meeting_pdf', {
+        meetingId: meeting.id,
+        outputPath,
+      });
+
+      toast.success('PDF exported', {
+        description: outputPath,
+      });
+      Analytics.trackFeatureUsed('pdf_export');
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+      toast.error('Failed to export PDF', {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   // Track page view
   useEffect(() => {
     Analytics.trackPageView('meeting_details');
@@ -210,8 +249,54 @@ export default function PageContent({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="flex flex-col h-screen bg-gray-50"
+      className="flex flex-col h-screen bg-paper"
     >
+      <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-white px-4 py-2">
+        <Input
+          value={meetingData.project}
+          onChange={(event) => meetingData.setProject(event.target.value)}
+          placeholder="Project / folder"
+          className="h-8 w-48 text-sm"
+          aria-label="Meeting project or folder"
+        />
+        <Input
+          value={meetingData.tagsText}
+          onChange={(event) => meetingData.setTagsText(event.target.value)}
+          placeholder="Tags, comma separated"
+          className="h-8 min-w-64 flex-1 text-sm"
+          aria-label="Meeting tags"
+        />
+        <Button
+          variant={meetingData.isPinned ? 'default' : 'outline'}
+          size="sm"
+          title={meetingData.isPinned ? 'Unpin meeting' : 'Pin meeting'}
+          onClick={() => meetingData.setIsPinned(!meetingData.isPinned)}
+        >
+          <Pin />
+          <span className="hidden lg:inline">{meetingData.isPinned ? 'Pinned' : 'Pin'}</span>
+        </Button>
+        <Button
+          variant={meetingData.isArchived ? 'default' : 'outline'}
+          size="sm"
+          title={meetingData.isArchived ? 'Restore meeting' : 'Archive meeting'}
+          onClick={() => meetingData.setIsArchived(!meetingData.isArchived)}
+        >
+          <Archive />
+          <span className="hidden lg:inline">{meetingData.isArchived ? 'Archived' : 'Archive'}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          title="Save organization"
+          disabled={meetingData.isOrganizationSaving}
+          onClick={() => void meetingData.handleSaveMeetingOrganization()}
+        >
+          <Save />
+          <span className="hidden lg:inline">
+            {meetingData.isOrganizationSaving ? 'Saving' : 'Save'}
+          </span>
+        </Button>
+      </div>
       <div className="flex flex-1 overflow-hidden">
         <TranscriptPanel
           transcripts={meetingData.transcripts}
@@ -248,6 +333,7 @@ export default function PageContent({
           onCopySummary={copyOperations.handleCopySummary}
           onOpenFolder={meetingOperations.handleOpenMeetingFolder}
           onExportMarkdown={handleExportMarkdown}
+          onExportPdf={handleExportPdf}
           aiSummary={meetingData.aiSummary}
           summaryStatus={summaryGeneration.summaryStatus}
           transcripts={meetingData.transcripts}
