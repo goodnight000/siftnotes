@@ -202,14 +202,14 @@ export function ApiKeySetupStep() {
       showNavigation={true}
     >
       <div className="mx-auto w-full max-w-lg space-y-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-lg border border-border bg-surface p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
-              <KeyRound className="h-4 w-4 text-gray-700" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sunken">
+              <KeyRound className="h-4 w-4 text-ink-2" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-gray-900">Summary provider</h2>
-              <p className="text-sm text-gray-500">OpenRouter is selected by default.</p>
+              <h2 className="text-sm font-medium text-ink">Summary provider</h2>
+              <p className="text-sm text-ink-3">OpenRouter is selected by default.</p>
             </div>
           </div>
 
@@ -268,14 +268,14 @@ export function ApiKeySetupStep() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-lg border border-border bg-surface p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
-              <Mic2 className="h-4 w-4 text-gray-700" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sunken">
+              <Mic2 className="h-4 w-4 text-ink-2" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-gray-900">Transcription provider</h2>
-              <p className="text-sm text-gray-500">ElevenLabs Scribe is selected by default.</p>
+              <h2 className="text-sm font-medium text-ink">Transcription provider</h2>
+              <p className="text-sm text-ink-3">ElevenLabs Scribe is selected by default.</p>
             </div>
           </div>
 
@@ -325,7 +325,7 @@ export function ApiKeySetupStep() {
         <Button
           onClick={saveApiKeySetup}
           disabled={!canSave || isSaving}
-          className="h-11 w-full bg-gray-900 text-white hover:bg-gray-800"
+          className="h-11 w-full bg-primary text-primary-foreground hover:opacity-90"
         >
           {isSaving ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

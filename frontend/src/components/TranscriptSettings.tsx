@@ -185,12 +185,12 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                 <div className="space-y-5 pb-6">
                     <div>
                         <div className="mb-3">
-                            <h3 className="text-lg font-semibold text-gray-900">Transcription provider</h3>
-                            <p className="text-sm text-gray-600">ElevenLabs Scribe is the default cloud transcription path.</p>
+                            <h3 className="text-lg font-semibold text-ink">Transcription provider</h3>
+                            <p className="text-sm text-ink-2">ElevenLabs Scribe is the default cloud transcription path.</p>
                         </div>
                         <div className="grid gap-3 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label className="block text-sm font-medium text-gray-700">
+                                <Label className="block text-sm font-medium text-ink-2">
                                     Provider
                                 </Label>
                                 <Select
@@ -199,7 +199,7 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                                         handleProviderChange(value as TranscriptModelProps['provider']);
                                     }}
                                 >
-                                    <SelectTrigger className='focus:ring-1 focus:ring-blue-500 focus:border-blue-500'>
+                                    <SelectTrigger className='focus:ring-1 focus:ring-clay focus:border-clay'>
                                         <SelectValue placeholder="Select provider" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -226,7 +226,7 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
 
                             {!isLocalProvider && (
                                 <div className="space-y-2">
-                                    <Label className="block text-sm font-medium text-gray-700">
+                                    <Label className="block text-sm font-medium text-ink-2">
                                         Model
                                     </Label>
                                     <Select
@@ -236,7 +236,7 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                                             setTranscriptModelConfig({ ...transcriptModelConfig, provider: uiProvider, model });
                                         }}
                                     >
-                                        <SelectTrigger className='focus:ring-1 focus:ring-blue-500 focus:border-blue-500'>
+                                        <SelectTrigger className='focus:ring-1 focus:ring-clay focus:border-clay'>
                                             <SelectValue placeholder="Select model" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -251,8 +251,8 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                     </div>
 
                     {uiProvider === 'localWhisper' && (
-                        <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                            <h4 className="mb-3 text-sm font-semibold text-gray-900">Advanced local transcription</h4>
+                        <div className="mt-6 rounded-lg border border-border bg-sunken p-4">
+                            <h4 className="mb-3 text-sm font-semibold text-ink">Advanced local transcription</h4>
                             <ModelManager
                                 selectedModel={transcriptModelConfig.provider === 'localWhisper' ? transcriptModelConfig.model : undefined}
                                 onModelSelect={handleWhisperModelSelect}
@@ -262,8 +262,8 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                     )}
 
                     {uiProvider === 'parakeet' && (
-                        <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                            <h4 className="mb-3 text-sm font-semibold text-gray-900">Advanced local transcription</h4>
+                        <div className="mt-6 rounded-lg border border-border bg-sunken p-4">
+                            <h4 className="mb-3 text-sm font-semibold text-ink">Advanced local transcription</h4>
                             <ParakeetModelManager
                                 selectedModel={transcriptModelConfig.provider === 'parakeet' ? transcriptModelConfig.model : undefined}
                                 onModelSelect={handleParakeetModelSelect}
@@ -275,13 +275,13 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
 
                     {requiresApiKey && (
                         <div>
-                            <Label className="block text-sm font-medium text-gray-700 mb-1">
+                            <Label className="block text-sm font-medium text-ink-2 mb-1">
                                 {providerLabel} API key
                             </Label>
                             <div className="relative mx-1">
                                 <Input
                                     type={showApiKey ? "text" : "password"}
-                                    className={`pr-24 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${isApiKeyLocked ? 'bg-gray-100 cursor-not-allowed' : ''
+                                    className={`pr-24 focus:ring-1 focus:ring-clay focus:border-clay ${isApiKeyLocked ? 'bg-sunken cursor-not-allowed' : ''
                                         }`}
                                     value={apiKey || ''}
                                     onChange={(e) => {
@@ -300,7 +300,7 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                                 {isApiKeyLocked && (
                                     <div
                                         onClick={handleInputClick}
-                                        className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50 rounded-md cursor-not-allowed"
+                                        className="absolute inset-0 flex items-center justify-center bg-sunken bg-opacity-50 rounded-md cursor-not-allowed"
                                     />
                                 )}
                                 <div className="absolute inset-y-0 right-0 pr-1 flex items-center">
@@ -333,7 +333,7 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                             type="button"
                             onClick={handleSave}
                             disabled={isSaveDisabled}
-                            className="min-w-28 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
+                            className="min-w-28 bg-primary text-primary-foreground hover:opacity-90 disabled:bg-sunken"
                         >
                             {isSaving ? (
                                 <>
