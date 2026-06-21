@@ -33,6 +33,7 @@ export function DownloadProgressStep() {
     setSummaryModelDownloaded,
     startBackgroundDownloads,
     completeOnboarding,
+    setupMode,
   } = useOnboarding();
 
   const [isMac, setIsMac] = useState(false);
@@ -184,14 +185,15 @@ export function DownloadProgressStep() {
     });
   }, []);
 
-  // Start the selected summary model only after the backend recommendation is known.
+  // Start the selected summary model only for local-model setup.
   useEffect(() => {
+    if (setupMode === 'api') return;
     if (summaryDownloadStartedRef.current) return;
     if (!selectedSummaryModel) return;
     summaryDownloadStartedRef.current = true;
 
     startSummaryDownload();
-  }, [selectedSummaryModel]);
+  }, [selectedSummaryModel, setupMode]);
 
   // Listen to Parakeet download progress
   useEffect(() => {
@@ -353,8 +355,9 @@ export function DownloadProgressStep() {
     }
 
     // Check if downloads are complete for toast notification
-    const downloadsComplete = parakeetState.status === 'completed' &&
-      summaryState.status === 'completed';
+    const downloadsComplete = setupMode === 'api'
+      ? parakeetState.status === 'completed'
+      : parakeetState.status === 'completed' && summaryState.status === 'completed';
 
     // Show toast if downloads still in progress
     if (!downloadsComplete) {
@@ -473,8 +476,12 @@ export function DownloadProgressStep() {
 
   return (
     <OnboardingContainer
-      title="Getting things ready"
-      description="You can start using SiftNotes after downloading the Transcription Engine."
+      title={setupMode === 'api' ? 'Prepare Local Transcription' : 'Getting things ready'}
+      description={
+        setupMode === 'api'
+          ? 'Live recording uses a local transcription engine.'
+          : 'You can start using SiftNotes after downloading the Transcription Engine.'
+      }
       step={3}
       totalSteps={isMac ? 4 : 3}
     >
@@ -488,7 +495,7 @@ export function DownloadProgressStep() {
             '~670 MB'
           )}
 
-          {renderDownloadCard(
+          {setupMode === 'local' && renderDownloadCard(
             'Summary Engine',
             <Sparkles className="w-5 h-5 text-gray-600" />,
             summaryState,
@@ -499,7 +506,7 @@ export function DownloadProgressStep() {
 
         {/* Info Message - Only show when Parakeet is downloaded */}
         <AnimatePresence>
-          {parakeetDownloaded && !summaryModelDownloaded && (
+          {setupMode === 'local' && parakeetDownloaded && !summaryModelDownloaded && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}

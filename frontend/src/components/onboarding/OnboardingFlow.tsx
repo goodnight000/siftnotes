@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 import {
   WelcomeStep,
+  ApiKeySetupStep,
   PermissionsStep,
   DownloadProgressStep,
-  SetupOverviewStep,
 } from './steps';
 
 interface OnboardingFlowProps {
@@ -12,35 +12,42 @@ interface OnboardingFlowProps {
 }
 
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
-  const { currentStep } = useOnboarding();
+  const { currentStep, completeOnboarding } = useOnboarding();
   const [isMac, setIsMac] = React.useState(false);
+  const [platformReady, setPlatformReady] = React.useState(false);
+  const autoCompletedRef = useRef(false);
 
   useEffect(() => {
-    // Check if running on macOS
     const checkPlatform = async () => {
       try {
-        // Dynamic import to avoid SSR issues if any
         const { platform } = await import('@tauri-apps/plugin-os');
         setIsMac(platform() === 'macos');
       } catch (e) {
         console.error('Failed to detect platform:', e);
-        // Fallback
         setIsMac(navigator.userAgent.includes('Mac'));
+      } finally {
+        setPlatformReady(true);
       }
     };
     checkPlatform();
   }, []);
 
-  // 4-Step Onboarding Flow (System-Recommended Models):
-  // Step 1: Welcome - Introduce SiftNotes features
-  // Step 2: Setup Overview - Database initialization + show recommended downloads
-  // Step 3: Download Progress - Download Parakeet + Summary Model (auto-selected based on platform/RAM)
-  // Step 4: Permissions - Request mic + system audio (macOS only)
+  useEffect(() => {
+    if (!platformReady || currentStep !== 4 || isMac || autoCompletedRef.current) return;
+
+    autoCompletedRef.current = true;
+    completeOnboarding()
+      .then(onComplete)
+      .catch((error) => {
+        autoCompletedRef.current = false;
+        console.error('Failed to complete onboarding:', error);
+      });
+  }, [completeOnboarding, currentStep, isMac, onComplete, platformReady]);
 
   return (
     <div className="onboarding-flow">
       {currentStep === 1 && <WelcomeStep />}
-      {currentStep === 2 && <SetupOverviewStep />}
+      {currentStep === 2 && <ApiKeySetupStep />}
       {currentStep === 3 && <DownloadProgressStep />}
       {currentStep === 4 && isMac && <PermissionsStep />}
     </div>

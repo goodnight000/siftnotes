@@ -167,6 +167,30 @@ pub async fn reset_onboarding_status_cmd<R: Runtime>(
         .map_err(|e| format!("Failed to reset onboarding status: {}", e))
 }
 
+pub fn mark_api_key_onboarding_status_complete(status: &mut OnboardingStatus) {
+    status.completed = true;
+    status.current_step = 4;
+}
+
+#[tauri::command]
+pub async fn complete_api_key_onboarding<R: Runtime>(
+    app: AppHandle<R>,
+) -> Result<(), String> {
+    info!("Completing API-key onboarding without changing model settings");
+
+    let mut status = load_onboarding_status(&app)
+        .await
+        .map_err(|e| format!("Failed to load onboarding status: {}", e))?;
+
+    mark_api_key_onboarding_status_complete(&mut status);
+
+    save_onboarding_status(&app, &status)
+        .await
+        .map_err(|e| format!("Failed to save completed onboarding status: {}", e))?;
+
+    Ok(())
+}
+
 #[tauri::command]
 pub async fn complete_onboarding<R: Runtime>(
     app: AppHandle<R>,
@@ -242,5 +266,31 @@ mod tests {
         .expect("old onboarding status should remain compatible");
 
         assert_eq!(status.model_status.selected_summary_model, None);
+    }
+
+    #[test]
+    fn api_key_onboarding_completion_preserves_model_status() {
+        let mut status = OnboardingStatus {
+            version: "1.0".to_string(),
+            completed: false,
+            current_step: 2,
+            model_status: ModelStatus {
+                parakeet: "not_downloaded".to_string(),
+                summary: "not_downloaded".to_string(),
+                selected_summary_model: Some("existing-model".to_string()),
+            },
+            last_updated: "2026-06-21T00:00:00Z".to_string(),
+        };
+
+        mark_api_key_onboarding_status_complete(&mut status);
+
+        assert!(status.completed);
+        assert_eq!(status.current_step, 4);
+        assert_eq!(status.model_status.parakeet, "not_downloaded");
+        assert_eq!(status.model_status.summary, "not_downloaded");
+        assert_eq!(
+            status.model_status.selected_summary_model.as_deref(),
+            Some("existing-model")
+        );
     }
 }

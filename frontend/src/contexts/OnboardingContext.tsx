@@ -34,6 +34,8 @@ interface ParakeetProgressInfo {
   speedMbps: number;
 }
 
+type OnboardingSetupMode = 'api' | 'local';
+
 interface OnboardingContextType {
   currentStep: number;
   parakeetDownloaded: boolean;
@@ -48,6 +50,8 @@ interface OnboardingContextType {
   isBackgroundDownloading: boolean;
   // Permissions
   permissions: OnboardingPermissions;
+  setupMode: OnboardingSetupMode;
+  setSetupMode: (mode: OnboardingSetupMode) => void;
   permissionsSkipped: boolean;
   // Navigation
   goToStep: (step: number) => void;
@@ -96,6 +100,10 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const [recommendedSummaryModel, setRecommendedSummaryModel] = useState<string>('');
   const [databaseExists, setDatabaseExists] = useState(false);
   const [isBackgroundDownloading, setIsBackgroundDownloading] = useState(false);
+  const [setupMode, setSetupModeState] = useState<OnboardingSetupMode>(() => {
+    if (typeof window === 'undefined') return 'api';
+    return localStorage.getItem('siftnotesOnboardingSetupMode') === 'local' ? 'local' : 'api';
+  });
 
   // Permissions state
   const [permissions, setPermissions] = useState<OnboardingPermissions>({
@@ -215,6 +223,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const isCompletingRef = useRef(false);
 
+  const setSetupMode = useCallback((mode: OnboardingSetupMode) => {
+    setSetupModeState(mode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('siftnotesOnboardingSetupMode', mode);
+    }
+  }, []);
+
   // Auto-save on state change (debounced)
   useEffect(() => {
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
@@ -230,7 +245,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [currentStep, parakeetDownloaded, summaryModelDownloaded, completed]);
+  }, [currentStep, parakeetDownloaded, setupMode, summaryModelDownloaded, completed]);
 
   // Listen to Parakeet download progress
   useEffect(() => {
@@ -472,6 +487,17 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         saveTimeoutRef.current = undefined;
       }
 
+      if (setupMode === 'api') {
+        await invoke('complete_api_key_onboarding');
+        setCompleted(true);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('siftnotesOnboardingSetupMode');
+        }
+        console.log('[OnboardingContext] API-key onboarding completed');
+        isCompletingRef.current = false;
+        return;
+      }
+
       let modelToSave = selectedSummaryModel;
       if (!modelToSave) {
         modelToSave = await invoke<string>('builtin_ai_get_recommended_model');
@@ -493,6 +519,10 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       });
       setCompleted(true);
       console.log('[OnboardingContext] Onboarding completed with model:', modelToSave);
+
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('siftnotesOnboardingSetupMode');
+      }
 
       // Reset the flag so subsequent state updates can be saved
       isCompletingRef.current = false;
@@ -616,6 +646,8 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         databaseExists,
         isBackgroundDownloading,
         permissions,
+        setupMode,
+        setSetupMode,
         permissionsSkipped,
         goToStep,
         goNext,
