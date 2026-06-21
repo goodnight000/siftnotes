@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face { font-family:"Avio Sans"; src:url("/fonts/AvioSans-Regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
+@font-face { font-family:"Avio Sans"; src:url("/fonts/AvioSans-Medium.woff2") format("woff2"); font-weight:500; font-display:swap; }
+@font-face { font-family:"Avio Sans"; src:url("/fonts/AvioSans-SemiBold.woff2") format("woff2"); font-weight:600; font-display:swap; }
+@font-face { font-family:"Avio Sans"; src:url("/fonts/AvioSans-Bold.woff2") format("woff2"); font-weight:700; font-display:swap; }
+@font-face { font-family:"Commit Mono"; src:url("/fonts/CommitMono-Regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
+@font-face { font-family:"Commit Mono"; src:url("/fonts/CommitMono-Medium.woff2") format("woff2"); font-weight:500; font-display:swap; }
+@font-face { font-family:"Commit Mono"; src:url("/fonts/CommitMono-SemiBold.woff2") format("woff2"); font-weight:600; font-display:swap; }
+@font-face { font-family:"Space Grotesk"; src:url("/fonts/SpaceGrotesk-Medium.woff2") format("woff2"); font-weight:500; font-display:swap; }
+@font-face { font-family:"Space Grotesk"; src:url("/fonts/SpaceGrotesk-SemiBold.woff2") format("woff2"); font-weight:600; font-display:swap; }
+@font-face { font-family:"Space Grotesk"; src:url("/fonts/SpaceGrotesk-Bold.woff2") format("woff2"); font-weight:700; font-display:swap; }
+
 @keyframes vibrate {
   0% {
     transform: translate(0);
@@ -78,26 +89,34 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 60 11% 98%;
+    --foreground: 60 4% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 60 4% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
+    --popover-foreground: 60 4% 10%;
+    --primary: 60 4% 10%;
+    --primary-foreground: 60 11% 98%;
+    --secondary: 60 7% 94%;
+    --secondary-foreground: 60 4% 10%;
+    --muted: 60 7% 94%;
+    --muted-foreground: 47 4% 50%;
+    --accent: 60 7% 94%;
+    --accent-foreground: 60 4% 10%;
+    --destructive: 5 71% 59%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 48 8% 88%;
+    --input: 48 8% 88%;
+    --ring: 15 79% 34%;
+    --radius: 0.625rem;
+    --clay: 15 79% 34%;
+    --wash: 20 35% 92%;
+    --ink-2: 43 4% 32%;
+    --ink-3: 47 4% 50%;
+    --rec: 5 71% 59%;
+    --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-sans: "Avio Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "Commit Mono", ui-monospace, SFMono-Regular, monospace;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -106,30 +125,30 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 60 3% 9%;
+    --foreground: 48 12% 90%;
+    --card: 60 3% 12%;
+    --card-foreground: 48 12% 90%;
+    --popover: 60 3% 12%;
+    --popover-foreground: 48 12% 90%;
+    --primary: 48 12% 90%;
+    --primary-foreground: 60 3% 9%;
+    --secondary: 50 4% 16%;
+    --secondary-foreground: 48 12% 90%;
+    --muted: 50 4% 16%;
+    --muted-foreground: 47 5% 58%;
+    --accent: 50 4% 16%;
+    --accent-foreground: 48 12% 90%;
+    --destructive: 5 65% 62%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 48 5% 20%;
+    --input: 48 5% 20%;
+    --ring: 22 75% 52%;
+    --clay: 22 75% 52%;
+    --wash: 20 30% 18%;
+    --ink-2: 47 6% 70%;
+    --ink-3: 47 5% 55%;
+    --rec: 5 65% 62%;
   }
 }
 
@@ -141,8 +160,14 @@
   /* html, */
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
     overflow: hidden;
     height: 100%;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 
   /* Make the window draggable */
