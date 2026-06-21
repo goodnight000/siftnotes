@@ -21,7 +21,7 @@ const Logo = React.forwardRef<HTMLDivElement, LogoProps>(({ isCollapsed }, ref) 
         alt="SiftNotes logo"
         width={isCollapsed ? 40 : 32}
         height={isCollapsed ? 40 : 32}
-        className="shrink-0"
+        className={isCollapsed ? "shrink-0 rounded-xl" : "shrink-0 rounded-lg"}
         priority
       />
       {!isCollapsed && (

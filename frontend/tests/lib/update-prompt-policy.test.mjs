@@ -34,7 +34,57 @@ function loadTsModule(filePath) {
   return module.exports;
 }
 
-const { shouldOpenUpdateDialog } = loadTsModule(modulePath);
+const { getUpdateAction, shouldOpenUpdateDialog } = loadTsModule(modulePath);
+
+assert.equal(
+  getUpdateAction({
+    mode: 'startup',
+    updateInfo: { available: true },
+    isRecording: false,
+  }),
+  'install-silently',
+  'startup checks should install available updates silently when recording is inactive',
+);
+
+assert.equal(
+  getUpdateAction({
+    mode: 'interactive',
+    updateInfo: { available: true },
+    isRecording: false,
+  }),
+  'prompt',
+  'interactive checks should prompt for available updates',
+);
+
+assert.equal(
+  getUpdateAction({
+    mode: 'startup',
+    updateInfo: { available: true },
+    isRecording: true,
+  }),
+  'blocked-by-recording',
+  'startup checks should not install while recording',
+);
+
+assert.equal(
+  getUpdateAction({
+    mode: 'interactive',
+    updateInfo: { available: true },
+    isRecording: true,
+  }),
+  'blocked-by-recording',
+  'interactive checks should not install while recording',
+);
+
+assert.equal(
+  getUpdateAction({
+    mode: 'startup',
+    updateInfo: { available: false },
+    isRecording: false,
+  }),
+  'none',
+  'checks with no available update should do nothing',
+);
 
 assert.equal(
   shouldOpenUpdateDialog({ available: true }),
