@@ -123,6 +123,24 @@ pub async fn api_validate_template<R: Runtime>(
     }
 }
 
+/// Saves a validated custom template to the user's app data directory.
+#[tauri::command]
+pub async fn api_save_custom_template<R: Runtime>(
+    _app: tauri::AppHandle<R>,
+    template_id: String,
+    template_json: String,
+) -> Result<TemplateInfo, String> {
+    info!("api_save_custom_template called for template_id: {}", template_id);
+
+    let template = templates::save_custom_template(&template_id, &template_json)?;
+
+    Ok(TemplateInfo {
+        id: template_id,
+        name: template.name,
+        description: template.description,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

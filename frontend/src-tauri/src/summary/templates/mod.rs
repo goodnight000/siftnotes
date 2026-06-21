@@ -31,9 +31,9 @@
 //! # Custom Templates
 //!
 //! Users can add custom templates to:
-//! - macOS: `~/Library/Application Support/Meetily/templates/`
-//! - Windows: `%APPDATA%\Meetily\templates\`
-//! - Linux: `~/.config/Meetily/templates/`
+//! - macOS: `~/Library/Application Support/SiftNotes/templates/`
+//! - Windows: `%APPDATA%\SiftNotes\templates\`
+//! - Linux: `~/.config/SiftNotes/templates/`
 //!
 //! Custom templates must follow the JSON schema defined in `types::Template`.
 
@@ -44,7 +44,8 @@ mod types;
 // Re-export public API
 pub use loader::{
     get_template, list_template_ids, list_templates, set_bundled_templates_dir,
-    validate_and_parse_template,
+    save_custom_template, validate_and_parse_template,
+    validate_custom_template_id,
 };
 pub use types::{Template, TemplateSection};
 

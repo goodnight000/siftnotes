@@ -101,6 +101,9 @@ const GROQ_FALLBACK_MODELS = [
   'gemma2-9b-it',
 ];
 
+const XAI_ENDPOINT = 'https://api.x.ai/v1';
+const XAI_MODEL = 'grok-4.3';
+
 interface ModelSettingsModalProps {
   modelConfig: ModelConfig;
   setModelConfig: (config: ModelConfig | ((prev: ModelConfig) => ModelConfig)) => void;
@@ -691,6 +694,13 @@ export function ModelSettingsModal({
     }
   };
 
+  const applyXaiPreset = () => {
+    setCustomOpenAIEndpoint(XAI_ENDPOINT);
+    setCustomOpenAIModel(XAI_MODEL);
+    setModelConfig((prev: ModelConfig) => ({ ...prev, provider: 'custom-openai', model: XAI_MODEL }));
+    toast.success('xAI preset applied');
+  };
+
   const handleInputClick = () => {
     if (isApiKeyLocked) {
       setIsLockButtonVibrating(true);
@@ -947,6 +957,17 @@ export function ModelSettingsModal({
         {/* Custom OpenAI Configuration Section */}
         {modelConfig.provider === 'custom-openai' && (
           <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={applyXaiPreset}
+              >
+                xAI Grok
+              </Button>
+            </div>
+
             <div>
               <Label htmlFor="custom-endpoint">Endpoint URL *</Label>
               <Input

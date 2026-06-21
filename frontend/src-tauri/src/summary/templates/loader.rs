@@ -19,14 +19,29 @@ pub fn set_bundled_templates_dir(path: PathBuf) {
 /// Get the user's custom templates directory path
 ///
 /// Returns the platform-specific application data directory for custom templates:
-/// - macOS: ~/Library/Application Support/Meetily/templates/
-/// - Windows: %APPDATA%\Meetily\templates\
-/// - Linux: ~/.config/Meetily/templates/
+/// - macOS: ~/Library/Application Support/SiftNotes/templates/
+/// - Windows: %APPDATA%\SiftNotes\templates\
+/// - Linux: ~/.config/SiftNotes/templates/
 fn get_custom_templates_dir() -> Option<PathBuf> {
     let mut path = dirs::data_dir()?;
-    path.push("Meetily");
+    path.push("SiftNotes");
     path.push("templates");
     Some(path)
+}
+
+pub fn validate_custom_template_id(template_id: &str) -> Result<(), String> {
+    if template_id.trim().is_empty() {
+        return Err("Template ID cannot be empty".to_string());
+    }
+
+    if template_id
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || ch == '_' || ch == '-')
+    {
+        Ok(())
+    } else {
+        Err("Template ID can only contain letters, numbers, underscores, and hyphens".to_string())
+    }
 }
 
 /// Load a template from the bundled resources directory
@@ -217,6 +232,24 @@ pub fn list_templates() -> Vec<(String, String, String)> {
     templates
 }
 
+pub fn save_custom_template(template_id: &str, json_content: &str) -> Result<Template, String> {
+    validate_custom_template_id(template_id)?;
+    let template = validate_and_parse_template(json_content)?;
+    let custom_dir = get_custom_templates_dir()
+        .ok_or_else(|| "Could not resolve custom templates directory".to_string())?;
+
+    std::fs::create_dir_all(&custom_dir)
+        .map_err(|e| format!("Failed to create custom templates directory: {}", e))?;
+
+    let template_path = custom_dir.join(format!("{}.json", template_id));
+    let pretty_json = serde_json::to_string_pretty(&template)
+        .map_err(|e| format!("Failed to serialize template: {}", e))?;
+    std::fs::write(&template_path, pretty_json)
+        .map_err(|e| format!("Failed to save custom template: {}", e))?;
+
+    Ok(template)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -248,5 +281,14 @@ mod tests {
     fn test_validate_invalid_json() {
         let result = validate_and_parse_template("invalid json");
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_validate_custom_template_id() {
+        assert!(validate_custom_template_id("client_weekly-1").is_ok());
+        assert!(validate_custom_template_id("").is_err());
+        assert!(validate_custom_template_id("../standard_meeting").is_err());
+        assert!(validate_custom_template_id("standard meeting").is_err());
+        assert!(validate_custom_template_id("standard.meeting").is_err());
     }
 }

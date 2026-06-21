@@ -14,15 +14,56 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Sparkles, Settings, Loader2, FileText, Check, Square } from 'lucide-react';
+import { Sparkles, Settings, Loader2, FileText, Check, Square, Plus } from 'lucide-react';
 import Analytics from '@/lib/analytics';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 import { useState, useEffect, useRef, ReactNode } from 'react';
 import { isOllamaNotInstalledError } from '@/lib/utils';
 import { BuiltInModelInfo } from '@/lib/builtin-ai';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+
+const DEFAULT_CUSTOM_TEMPLATE_JSON = JSON.stringify({
+  name: 'Custom Meeting Notes',
+  description: 'Custom outcome-focused meeting notes.',
+  sections: [
+    {
+      title: 'Summary',
+      instruction: 'Summarize the meeting outcomes and key context.',
+      format: 'paragraph',
+    },
+    {
+      title: 'Decisions',
+      instruction: 'List decisions, owners, rationale, and references.',
+      format: 'list',
+    },
+    {
+      title: 'Action Items',
+      instruction: 'List actions with owners, due dates, priorities, and references.',
+      format: 'list',
+    },
+    {
+      title: 'Follow-ups',
+      instruction: 'List open questions, pending confirmations, and next check-ins.',
+      format: 'list',
+    },
+  ],
+}, null, 2);
+
+function buildTemplateId(name: string) {
+  const cleaned = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 64);
+  return cleaned || `custom_${Date.now()}`;
+}
 
 interface SummaryGeneratorButtonGroupProps {
   languageSlot?: ReactNode;
@@ -36,6 +77,7 @@ interface SummaryGeneratorButtonGroupProps {
   availableTemplates: Array<{ id: string, name: string, description: string }>;
   selectedTemplate: string;
   onTemplateSelect: (templateId: string, templateName: string) => void;
+  onTemplatesChanged?: () => Promise<void>;
   hasTranscripts?: boolean;
   hasSummary?: boolean;
   isModelConfigLoading?: boolean;
@@ -53,6 +95,7 @@ export function SummaryGeneratorButtonGroup({
   availableTemplates,
   selectedTemplate,
   onTemplateSelect,
+  onTemplatesChanged,
   hasTranscripts = true,
   hasSummary = false,
   isModelConfigLoading = false,
@@ -61,6 +104,10 @@ export function SummaryGeneratorButtonGroup({
 }: SummaryGeneratorButtonGroupProps) {
   const [isCheckingModels, setIsCheckingModels] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+  const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+  const [customTemplateName, setCustomTemplateName] = useState('Custom Meeting Notes');
+  const [customTemplateJson, setCustomTemplateJson] = useState(DEFAULT_CUSTOM_TEMPLATE_JSON);
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false);
 
   // Expose the function to open the modal via callback registration
   useEffect(() => {
@@ -242,6 +289,38 @@ export function SummaryGeneratorButtonGroup({
 
   const isGenerating = summaryStatus === 'processing' || summaryStatus === 'summarizing' || summaryStatus === 'regenerating';
 
+  const saveCustomTemplate = async () => {
+    setIsSavingTemplate(true);
+    try {
+      const parsed = JSON.parse(customTemplateJson);
+      const templateName = customTemplateName.trim() || parsed.name || 'Custom Meeting Notes';
+      const templateJson = JSON.stringify({ ...parsed, name: templateName });
+      const templateId = buildTemplateId(templateName);
+      const savedTemplate = await invoke<{ id: string; name: string; description: string }>(
+        'api_save_custom_template',
+        {
+          templateId,
+          templateJson,
+        }
+      );
+
+      await onTemplatesChanged?.();
+      onTemplateSelect(savedTemplate.id, savedTemplate.name);
+      setTemplateDialogOpen(false);
+      toast.success('Template saved', {
+        description: savedTemplate.name,
+      });
+      Analytics.trackFeatureUsed('custom_template_saved');
+    } catch (error) {
+      console.error('Failed to save custom template:', error);
+      toast.error('Failed to save template', {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setIsSavingTemplate(false);
+    }
+  };
+
   return (
     <ButtonGroup>
       {/* Generate Summary or Stop button */}
@@ -351,10 +430,67 @@ export function SummaryGeneratorButtonGroup({
                 )}
               </DropdownMenuItem>
             ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setTemplateDialogOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Custom Template</span>
+            </DropdownMenuItem>
 
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+      <Dialog open={templateDialogOpen} onOpenChange={setTemplateDialogOpen}>
+        <DialogContent aria-describedby={undefined} className="sm:max-w-2xl">
+          <DialogTitle>Custom Template</DialogTitle>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="custom-template-name">Template name</Label>
+              <Input
+                id="custom-template-name"
+                value={customTemplateName}
+                onChange={(event) => setCustomTemplateName(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="custom-template-json">Template JSON</Label>
+              <Textarea
+                id="custom-template-json"
+                value={customTemplateJson}
+                onChange={(event) => setCustomTemplateJson(event.target.value)}
+                className="min-h-[360px] font-mono text-xs"
+                spellCheck={false}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setTemplateDialogOpen(false)}
+                disabled={isSavingTemplate}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={saveCustomTemplate}
+                disabled={isSavingTemplate}
+              >
+                {isSavingTemplate ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving
+                  </>
+                ) : (
+                  'Save'
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </ButtonGroup>
   );
 }

@@ -1,5 +1,5 @@
 {
-    "name": "meetily",
+    "name": "sift-notes",
     "version": "0.4.0",
     "private": true,
     "main": "electron/main.js",
@@ -57,6 +57,7 @@
         "@remirror/react": "^3.0.1",
         "@tanstack/react-virtual": "^3.13.13",
         "@tauri-apps/api": "^2.6.0",
+        "@tauri-apps/plugin-dialog": "^2.3.0",
         "@tauri-apps/plugin-fs": "^2.4.0",
         "@tauri-apps/plugin-notification": "~2.3.1",
         "@tauri-apps/plugin-os": "^2.3.2",
@@ -108,5 +109,6 @@
         "tailwindcss": "^3.4.1",
         "typescript": "^5.7.2",
         "wait-on": "^7.2.0"
-    }
+    },
+    "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }

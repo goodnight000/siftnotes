@@ -5,6 +5,7 @@ import { Summary, SummaryResponse } from '@/types';
 import { useSidebar } from '@/components/Sidebar/SidebarProvider';
 import Analytics from '@/lib/analytics';
 import { invoke } from '@tauri-apps/api/core';
+import { save } from '@tauri-apps/plugin-dialog';
 import { toast } from 'sonner';
 import { TranscriptPanel } from '@/components/MeetingDetails/TranscriptPanel';
 import { SummaryPanel } from '@/components/MeetingDetails/SummaryPanel';
@@ -17,6 +18,15 @@ import { useTemplates } from '@/hooks/meeting-details/useTemplates';
 import { useCopyOperations } from '@/hooks/meeting-details/useCopyOperations';
 import { useMeetingOperations } from '@/hooks/meeting-details/useMeetingOperations';
 import { useConfig } from '@/contexts/ConfigContext';
+
+function buildMarkdownExportName(title: string) {
+  const fallback = 'meeting-notes';
+  const cleaned = title.trim()
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '-')
+    .replace(/\s+/g, ' ')
+    .slice(0, 80);
+  return `${cleaned || fallback}.md`;
+}
 
 export default function PageContent({
   meeting,
@@ -134,6 +144,36 @@ export default function PageContent({
     meeting,
   });
 
+  const handleExportMarkdown = async () => {
+    try {
+      const outputPath = await save({
+        title: 'Export Markdown',
+        defaultPath: buildMarkdownExportName(meetingData.meetingTitle || meeting.title || ''),
+        filters: [
+          {
+            name: 'Markdown',
+            extensions: ['md'],
+          },
+        ],
+      });
+
+      if (!outputPath) return;
+
+      await invoke<string>('api_export_meeting_markdown', {
+        meetingId: meeting.id,
+        outputPath,
+      });
+
+      toast.success('Markdown exported', {
+        description: outputPath,
+      });
+      Analytics.trackFeatureUsed('markdown_export');
+    } catch (error) {
+      console.error('Failed to export Markdown:', error);
+      toast.error('Failed to export Markdown');
+    }
+  };
+
   // Track page view
   useEffect(() => {
     Analytics.trackPageView('meeting_details');
@@ -205,6 +245,7 @@ export default function PageContent({
           onSaveAll={meetingData.saveAllChanges}
           onCopySummary={copyOperations.handleCopySummary}
           onOpenFolder={meetingOperations.handleOpenMeetingFolder}
+          onExportMarkdown={handleExportMarkdown}
           aiSummary={meetingData.aiSummary}
           summaryStatus={summaryGeneration.summaryStatus}
           transcripts={meetingData.transcripts}
@@ -224,6 +265,7 @@ export default function PageContent({
           availableTemplates={templates.availableTemplates}
           selectedTemplate={templates.selectedTemplate}
           onTemplateSelect={templates.handleTemplateSelection}
+          onTemplatesChanged={templates.refreshTemplates}
           isModelConfigLoading={false}
           onOpenModelSettings={handleRegisterModalOpen}
         />

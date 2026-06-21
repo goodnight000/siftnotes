@@ -61,18 +61,6 @@ export class UpdateService {
 
     try {
       const currentVersion = await getVersion();
-      const update = await check();
-
-      if (update?.available) {
-        return {
-          available: true,
-          currentVersion,
-          version: update.version,
-          date: update.date,
-          body: update.body,
-        };
-      }
-
       return {
         available: false,
         currentVersion,

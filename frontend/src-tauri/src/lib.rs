@@ -42,6 +42,7 @@ pub mod config;
 pub mod console_utils;
 pub mod database;
 pub mod notifications;
+pub mod export;
 pub mod ollama;
 pub mod onboarding;
 pub mod openai;
@@ -671,6 +672,7 @@ pub fn run() {
             summary::template_commands::api_list_templates,
             summary::template_commands::api_get_template_details,
             summary::template_commands::api_validate_template,
+            summary::template_commands::api_save_custom_template,
             // Built-in AI commands
             summary::summary_engine::commands::builtin_ai_list_models,
             summary::summary_engine::commands::builtin_ai_get_model_info,
@@ -692,6 +694,8 @@ pub fn run() {
             audio::recording_preferences::get_audio_backend_info,
             // Language preference commands
             set_language_preference,
+            // Export commands
+            export::api_export_meeting_markdown,
             // Notification system commands
             notifications::commands::get_notification_settings,
             notifications::commands::set_notification_settings,

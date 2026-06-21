@@ -62,4 +62,20 @@ mod tests {
         assert!(get_builtin_template("standard_meeting").is_some());
         assert!(get_builtin_template("nonexistent").is_none());
     }
+
+    #[test]
+    fn test_standard_meeting_sections_cover_siftnotes_outputs() {
+        let template =
+            crate::summary::templates::validate_and_parse_template(STANDARD_MEETING).unwrap();
+        let titles: Vec<&str> = template
+            .sections
+            .iter()
+            .map(|section| section.title.as_str())
+            .collect();
+
+        assert_eq!(
+            titles,
+            vec!["Summary", "Decisions", "Action Items", "Follow-ups", "Discussion Notes"]
+        );
+    }
 }
