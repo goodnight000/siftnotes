@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { ChevronDown, ChevronRight, File, Settings, ChevronLeftCircle, ChevronRightCircle, Calendar, Home, Trash2, Plus, Pencil, SearchIcon, X, Upload } from 'lucide-react';
+import { Archive, ArchiveRestore, ChevronDown, ChevronRight, File, Folder, Pin, Settings, ChevronLeftCircle, ChevronRightCircle, Calendar, Home, Trash2, Plus, Pencil, SearchIcon, X, Upload, LayoutGrid } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSidebar } from './SidebarProvider';
 import type { CurrentMeeting } from '@/components/Sidebar/SidebarProvider';
@@ -35,7 +35,86 @@ interface SidebarItem {
   id: string;
   title: string;
   type: 'folder' | 'file';
+  meeting?: CurrentMeeting;
   children?: SidebarItem[];
+}
+
+function normaliseSidebarMeeting(meeting: CurrentMeeting): CurrentMeeting {
+  return {
+    ...meeting,
+    project: meeting.project ?? null,
+    tags: Array.isArray(meeting.tags) ? meeting.tags : [],
+    is_pinned: Boolean(meeting.is_pinned),
+    is_archived: Boolean(meeting.is_archived),
+  };
+}
+
+function meetingToItem(meeting: CurrentMeeting): SidebarItem {
+  return {
+    id: meeting.id,
+    title: meeting.title,
+    type: 'file',
+    meeting: normaliseSidebarMeeting(meeting),
+  };
+}
+
+function buildMeetingSidebarItems(meetings: CurrentMeeting[], showArchived: boolean): SidebarItem[] {
+  const visibleMeetings = meetings
+    .map(normaliseSidebarMeeting)
+    .filter(meeting => showArchived || !meeting.is_archived);
+  const pinned = visibleMeetings.filter(meeting => meeting.is_pinned);
+  const regular = visibleMeetings.filter(meeting => !meeting.is_pinned);
+  const projectGroups = new Map<string, CurrentMeeting[]>();
+
+  for (const meeting of regular) {
+    const projectName = meeting.project?.trim() || 'Unfiled';
+    projectGroups.set(projectName, [...(projectGroups.get(projectName) || []), meeting]);
+  }
+
+  const children: SidebarItem[] = [];
+  if (pinned.length > 0) {
+    children.push({
+      id: 'pinned-meetings',
+      title: 'Pinned',
+      type: 'folder',
+      children: pinned.map(meetingToItem),
+    });
+  }
+
+  for (const [projectName, projectMeetings] of Array.from(projectGroups.entries()).sort(([a], [b]) => a.localeCompare(b))) {
+    children.push({
+      id: `project-${projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'unfiled'}`,
+      title: projectName,
+      type: 'folder',
+      children: projectMeetings.map(meetingToItem),
+    });
+  }
+
+  return [{
+    id: 'meetings',
+    title: 'Meeting Notes',
+    type: 'folder',
+    children,
+  }];
+}
+
+function filterItems(items: SidebarItem[], query: string, matchedMeetingIds: Set<string>): SidebarItem[] {
+  const lowered = query.trim().toLowerCase();
+  if (!lowered) return items;
+
+  return items
+    .map(item => {
+      if (item.type === 'folder') {
+        const children = filterItems(item.children || [], query, matchedMeetingIds);
+        const titleMatches = item.title.toLowerCase().includes(lowered);
+        return titleMatches || children.length > 0 ? { ...item, children } : null;
+      }
+
+      const titleMatches = item.title.toLowerCase().includes(lowered);
+      const tagMatches = item.meeting?.tags?.some(tag => tag.toLowerCase().includes(lowered)) ?? false;
+      return matchedMeetingIds.has(item.id) || titleMatches || tagMatches ? item : null;
+    })
+    .filter((item): item is SidebarItem => item !== null);
 }
 
 const Sidebar: React.FC = () => {
@@ -44,7 +123,6 @@ const Sidebar: React.FC = () => {
   const {
     currentMeeting,
     setCurrentMeeting,
-    sidebarItems,
     isCollapsed,
     toggleCollapse,
     searchTranscripts,
@@ -59,6 +137,7 @@ const Sidebar: React.FC = () => {
   const { betaFeatures } = useConfig();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['meetings']));
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showArchived, setShowArchived] = useState(false);
   const [showModelSettings, setShowModelSettings] = useState(false);
   const [modelConfig, setModelConfig] = useState<ModelConfig>({
     provider: 'openrouter',
@@ -251,67 +330,37 @@ const Sidebar: React.FC = () => {
     }
   }, [expandedFolders, searchTranscripts]);
 
+  const groupedSidebarItems = useMemo(
+    () => buildMeetingSidebarItems(meetings, showArchived),
+    [meetings, showArchived]
+  );
+
+  useEffect(() => {
+    setExpandedFolders(prev => {
+      const next = new Set(prev);
+      let changed = false;
+
+      const ensure = (id: string) => {
+        if (!next.has(id)) {
+          next.add(id);
+          changed = true;
+        }
+      };
+
+      ensure('meetings');
+      groupedSidebarItems[0]?.children
+        ?.filter(item => item.type === 'folder')
+        .forEach(item => ensure(item.id));
+
+      return changed ? next : prev;
+    });
+  }, [groupedSidebarItems]);
+
   // Combine search results with sidebar items
   const filteredSidebarItems = useMemo(() => {
-    if (!searchQuery.trim()) return sidebarItems;
-
-    // If we have search results, highlight matching meetings
-    if (searchResults.length > 0) {
-      // Get the IDs of meetings that matched in transcripts
-      const matchedMeetingIds = new Set(searchResults.map(result => result.id));
-
-      return sidebarItems
-        .map(folder => {
-          // Always include folders in the results
-          if (folder.type === 'folder') {
-            if (!folder.children) return folder;
-
-            // Filter children based on search results or title match
-            const filteredChildren = folder.children.filter(item => {
-              // Include if the meeting ID is in our search results
-              if (matchedMeetingIds.has(item.id)) return true;
-
-              // Or if the title matches the search query
-              return item.title.toLowerCase().includes(searchQuery.toLowerCase());
-            });
-
-            return {
-              ...folder,
-              children: filteredChildren
-            };
-          }
-
-          // For non-folder items, check if they match the search
-          return (matchedMeetingIds.has(folder.id) ||
-            folder.title.toLowerCase().includes(searchQuery.toLowerCase()))
-            ? folder : undefined;
-        })
-        .filter((item): item is SidebarItem => item !== undefined); // Type-safe filter
-    } else {
-      // Fall back to title-only filtering if no transcript results
-      return sidebarItems
-        .map(folder => {
-          // Always include folders in the results
-          if (folder.type === 'folder') {
-            if (!folder.children) return folder;
-
-            // Filter children based on search query
-            const filteredChildren = folder.children.filter(item =>
-              item.title.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-
-            return {
-              ...folder,
-              children: filteredChildren
-            };
-          }
-
-          // For non-folder items, check if they match the search
-          return folder.title.toLowerCase().includes(searchQuery.toLowerCase()) ? folder : undefined;
-        })
-        .filter((item): item is SidebarItem => item !== undefined); // Type-safe filter
-    }
-  }, [sidebarItems, searchQuery, searchResults, expandedFolders]);
+    const matchedMeetingIds = new Set(searchResults.map(result => result.id));
+    return filterItems(groupedSidebarItems, searchQuery, matchedMeetingIds);
+  }, [groupedSidebarItems, searchQuery, searchResults]);
 
 
   const handleDelete = async (itemId: string) => {
@@ -357,6 +406,37 @@ const Sidebar: React.FC = () => {
     setDeleteModalState({ isOpen: false, itemId: null });
   };
 
+  const handleSidebarOrganizationUpdate = async (
+    meeting: CurrentMeeting,
+    patch: Partial<Pick<CurrentMeeting, 'is_pinned' | 'is_archived'>>
+  ) => {
+    const nextMeeting = normaliseSidebarMeeting({ ...meeting, ...patch });
+
+    try {
+      const updated = await invoke<CurrentMeeting>('api_update_meeting_organization', {
+        meetingId: nextMeeting.id,
+        project: nextMeeting.project ?? null,
+        tags: nextMeeting.tags ?? [],
+        isPinned: Boolean(nextMeeting.is_pinned),
+        isArchived: Boolean(nextMeeting.is_archived),
+      });
+
+      const normalised = normaliseSidebarMeeting(updated);
+      setMeetings(meetings.map((m: CurrentMeeting) =>
+        m.id === normalised.id ? { ...m, ...normalised } : m
+      ));
+
+      if (currentMeeting?.id === normalised.id) {
+        setCurrentMeeting(normalised);
+      }
+    } catch (error) {
+      console.error('Failed to update meeting organization:', error);
+      toast.error('Failed to update meeting organization', {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   // Handle modal editing of meeting names
   const handleEditStart = (meetingId: string, currentTitle: string) => {
     setEditModalState({
@@ -393,7 +473,7 @@ const Sidebar: React.FC = () => {
 
       // Update current meeting if it's the one being edited
       if (currentMeeting?.id === meetingId) {
-        setCurrentMeeting({ id: meetingId, title: newTitle });
+        setCurrentMeeting({ ...currentMeeting, id: meetingId, title: newTitle });
       }
 
       // Track the edit
@@ -444,6 +524,7 @@ const Sidebar: React.FC = () => {
     if (!isCollapsed) return null;
 
     const isHomePage = pathname === '/';
+    const isNotesPage = pathname?.startsWith('/notes') ?? false;
     const isSettingsPage = pathname === '/settings';
 
     return (
@@ -455,14 +536,29 @@ const Sidebar: React.FC = () => {
             <TooltipTrigger asChild>
               <button
                 onClick={() => router.push('/')}
-                className={`p-2 rounded-lg transition-colors duration-150 ${isHomePage ? 'bg-gray-100' : 'hover:bg-gray-100'
+                className={`p-2 rounded-lg transition-colors duration-150 ${isHomePage ? 'bg-wash text-clay' : 'text-ink-3 hover:bg-sunken'
                   }`}
               >
-                <Home className="w-5 h-5 text-gray-600" />
+                <Home className="w-5 h-5" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right">
               <p>Home</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => router.push('/notes')}
+                className={`p-2 rounded-lg transition-colors duration-150 ${isNotesPage ? 'bg-wash text-clay' : 'text-ink-3 hover:bg-sunken'
+                  }`}
+              >
+                <LayoutGrid className="w-5 h-5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>All notes</p>
             </TooltipContent>
           </Tooltip>
 
@@ -486,10 +582,10 @@ const Sidebar: React.FC = () => {
             <TooltipTrigger asChild>
               <button
                 onClick={() => router.push('/settings')}
-                className={`p-2 rounded-lg transition-colors duration-150 ${isSettingsPage ? 'bg-gray-100' : 'hover:bg-gray-100'
+                className={`p-2 rounded-lg transition-colors duration-150 ${isSettingsPage ? 'bg-wash text-clay' : 'text-ink-3 hover:bg-sunken'
                   }`}
               >
-                <Settings className="w-5 h-5 text-gray-600" />
+                <Settings className="w-5 h-5" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right">
@@ -512,7 +608,8 @@ const Sidebar: React.FC = () => {
     const isExpanded = expandedFolders.has(item.id);
     const paddingLeft = `${depth * 12 + 12}px`;
     const isActive = item.type === 'file' && currentMeeting?.id === item.id;
-    const isMeetingItem = item.id.includes('-') && !item.id.startsWith('intro-call');
+    const isMeetingItem = item.type === 'file' && !item.id.startsWith('intro-call');
+    const itemMeeting = item.meeting;
 
     // Check if this item has a matching transcript snippet
     const matchingResult = isMeetingItem ? findMatchingSnippet(item.id) : null;
@@ -526,7 +623,7 @@ const Sidebar: React.FC = () => {
           className={`flex items-center transition-all duration-150 group ${item.type === 'folder' && depth === 0
             ? 'p-3 text-lg font-semibold h-10 mx-3 mt-3 rounded-lg'
             : `px-3 py-2 my-0.5 rounded-md text-sm ${isActive ? 'bg-blue-100 text-blue-700 font-medium' :
-              hasTranscriptMatch ? 'bg-yellow-50' : 'hover:bg-gray-50'
+              hasTranscriptMatch ? 'bg-yellow-50' : 'hover:bg-sunken'
             } cursor-pointer`
             }`}
           style={item.type === 'folder' && depth === 0 ? {} : { paddingLeft }}
@@ -534,7 +631,7 @@ const Sidebar: React.FC = () => {
             if (item.type === 'folder') {
               toggleFolder(item.id);
             } else {
-              setCurrentMeeting({ id: item.id, title: item.title });
+              setCurrentMeeting(item.meeting ?? { id: item.id, title: item.title });
               const basePath = item.id.startsWith('intro-call') ? '/' :
                 item.id.includes('-') ? `/meeting-details?id=${item.id}` : `/notes/${item.id}`;
               router.push(basePath);
@@ -545,15 +642,15 @@ const Sidebar: React.FC = () => {
             <>
               {item.id === 'meetings' ? (
                 <Calendar className="w-4 h-4 mr-2" />
-              ) : item.id === 'notes' ? (
-                <Calendar className="w-4 h-4 mr-2" />
-              ) : null}
+              ) : (
+                <Folder className="w-4 h-4 mr-2" />
+              )}
               <span className={depth === 0 ? "" : "font-medium"}>{item.title}</span>
               <div className="ml-auto">
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                  <ChevronDown className="w-4 h-4 text-ink-3" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-500" />
+                  <ChevronRight className="w-4 h-4 text-ink-3" />
                 )}
               </div>
               {searchQuery && item.id === 'meetings' && isSearching && (
@@ -564,8 +661,8 @@ const Sidebar: React.FC = () => {
             <div className="flex flex-col w-full">
               <div className="flex items-center w-full">
                 {isMeetingItem ? (
-                  <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full mr-2 bg-gray-100">
-                    <File className="w-3.5 h-3.5 text-gray-600" />
+                  <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full mr-2 bg-sunken">
+                    <File className="w-3.5 h-3.5 text-ink-3" />
                   </div>
                 ) : (
                   <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full mr-2 bg-blue-100">
@@ -575,6 +672,40 @@ const Sidebar: React.FC = () => {
                 <span className="flex-1 break-words">{item.title}</span>
                 {isMeetingItem && (
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    {itemMeeting && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleSidebarOrganizationUpdate(itemMeeting, {
+                              is_pinned: !itemMeeting.is_pinned,
+                            });
+                          }}
+                          className="hover:text-blue-600 p-1 rounded-md hover:bg-blue-50 flex-shrink-0"
+                          aria-label={itemMeeting.is_pinned ? 'Unpin meeting' : 'Pin meeting'}
+                          title={itemMeeting.is_pinned ? 'Unpin meeting' : 'Pin meeting'}
+                        >
+                          <Pin className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleSidebarOrganizationUpdate(itemMeeting, {
+                              is_archived: !itemMeeting.is_archived,
+                            });
+                          }}
+                          className="hover:text-amber-600 p-1 rounded-md hover:bg-amber-50 flex-shrink-0"
+                          aria-label={itemMeeting.is_archived ? 'Restore meeting' : 'Archive meeting'}
+                          title={itemMeeting.is_archived ? 'Restore meeting' : 'Archive meeting'}
+                        >
+                          {itemMeeting.is_archived ? (
+                            <ArchiveRestore className="w-4 h-4" />
+                          ) : (
+                            <Archive className="w-4 h-4" />
+                          )}
+                        </button>
+                      </>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -601,7 +732,7 @@ const Sidebar: React.FC = () => {
 
               {/* Show transcript match snippet if available */}
               {hasTranscriptMatch && (
-                <div className="mt-1 ml-8 text-xs text-gray-500 bg-yellow-50 p-1.5 rounded border border-yellow-100 line-clamp-2">
+                <div className="mt-1 ml-8 text-xs text-ink-3 bg-yellow-50 p-1.5 rounded border border-yellow-100 line-clamp-2">
                   <span className="font-medium text-yellow-600">Match:</span> {matchingResult.matchContext}
                 </div>
               )}
@@ -622,7 +753,7 @@ const Sidebar: React.FC = () => {
       {/* Floating collapse button */}
       <button
         onClick={toggleCollapse}
-        className="absolute -right-6 top-20 z-50 p-1 bg-white hover:bg-gray-100 rounded-full shadow-lg border"
+        className="absolute -right-6 top-20 z-50 p-1 bg-paper hover:bg-sunken rounded-full shadow-lg border"
         style={{ transform: 'translateX(50%)' }}
       >
         {isCollapsed ? (
@@ -633,7 +764,7 @@ const Sidebar: React.FC = () => {
       </button>
 
       <div
-        className={`h-screen bg-white border-r shadow-sm flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
+        className={`h-screen bg-paper border-r shadow-sm flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
           }`}
       >
         {/*  Header with traffic light spacing */}
@@ -670,6 +801,18 @@ const Sidebar: React.FC = () => {
                     }
                   </InputGroup>
                 </div>
+                <button
+                  onClick={() => setShowArchived(value => !value)}
+                  className={`w-full flex items-center justify-center gap-2 px-2 py-1.5 text-xs font-medium rounded-md transition-colors ${showArchived ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-sunken text-ink-2 hover:bg-surface'
+                    }`}
+                >
+                  {showArchived ? (
+                    <ArchiveRestore className="w-3.5 h-3.5" />
+                  ) : (
+                    <Archive className="w-3.5 h-3.5" />
+                  )}
+                  <span>{showArchived ? 'Hide archived' : 'Show archived'}</span>
+                </button>
               </div>
             )}
           </div>
@@ -682,7 +825,7 @@ const Sidebar: React.FC = () => {
             {!isCollapsed && (
               <div
                 onClick={() => router.push('/')}
-                className="p-3  text-lg font-semibold items-center hover:bg-gray-100 h-10   flex mx-3 mt-3 rounded-lg cursor-pointer"
+                className="p-3  text-lg font-semibold items-center hover:bg-sunken h-10   flex mx-3 mt-3 rounded-lg cursor-pointer"
               >
                 <Home className="w-4 h-4 mr-2" />
                 <span>Home</span>
@@ -701,7 +844,7 @@ const Sidebar: React.FC = () => {
                     <div
                       className="flex items-center transition-all duration-150 p-3 text-lg font-semibold h-10 mx-3 mt-3 rounded-lg"
                     >
-                      <span className="text-gray-700">{item.title}</span>
+                      <span className="text-ink-2">{item.title}</span>
                       {searchQuery && item.id === 'meetings' && isSearching && (
                         <span className="ml-2 text-xs text-blue-500 animate-pulse">Searching...</span>
                       )}
@@ -729,11 +872,11 @@ const Sidebar: React.FC = () => {
         {/* Footer */}
         {!isCollapsed && (
 
-          <div className="flex-shrink-0 p-2 border-t border-gray-100">
+          <div className="flex-shrink-0 p-2 border-t border-border">
             {betaFeatures.importAndRetranscribe && (
               <button
                 onClick={() => openImportDialog()}
-                className="w-full flex items-center justify-center px-3 py-2 mt-1 text-sm font-medium text-gray-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors shadow-sm"
+                className="w-full flex items-center justify-center px-3 py-2 mt-1 text-sm font-medium text-ink-2 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors shadow-sm"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 <span>Import Audio</span>
@@ -742,12 +885,12 @@ const Sidebar: React.FC = () => {
 
             <button
               onClick={() => router.push('/settings')}
-              className="w-full flex items-center justify-center px-3 py-1.5 mt-1 mb-1 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors shadow-sm"
+              className="w-full flex items-center justify-center px-3 py-1.5 mt-1 mb-1 text-sm font-medium text-ink-2 bg-surface hover:bg-sunken rounded-lg transition-colors shadow-sm"
             >
               <Settings className="w-4 h-4 mr-2" />
               <span>Settings</span>
             </button>
-            <div className="w-full flex items-center justify-center px-3 py-1 text-xs text-gray-400">
+            <div className="w-full flex items-center justify-center px-3 py-1 text-xs text-ink-3">
               v0.4.0
             </div>
           </div>
@@ -774,7 +917,7 @@ const Sidebar: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Edit Meeting Title</h3>
             <div className="space-y-4">
               <div>
-                <label htmlFor="meeting-title" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="meeting-title" className="block text-sm font-medium text-ink-2 mb-2">
                   Meeting Title
                 </label>
                 <input
@@ -789,7 +932,7 @@ const Sidebar: React.FC = () => {
                       handleEditCancel();
                     }
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter meeting title"
                   autoFocus
                 />
@@ -799,7 +942,7 @@ const Sidebar: React.FC = () => {
           <DialogFooter>
             <button
               onClick={handleEditCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              className="px-4 py-2 text-sm font-medium text-ink-2 bg-sunken hover:bg-surface rounded-md transition-colors"
             >
               Cancel
             </button>
