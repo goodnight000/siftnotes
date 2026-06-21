@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 
 const [version, bundleDir = 'frontend/src-tauri/target/release/bundle/updater', outputFile = 'latest.json', notes = ''] = process.argv.slice(2);
+const GITHUB_REPOSITORY = 'charleszheng/siftnotes';
 
 if (!version) {
   console.error('Usage: node generate-update-manifest-github.js <version> [bundle-dir] [output-file] [notes]');
@@ -56,7 +57,7 @@ const versionDir = `v${versionClean}`;
 const pubDate = new Date().toISOString();
 
 console.log(`Generating manifest for version ${versionClean}...`);
-console.log(`GitHub Repository: Zackriya-Solutions/meeting-minutes`);
+console.log(`GitHub Repository: ${GITHUB_REPOSITORY}`);
 console.log(`Bundle Directory: ${bundleDir}`);
 console.log('');
 
@@ -117,7 +118,7 @@ bundleFiles.forEach(filename => {
 
   if (platform && !platforms[platform]) {
     // Generate GitHub Release URL
-    const githubUrl = `https://github.com/Zackriya-Solutions/meeting-minutes/releases/download/${versionDir}/${filename}`;
+    const githubUrl = `https://github.com/${GITHUB_REPOSITORY}/releases/download/${versionDir}/${filename}`;
 
     // Check if signature file exists (look for .sig file with same name)
     const sigFile = path.join(bundleDir, `${filename}.sig`);
@@ -164,7 +165,7 @@ console.log('');
 console.log(`✓ Manifest generated: ${outputPath}`);
 console.log(`\nNext steps:`);
 console.log(`1. Create GitHub Release with tag: v${versionClean}`);
-console.log(`   URL: https://github.com/Zackriya-Solutions/meeting-minutes/releases/new?tag=v${versionClean}`);
+console.log(`   URL: https://github.com/${GITHUB_REPOSITORY}/releases/new?tag=v${versionClean}`);
 console.log(`\n2. Upload this file to the release:`);
 console.log(`   - File: ${outputFile}`);
 console.log(`   - Name: latest.json (must be exact)`);
@@ -174,4 +175,4 @@ Object.keys(platforms).forEach(platform => {
   console.log(`   - ${filename}`);
 });
 console.log(`\n4. Verify the manifest is accessible:`);
-console.log(`   curl https://github.com/Zackriya-Solutions/meeting-minutes/releases/latest/download/latest.json`);
+console.log(`   curl https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/latest.json`);

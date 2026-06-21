@@ -38,7 +38,7 @@ export class UpdateService {
    * @param force Force check even if recently checked
    * @returns Promise with update information
    */
-  async checkForUpdates(force = false): Promise<UpdateInfo> {
+  async checkForUpdates(force = false, timeoutMs = 10_000): Promise<UpdateInfo> {
     // Prevent concurrent update checks
     if (this.updateCheckInProgress) {
       throw new Error('Update check already in progress');
@@ -61,7 +61,7 @@ export class UpdateService {
 
     try {
       const currentVersion = await getVersion();
-      const update = await check({ timeout: 10_000 });
+      const update = await check({ timeout: timeoutMs });
 
       if (!update) {
         return {
@@ -96,21 +96,62 @@ export class UpdateService {
     onProgress?: (progress: UpdateProgress) => void
   ): Promise<void> {
     try {
-      // Download the update
-      await update.download();
+      let downloaded = 0;
+      let contentLength = 0;
 
-      // Notify progress if callback provided
-      if (onProgress) {
-        onProgress({ downloaded: 100, total: 100, percentage: 100 });
-      }
+      await update.downloadAndInstall((event) => {
+        switch (event.event) {
+          case 'Started':
+            downloaded = 0;
+            contentLength = event.data.contentLength || 0;
+            onProgress?.({
+              downloaded,
+              total: contentLength,
+              percentage: 0,
+            });
+            break;
+          case 'Progress':
+            downloaded += event.data.chunkLength || 0;
+            onProgress?.({
+              downloaded,
+              total: contentLength,
+              percentage: contentLength > 0
+                ? Math.round((downloaded / contentLength) * 100)
+                : 0,
+            });
+            break;
+          case 'Finished':
+            onProgress?.({
+              downloaded: contentLength,
+              total: contentLength,
+              percentage: 100,
+            });
+            break;
+        }
+      });
 
-      // Install and relaunch
-      await update.install();
       await relaunch();
     } catch (error) {
       console.error('Failed to download/install update:', error);
       throw error;
     }
+  }
+
+  /**
+   * Re-check for the latest update, install it, and relaunch the app.
+   * This is used by startup auto-update where no Update object is retained.
+   */
+  async downloadAndInstallLatest(
+    onProgress?: (progress: UpdateProgress) => void,
+    timeoutMs = 10_000
+  ): Promise<void> {
+    const update = await check({ timeout: timeoutMs });
+
+    if (!update?.available) {
+      throw new Error('Update no longer available');
+    }
+
+    await this.downloadAndInstall(update, onProgress);
   }
 
   /**

@@ -8,9 +8,10 @@ import MainContent from '@/components/MainContent'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
 import { Toaster, toast } from 'sonner'
 import "sonner/dist/styles.css"
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
+import { usePathname, useRouter } from 'next/navigation'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { RecordingStateProvider } from '@/contexts/RecordingStateContext'
 import { OllamaDownloadProvider } from '@/contexts/OllamaDownloadContext'
@@ -25,6 +26,15 @@ import { RecordingPostProcessingProvider } from '@/contexts/RecordingPostProcess
 import { ImportAudioDialog, ImportDropOverlay } from '@/components/ImportAudio'
 import { ImportDialogProvider } from '@/contexts/ImportDialogContext'
 import { isAudioExtension, getAudioFormatsDisplayList } from '@/constants/audioFormats'
+import { useSidebar } from '@/components/Sidebar/SidebarProvider'
+import {
+  UPDATE_LAST_LOCATION_KEY,
+  UPDATE_PENDING_RESTORE_KEY,
+  consumeUpdateRestoreSnapshot,
+  createUpdateRestoreSnapshot,
+  resolveUpdateRestoreDestination,
+  saveUpdateRestoreSnapshot,
+} from '@/lib/update-restore-state'
 
 
 const sourceSans3 = Source_Sans_3({
@@ -59,6 +69,49 @@ function ConditionalImportDialog({
       preselectedFile={importFilePath}
     />
   );
+}
+
+function UpdateRestoreStateBridge({ enabled }: { enabled: boolean }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { currentMeeting } = useSidebar();
+  const restoreAttemptedRef = useRef(false);
+
+  useEffect(() => {
+    if (!enabled || restoreAttemptedRef.current || typeof window === 'undefined') {
+      return;
+    }
+
+    restoreAttemptedRef.current = true;
+    const snapshot = consumeUpdateRestoreSnapshot(UPDATE_PENDING_RESTORE_KEY);
+    const destination = resolveUpdateRestoreDestination(snapshot);
+
+    if (!destination) {
+      return;
+    }
+
+    const currentDestination = `${window.location.pathname}${window.location.search}`;
+    if (destination !== currentDestination) {
+      router.replace(destination);
+    }
+  }, [enabled, router]);
+
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined') {
+      return;
+    }
+
+    saveUpdateRestoreSnapshot(
+      UPDATE_LAST_LOCATION_KEY,
+      createUpdateRestoreSnapshot({
+        pathname: pathname || window.location.pathname,
+        search: window.location.search,
+        currentMeeting,
+      }),
+    );
+  }, [currentMeeting, enabled, pathname]);
+
+  return null;
 }
 
 // export { metadata } from './metadata'
@@ -244,6 +297,7 @@ export default function RootLayout({
                         <TooltipProvider>
                           <RecordingPostProcessingProvider>
                             <ImportDialogProvider onOpen={handleOpenImportDialog}>
+                              <UpdateRestoreStateBridge enabled={onboardingCompleted && !showOnboarding} />
                               {/* Download progress toast provider - listens for background downloads */}
                               <DownloadProgressToastProvider />
 

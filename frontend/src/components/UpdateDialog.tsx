@@ -11,20 +11,23 @@ import {
 import { Button } from './ui/button';
 import { updateService, UpdateInfo, UpdateProgress } from '@/services/updateService';
 import { check, Update } from '@tauri-apps/plugin-updater';
-import { relaunch } from '@tauri-apps/plugin-process';
 import { toast } from 'sonner';
+import { UPDATE_PENDING_RESTORE_KEY } from '@/lib/update-restore-state';
+import { useRecordingState } from '@/contexts/RecordingStateContext';
 
 interface UpdateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   updateInfo: UpdateInfo | null;
+  onBeforeInstall?: () => void;
 }
 
-export function UpdateDialog({ open, onOpenChange, updateInfo }: UpdateDialogProps) {
+export function UpdateDialog({ open, onOpenChange, updateInfo, onBeforeInstall }: UpdateDialogProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [progress, setProgress] = useState<UpdateProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [update, setUpdate] = useState<Update | null>(null);
+  const { isRecording } = useRecordingState();
 
   useEffect(() => {
     if (open && updateInfo?.available) {
@@ -54,6 +57,15 @@ export function UpdateDialog({ open, onOpenChange, updateInfo }: UpdateDialogPro
   }, [open, updateInfo]);
 
   const handleDownloadAndInstall = async () => {
+    if (isRecording) {
+      const message = 'Finish or stop the current recording before installing the update.';
+      setError(message);
+      toast.info('Update paused', {
+        description: message,
+      });
+      return;
+    }
+
     // Get update object if not already available
     let updateToUse: Update | null = update;
     if (!updateToUse) {
@@ -82,45 +94,8 @@ export function UpdateDialog({ open, onOpenChange, updateInfo }: UpdateDialogPro
     setProgress({ downloaded: 0, total: 0, percentage: 0 });
 
     try {
-      let downloaded = 0;
-      let contentLength = 0;
-
-      // Use the official Tauri updater API with progress callbacks
-      await updateToUse.downloadAndInstall((event) => {
-        switch (event.event) {
-          case 'Started':
-            contentLength = event.data.contentLength || 0;
-            console.log(`[UpdateDialog] Started downloading ${contentLength} bytes`);
-            setProgress({
-              downloaded: 0,
-              total: contentLength,
-              percentage: 0,
-            });
-            break;
-
-          case 'Progress':
-            downloaded += event.data.chunkLength || 0;
-            const percentage = contentLength > 0
-              ? Math.round((downloaded / contentLength) * 100)
-              : 0;
-            console.log(`[UpdateDialog] Progress: ${downloaded} / ${contentLength} bytes (${percentage}%)`);
-            setProgress({
-              downloaded,
-              total: contentLength,
-              percentage,
-            });
-            break;
-
-          case 'Finished':
-            console.log('[UpdateDialog] Download finished');
-            setProgress({
-              downloaded: contentLength,
-              total: contentLength,
-              percentage: 100,
-            });
-            break;
-        }
-      });
+      onBeforeInstall?.();
+      await updateService.downloadAndInstall(updateToUse, setProgress);
 
       console.log('[UpdateDialog] Update installed successfully');
       toast.success('Update installed successfully. The app will restart...');
@@ -131,10 +106,11 @@ export function UpdateDialog({ open, onOpenChange, updateInfo }: UpdateDialogPro
       // Close dialog before relaunch
       handleOpenChange(false);
 
-      // Relaunch the app
-      await relaunch();
     } catch (err: any) {
       console.error('Update failed:', err);
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(UPDATE_PENDING_RESTORE_KEY);
+      }
       setError(err.message || 'Failed to download or install update');
       setIsDownloading(false);
       toast.error('Update failed: ' + (err.message || 'Unknown error'));
