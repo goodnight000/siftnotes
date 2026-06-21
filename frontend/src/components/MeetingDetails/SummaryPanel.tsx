@@ -9,7 +9,7 @@ import { SummaryGeneratorButtonGroup } from './SummaryGeneratorButtonGroup';
 import Analytics from '@/lib/analytics';
 import { useEffect, useRef, useState, RefObject } from 'react';
 import { toast } from 'sonner';
-import { Languages, ChevronDown, FileDown, MoreHorizontal, Sparkles, Save, Copy, Loader2 } from 'lucide-react';
+import { Languages, ChevronDown, FileDown, MoreHorizontal, Sparkles, Save, Copy, Loader2, Settings, FileText, Check, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { LanguagePickerPopover } from '@/components/LanguagePickerPopover';
@@ -109,6 +112,8 @@ export function SummaryPanel({
   isModelConfigLoading = false,
   onOpenModelSettings
 }: SummaryPanelProps) {
+  const openModelRef = useRef<(() => void) | null>(null);
+  const openTemplateRef = useRef<(() => void) | null>(null);
   const [summaryLang, setSummaryLang] = useState<string | null>(null);
   const [summaryLangStorage, setSummaryLangStorage] = useState<SummaryLanguageStorage>('metadata');
   const [langPickerOpen, setLangPickerOpen] = useState(false);
@@ -285,6 +290,7 @@ export function SummaryPanel({
                 Kept as a unit because it owns the model-readiness gating and the
                 model/template dialogs (a non-editable sub-component). */}
             <SummaryGeneratorButtonGroup
+              compact
               modelConfig={modelConfig}
               setModelConfig={setModelConfig}
               onSaveModelConfig={onSaveModelConfig}
@@ -299,9 +305,13 @@ export function SummaryPanel({
               hasTranscripts={transcripts.length > 0}
               hasSummary={!!aiSummary}
               isModelConfigLoading={isModelConfigLoading}
-              onOpenModelSettings={onOpenModelSettings}
+              onOpenModelSettings={(fn) => { openModelRef.current = fn; onOpenModelSettings?.(fn); }}
+              onOpenTemplateDialog={(fn) => { openTemplateRef.current = fn; }}
               languageSlot={languageSlot}
             />
+
+            {/* Language chip */}
+            {languageSlot}
 
             {/* Save (ghost) - preserves dirty/saving state */}
             <Button
@@ -366,6 +376,37 @@ export function SummaryPanel({
                   <FileDown />
                   <span>Export PDF</span>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => openModelRef.current?.()}>
+                  <Settings />
+                  <span>AI model</span>
+                </DropdownMenuItem>
+                {availableTemplates.length > 0 && (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <FileText />
+                      <span>Template</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {availableTemplates.map((t) => (
+                        <DropdownMenuItem
+                          key={t.id}
+                          onClick={() => onTemplateSelect(t.id, t.name)}
+                          className="flex items-center justify-between gap-2"
+                          title={t.description}
+                        >
+                          <span>{t.name}</span>
+                          {selectedTemplate === t.id && <Check className="h-4 w-4 text-clay" />}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => openTemplateRef.current?.()}>
+                        <Plus className="h-4 w-4" />
+                        <span>Custom template…</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -82,6 +82,8 @@ interface SummaryGeneratorButtonGroupProps {
   hasSummary?: boolean;
   isModelConfigLoading?: boolean;
   onOpenModelSettings?: (openFn: () => void) => void;
+  onOpenTemplateDialog?: (openFn: () => void) => void;
+  compact?: boolean;
 }
 
 export function SummaryGeneratorButtonGroup({
@@ -100,6 +102,8 @@ export function SummaryGeneratorButtonGroup({
   hasSummary = false,
   isModelConfigLoading = false,
   onOpenModelSettings,
+  onOpenTemplateDialog,
+  compact = false,
   languageSlot
 }: SummaryGeneratorButtonGroupProps) {
   const [isCheckingModels, setIsCheckingModels] = useState(false);
@@ -125,6 +129,13 @@ export function SummaryGeneratorButtonGroup({
       onOpenModelSettings(openDialog);
     }
   }, [onOpenModelSettings]);
+
+  // Expose the function to open the custom-template dialog via callback registration
+  useEffect(() => {
+    if (onOpenTemplateDialog) {
+      onOpenTemplateDialog(() => setTemplateDialogOpen(true));
+    }
+  }, [onOpenTemplateDialog]);
 
   if (!hasTranscripts) {
     return null;
@@ -370,20 +381,22 @@ export function SummaryGeneratorButtonGroup({
         </Button>
       )}
 
-      {languageSlot}
+      {!compact && languageSlot}
 
       {/* Settings button */}
       <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            title="Summary Settings"
-          >
-            <Settings />
-            <span className="hidden lg:inline">AI Model</span>
-          </Button>
-        </DialogTrigger>
+        {!compact && (
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              title="Summary Settings"
+            >
+              <Settings />
+              <span className="hidden lg:inline">AI Model</span>
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent
           aria-describedby={undefined}
         >
@@ -404,7 +417,7 @@ export function SummaryGeneratorButtonGroup({
       </Dialog>
 
       {/* Template selector dropdown */}
-      {availableTemplates.length > 0 && (
+      {!compact && availableTemplates.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
