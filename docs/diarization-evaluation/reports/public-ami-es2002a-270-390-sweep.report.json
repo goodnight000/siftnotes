@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-06-21T18:10:00.000Z",
+  "baseConfig": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/public-ami-es2002a-270-390.config.json",
+  "outputDir": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output",
+  "bestDefaultVariant": null,
+  "bestOptionalVariant": null,
+  "variants": [
+    {
+      "id": "n4-threshold-0.35",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n4-threshold-0.35",
+      "parameters": {
+        "numSpeakers": "4",
+        "clusterThreshold": "0.35"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/configs/n4-threshold-0.35.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/reports/n4-threshold-0.35.report.json",
+      "der": 0.398159,
+      "jer": 0.527802,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 310.875,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 33.049220625,
+        "runtimeFactor": 3.630947953708364
+      }
+    },
+    {
+      "id": "n4-threshold-0.50",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n4-threshold-0.50",
+      "parameters": {
+        "numSpeakers": "4",
+        "clusterThreshold": "0.50"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/configs/n4-threshold-0.50.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/reports/n4-threshold-0.50.report.json",
+      "der": 0.398159,
+      "jer": 0.527802,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 266.4375,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 35.194213625,
+        "runtimeFactor": 3.4096514068653234
+      }
+    },
+    {
+      "id": "n0-threshold-0.50",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n0-threshold-0.50",
+      "parameters": {
+        "numSpeakers": "0",
+        "clusterThreshold": "0.50"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/configs/n0-threshold-0.50.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/reports/n0-threshold-0.50.report.json",
+      "der": 0.672803,
+      "jer": 0.693002,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 292.140625,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 34.395359125,
+        "runtimeFactor": 3.4888427698601623
+      }
+    },
+    {
+      "id": "n0-threshold-0.30",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n0-threshold-0.30",
+      "parameters": {
+        "numSpeakers": "0",
+        "clusterThreshold": "0.30"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/configs/n0-threshold-0.30.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-sweep-output/reports/n0-threshold-0.30.report.json",
+      "der": 0.777954,
+      "jer": 0.770467,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 279.03125,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 55.964646792,
+        "runtimeFactor": 2.144210798756505
+      }
+    }
+  ]
+}

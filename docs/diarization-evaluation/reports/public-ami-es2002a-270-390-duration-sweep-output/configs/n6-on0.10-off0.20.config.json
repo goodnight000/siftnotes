@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-06-21T18:00:00.000Z",
+  "corpusItem": {
+    "id": "public-ami-es2002a-270-390",
+    "category": "public-ami-4-speaker-overlap",
+    "audioPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/public-data/ami/ES2002a/ES2002a.270-390.Mix-Headset.16k.wav",
+    "durationSeconds": 120,
+    "sampleRate": 16000
+  },
+  "gates": {
+    "maxDefaultDer": 0.18,
+    "maxDefaultJer": 0.2,
+    "minDefaultRuntimeFactor": 1
+  },
+  "reference": {
+    "engine": "ami-manual-nxt",
+    "format": "rttm",
+    "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/public-ami-es2002a-270-390.reference.rttm"
+  },
+  "transcripts": {
+    "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/public-ami-es2002a-270-390.transcripts.json"
+  },
+  "candidates": [
+    {
+      "engine": "sherpa-onnx::n6-on0.10-off0.20",
+      "engineVersion": "offline-speaker-diarization",
+      "format": "rttm",
+      "path": "../rttm/n6-on0.10-off0.20.rttm",
+      "modelPaths": [
+        "/Users/charleszheng/Desktop/Ideas/sift-notes/models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+        "/Users/charleszheng/Desktop/Ideas/sift-notes/models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx"
+      ],
+      "run": {
+        "command": ".venv-diarization/bin/python",
+        "cwd": "/Users/charleszheng/Desktop/Ideas/sift-notes",
+        "args": [
+          "scripts/diarization-adapters/sherpa-onnx.py",
+          "--audio",
+          "{audioPath}",
+          "--output",
+          "{outputPath}",
+          "--segmentation-model",
+          "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+          "--embedding-model",
+          "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+          "--num-speakers",
+          "6",
+          "--cluster-threshold",
+          "0.5",
+          "--min-duration-on",
+          "0.10",
+          "--min-duration-off",
+          "0.20",
+          "--stats-output",
+          "{statsPath}"
+        ]
+      },
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models"
+      }
+    }
+  ]
+}

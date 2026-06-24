@@ -285,7 +285,10 @@ mod tests {
 
     #[test]
     fn omits_auto_language_hints_for_cloud_transcription() {
-        assert_eq!(normalize_cloud_language_hint(Some("auto".to_string())), None);
+        assert_eq!(
+            normalize_cloud_language_hint(Some("auto".to_string())),
+            None
+        );
         assert_eq!(
             normalize_cloud_language_hint(Some("auto-translate".to_string())),
             None

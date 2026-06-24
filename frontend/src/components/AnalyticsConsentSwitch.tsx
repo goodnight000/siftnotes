@@ -155,14 +155,14 @@ export default function AnalyticsConsentSwitch() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-          <div>
+        <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="min-w-0">
             <h4 className="font-semibold text-gray-800">Enable Analytics</h4>
             <p className="text-sm text-gray-600">
               {isProcessing ? 'Updating...' : 'Off unless you choose to enable it'}
             </p>
           </div>
-          <div className="flex items-center gap-2 ml-4">
+          <div className="flex shrink-0 items-center gap-2">
             {isProcessing && (
               <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
             )}

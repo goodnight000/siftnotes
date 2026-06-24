@@ -553,8 +553,8 @@ function ModelCard({
       )}
 
       <div className="p-3">
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex-1">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex-1 min-w-0">
             {/* Model Name and Tagline */}
             <div className="flex items-center gap-2 flex-wrap mb-2">
               <span className="text-2xl">{getModelIcon(model.accuracy)}</span>
@@ -583,7 +583,7 @@ function ModelCard({
             </div>
 
             {/* Model Specs */}
-            <div className="flex items-center space-x-4 text-sm text-gray-600 ml-9 mt-1.5">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 ml-9 mt-1.5">
               <span className="flex items-center space-x-1">
                 <span>📦</span>
                 <span>{formatFileSize(model.size_mb)}</span>
@@ -600,7 +600,7 @@ function ModelCard({
           </div>
 
           {/* Status/Action */}
-          <div className="ml-4 flex items-center gap-2">
+          <div className="ml-4 flex shrink-0 items-center gap-2">
             {isAvailable && (
               <>
                 <div className="flex items-center gap-1.5 text-green-600">

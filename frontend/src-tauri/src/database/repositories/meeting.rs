@@ -2,16 +2,18 @@ use crate::api::{MeetingDetails, MeetingTranscript};
 use crate::database::models::{MeetingModel, Transcript};
 use chrono::Utc;
 use sqlx::{Connection, Error as SqlxError, SqliteConnection, SqlitePool};
+use std::collections::HashSet;
 use tracing::{error, info};
 
 pub struct MeetingsRepository;
 
 impl MeetingsRepository {
     pub async fn get_meetings(pool: &SqlitePool) -> Result<Vec<MeetingModel>, sqlx::Error> {
-        let meetings =
-            sqlx::query_as::<_, MeetingModel>("SELECT * FROM meetings ORDER BY created_at DESC")
-                .fetch_all(pool)
-                .await?;
+        let meetings = sqlx::query_as::<_, MeetingModel>(
+            "SELECT * FROM meetings ORDER BY is_archived ASC, is_pinned DESC, created_at DESC",
+        )
+        .fetch_all(pool)
+        .await?;
         Ok(meetings)
     }
 
@@ -62,7 +64,7 @@ impl MeetingsRepository {
 
         // Get meeting details
         let meeting: Option<MeetingModel> =
-            sqlx::query_as("SELECT id, title, created_at, updated_at, folder_path FROM meetings WHERE id = ?")
+            sqlx::query_as("SELECT id, title, created_at, updated_at, folder_path, project, tags, is_pinned, is_archived FROM meetings WHERE id = ?")
                 .bind(meeting_id)
                 .fetch_optional(&mut *transaction)
                 .await?;
@@ -100,6 +102,11 @@ impl MeetingsRepository {
                 title: meeting.title,
                 created_at: meeting.created_at.0.to_rfc3339(),
                 updated_at: meeting.updated_at.0.to_rfc3339(),
+                folder_path: meeting.folder_path,
+                project: normalise_project(meeting.project.as_deref()),
+                tags: parse_tags_json(meeting.tags.as_deref()),
+                is_pinned: meeting.is_pinned,
+                is_archived: meeting.is_archived,
                 transcripts: meeting_transcripts,
             }))
         } else {
@@ -120,7 +127,7 @@ impl MeetingsRepository {
         }
 
         let meeting: Option<MeetingModel> =
-            sqlx::query_as("SELECT id, title, created_at, updated_at, folder_path FROM meetings WHERE id = ?")
+            sqlx::query_as("SELECT id, title, created_at, updated_at, folder_path, project, tags, is_pinned, is_archived FROM meetings WHERE id = ?")
                 .bind(meeting_id)
                 .fetch_optional(pool)
                 .await?;
@@ -142,19 +149,17 @@ impl MeetingsRepository {
         }
 
         // Get total count of transcripts for this meeting
-        let total: (i64,) = sqlx::query_as(
-            "SELECT COUNT(*) FROM transcripts WHERE meeting_id = ?"
-        )
-        .bind(meeting_id)
-        .fetch_one(pool)
-        .await?;
+        let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM transcripts WHERE meeting_id = ?")
+            .bind(meeting_id)
+            .fetch_one(pool)
+            .await?;
 
         // Get paginated transcripts ordered by audio_start_time
         let transcripts = sqlx::query_as::<_, Transcript>(
             "SELECT * FROM transcripts
              WHERE meeting_id = ?
              ORDER BY audio_start_time ASC
-             LIMIT ? OFFSET ?"
+             LIMIT ? OFFSET ?",
         )
         .bind(meeting_id)
         .bind(limit)
@@ -228,6 +233,76 @@ impl MeetingsRepository {
         transaction.commit().await?;
         Ok(true)
     }
+
+    pub async fn update_meeting_organization(
+        pool: &SqlitePool,
+        meeting_id: &str,
+        project: Option<&str>,
+        tags: &[String],
+        is_pinned: bool,
+        is_archived: bool,
+    ) -> Result<Option<MeetingModel>, SqlxError> {
+        if meeting_id.trim().is_empty() {
+            return Err(SqlxError::Protocol(
+                "meeting_id cannot be empty".to_string(),
+            ));
+        }
+
+        let now = Utc::now();
+        let project = normalise_project(project);
+        let tags_json = normalise_tags_json(tags);
+
+        let result = sqlx::query(
+            r#"
+            UPDATE meetings
+            SET project = ?, tags = ?, is_pinned = ?, is_archived = ?, updated_at = ?
+            WHERE id = ?
+            "#,
+        )
+        .bind(project)
+        .bind(tags_json)
+        .bind(is_pinned)
+        .bind(is_archived)
+        .bind(now)
+        .bind(meeting_id)
+        .execute(pool)
+        .await?;
+
+        if result.rows_affected() == 0 {
+            return Ok(None);
+        }
+
+        Self::get_meeting_metadata(pool, meeting_id).await
+    }
+}
+
+pub fn normalise_project(project: Option<&str>) -> Option<String> {
+    project
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(ToOwned::to_owned)
+}
+
+pub fn normalise_tags_json(tags: &[String]) -> String {
+    let mut seen = HashSet::new();
+    let normalised = tags
+        .iter()
+        .map(|tag| tag.trim())
+        .filter(|tag| !tag.is_empty())
+        .filter(|tag| seen.insert(tag.to_ascii_lowercase()))
+        .map(ToOwned::to_owned)
+        .collect::<Vec<_>>();
+
+    serde_json::to_string(&normalised).unwrap_or_else(|_| "[]".to_string())
+}
+
+pub fn parse_tags_json(tags: Option<&str>) -> Vec<String> {
+    tags.and_then(|raw| serde_json::from_str::<Vec<String>>(raw).ok())
+        .unwrap_or_default()
+        .into_iter()
+        .map(|tag| tag.trim().to_string())
+        .filter(|tag| !tag.is_empty())
+        .collect()
 }
 
 async fn delete_meeting_with_transaction(
@@ -271,4 +346,31 @@ async fn delete_meeting_with_transaction(
         .await?;
 
     Ok(result.rows_affected() > 0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalises_tags_for_storage() {
+        let tags = vec![
+            " Product ".to_string(),
+            "sales".to_string(),
+            "product".to_string(),
+            "".to_string(),
+            "  Customer Calls  ".to_string(),
+        ];
+
+        assert_eq!(
+            normalise_tags_json(&tags),
+            r#"["Product","sales","Customer Calls"]"#
+        );
+    }
+
+    #[test]
+    fn parses_invalid_tags_as_empty_list() {
+        assert!(parse_tags_json(Some("{")).is_empty());
+        assert!(parse_tags_json(None).is_empty());
+    }
 }

@@ -75,7 +75,14 @@ mod tests {
 
         assert_eq!(
             titles,
-            vec!["Summary", "Decisions", "Action Items", "Follow-ups", "Discussion Notes"]
+            vec![
+                "Summary",
+                "Timeline",
+                "Decisions",
+                "Action Items",
+                "Follow-ups",
+                "Discussion Notes"
+            ]
         );
     }
 }

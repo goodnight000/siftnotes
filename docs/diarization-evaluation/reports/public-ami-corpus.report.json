@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-06-21T19:15:00.000Z",
+  "requiredCategories": [
+    "public-ami-clean-2-speaker",
+    "public-ami-noisy-2-speaker",
+    "public-ami-4-speaker-overlap"
+  ],
+  "reportCount": 3,
+  "categoryCoverage": [
+    {
+      "category": "public-ami-clean-2-speaker",
+      "status": "labeled",
+      "itemIds": [
+        "public-ami-is1008a-390-510-clean"
+      ]
+    },
+    {
+      "category": "public-ami-noisy-2-speaker",
+      "status": "labeled",
+      "itemIds": [
+        "public-ami-is1008a-390-510-noisy"
+      ]
+    },
+    {
+      "category": "public-ami-4-speaker-overlap",
+      "status": "labeled",
+      "itemIds": [
+        "public-ami-es2002a-270-390-tuned"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "status": "fail",
+      "itemCount": 3,
+      "labeledItemCount": 3,
+      "unlabeledItemCount": 0,
+      "defaultPassCount": 2,
+      "optionalPassCount": 0,
+      "failCount": 1,
+      "meanDer": 0.187661,
+      "maxDer": 0.388921,
+      "meanJer": 0.231636,
+      "maxJer": 0.521543,
+      "meanRuntimeFactor": 2.774669,
+      "maxModelSizeMb": 43.47484,
+      "maxPeakMemoryMb": 339.796875,
+      "blockers": [
+        "sherpa-onnx:public-ami-es2002a-270-390-tuned:der_above_default_gate",
+        "sherpa-onnx:public-ami-es2002a-270-390-tuned:jer_above_default_gate"
+      ]
+    }
+  ],
+  "decision": {
+    "status": "no_candidate_passed",
+    "defaultCandidate": null,
+    "optionalCandidate": null,
+    "blockers": []
+  }
+}

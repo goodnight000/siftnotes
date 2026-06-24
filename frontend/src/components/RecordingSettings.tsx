@@ -162,8 +162,8 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       </div>
 
       {/* Auto Save Toggle */}
-      <div className="flex items-center justify-between p-4 border rounded-lg">
-        <div className="flex-1">
+      <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">
+        <div className="flex-1 min-w-0">
           <div className="font-medium">Save Audio Recordings</div>
           <div className="text-sm text-ink-2">
             Automatically save audio files when recording stops
@@ -173,6 +173,7 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
           checked={preferences.auto_save}
           onCheckedChange={handleAutoSaveToggle}
           disabled={saving}
+          className="shrink-0"
         />
       </div>
 
@@ -214,8 +215,8 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       )}
 
       {/* Recording Notification Toggle */}
-      <div className="flex items-center justify-between p-4 border rounded-lg">
-        <div className="flex-1">
+      <div className="flex items-center justify-between gap-4 p-4 border rounded-lg">
+        <div className="flex-1 min-w-0">
           <div className="font-medium">Recording Start Notification</div>
           <div className="text-sm text-ink-2">
             Show reminder to inform participants when recording starts
@@ -224,6 +225,7 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
         <Switch
           checked={showRecordingNotification}
           onCheckedChange={handleNotificationToggle}
+          className="shrink-0"
         />
       </div>
 

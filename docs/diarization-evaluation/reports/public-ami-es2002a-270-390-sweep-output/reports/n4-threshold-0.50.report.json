@@ -1,0 +1,925 @@
+{
+  "generatedAt": "2026-06-21T18:00:00.000Z",
+  "corpusItem": {
+    "id": "public-ami-es2002a-270-390",
+    "category": "public-ami-4-speaker-overlap",
+    "audioPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/public-data/ami/ES2002a/ES2002a.270-390.Mix-Headset.16k.wav",
+    "durationSeconds": 120,
+    "sampleRate": 16000
+  },
+  "referenceEngine": "ami-manual-nxt",
+  "candidates": [
+    {
+      "engine": "sherpa-onnx::n4-threshold-0.50",
+      "metrics": {
+        "speakerMapping": {
+          "SPEAKER_00": "AMI_D",
+          "SPEAKER_02": "AMI_A",
+          "SPEAKER_01": "AMI_B"
+        },
+        "totalReferenceSpeakerSeconds": 116.908,
+        "overlapReferenceSeconds": 20.928,
+        "missedSpeechSeconds": 36.537,
+        "falseAlarmSeconds": 1.897,
+        "speakerConfusionSeconds": 8.114,
+        "diarizationErrorRate": 0.398159,
+        "jaccardErrorRate": 0.527802
+      },
+      "gate": {
+        "status": "fail",
+        "reasons": [
+          "der_above_default_gate",
+          "jer_above_default_gate"
+        ]
+      },
+      "practicalMetrics": {
+        "speakerCount": 3,
+        "turnCount": 25,
+        "rejectedTurnCount": 0,
+        "speechSeconds": 78.167,
+        "speakerSeconds": 82.268,
+        "overlapRegionSeconds": 4.101,
+        "overlapSpeakerSeconds": 8.202,
+        "overlapRatio": 0.034175,
+        "turnsPerMinute": 12.5
+      },
+      "transcriptReconciliationMetrics": {
+        "totalSegments": 49,
+        "timedSegments": 49,
+        "assignedSegments": 49,
+        "unassignedSegments": 0,
+        "missingTimingSegments": 0,
+        "noOverlapSegments": 0,
+        "lowCoverageAssignedSegments": 8,
+        "overlapSegmentCount": 17,
+        "tieSegmentCount": 0,
+        "totalTimedSegmentSeconds": 116.908,
+        "totalAssignedCoverageSeconds": 98.1,
+        "meanCoverageRatio": 0.823643,
+        "assignmentReasonCounts": {
+          "dominant_overlap": 49,
+          "overlap_tie_earliest_turn": 0,
+          "missing_audio_timestamps": 0,
+          "no_diarization_overlap": 0
+        }
+      },
+      "assignedTranscripts": [
+        {
+          "id": "ES2002a-C-0001",
+          "text": "Then they're small cute and furry, and uh when planet of the apes becomes real, I'm gonna be up there with them.",
+          "timestamp": "00:00:00.000",
+          "audio_start_time": 0,
+          "audio_end_time": 4.048,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.992342,
+            "coverageSeconds": 4.017,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0001",
+          "text": "",
+          "timestamp": "00:00:03.968",
+          "audio_start_time": 3.968,
+          "audio_end_time": 4.992,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.024,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0002",
+          "text": "",
+          "timestamp": "00:00:05.561",
+          "audio_start_time": 5.561,
+          "audio_end_time": 8.886,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.199398,
+            "coverageSeconds": 0.663,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0001",
+          "text": "Right.",
+          "timestamp": "00:00:05.648",
+          "audio_start_time": 5.648,
+          "audio_end_time": 6.24,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.972973,
+            "coverageSeconds": 0.576,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0001",
+          "text": "Cool.",
+          "timestamp": "00:00:05.672",
+          "audio_start_time": 5.672,
+          "audio_end_time": 6.227,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.994595,
+            "coverageSeconds": 0.552,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0003",
+          "text": "",
+          "timestamp": "00:00:09.963",
+          "audio_start_time": 9.963,
+          "audio_end_time": 13,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.350016,
+            "coverageSeconds": 1.063,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0002",
+          "text": "There's too much gear.",
+          "timestamp": "00:00:10.439",
+          "audio_start_time": 10.439,
+          "audio_end_time": 12.696,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.470979,
+            "coverageSeconds": 1.063,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0002",
+          "text": "You can take as long over this as you like, because we haven't got an awful lot to discuss. Ok oh we do we do. Don't feel like you're in a rush, anyway.",
+          "timestamp": "00:00:15.936",
+          "audio_start_time": 15.936,
+          "audio_end_time": 23.408,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.998929,
+            "coverageSeconds": 7.464,
+            "overlappedSpeakers": [
+              "SPEAKER_01",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.354,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0003",
+          "text": "",
+          "timestamp": "00:00:20.031",
+          "audio_start_time": 20.031,
+          "audio_end_time": 21.4,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.369,
+            "overlappedSpeakers": [
+              "SPEAKER_01",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.354,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0004",
+          "text": "",
+          "timestamp": "00:00:20.429",
+          "audio_start_time": 20.429,
+          "audio_end_time": 22.275,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.846,
+            "overlappedSpeakers": [
+              "SPEAKER_01",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.003,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0004",
+          "text": "Okay.",
+          "timestamp": "00:00:23.138",
+          "audio_start_time": 23.138,
+          "audio_end_time": 24.656,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.185771,
+            "coverageSeconds": 0.282,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0002",
+          "text": "I coulda told you a whole lot more about beagles. Boy, let me tell you.",
+          "timestamp": "00:00:25.680",
+          "audio_start_time": 25.68,
+          "audio_end_time": 31.248,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.630388,
+            "coverageSeconds": 3.51,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 1.553,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0003",
+          "text": "Ach why not We might have to get you up again then.",
+          "timestamp": "00:00:27.920",
+          "audio_start_time": 27.92,
+          "audio_end_time": 30.658,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.991965,
+            "coverageSeconds": 2.716,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 1.553,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0005",
+          "text": "",
+          "timestamp": "00:00:30.234",
+          "audio_start_time": 30.234,
+          "audio_end_time": 31.607,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.373,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.206,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0004",
+          "text": "I don't know what mine is. I'm gonna have to think on the spot now.",
+          "timestamp": "00:00:30.658",
+          "audio_start_time": 30.658,
+          "audio_end_time": 33.875,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.881567,
+            "coverageSeconds": 2.836,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0003",
+          "text": "Impressionist.",
+          "timestamp": "00:00:36.976",
+          "audio_start_time": 36.976,
+          "audio_end_time": 37.936,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.9,
+            "coverageSeconds": 0.864,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0005",
+          "text": "",
+          "timestamp": "00:00:37.824",
+          "audio_start_time": 37.824,
+          "audio_end_time": 39.12,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.296,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0006",
+          "text": "",
+          "timestamp": "00:00:38.532",
+          "audio_start_time": 38.532,
+          "audio_end_time": 39.412,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.88,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0005",
+          "text": "Can't draw.",
+          "timestamp": "00:00:39.360",
+          "audio_start_time": 39.36,
+          "audio_end_time": 41.028,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.914868,
+            "coverageSeconds": 1.526,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0007",
+          "text": "",
+          "timestamp": "00:00:40.325",
+          "audio_start_time": 40.325,
+          "audio_end_time": 41.102,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.722008,
+            "coverageSeconds": 0.561,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0006",
+          "text": "Is that a whale?",
+          "timestamp": "00:00:41.952",
+          "audio_start_time": 41.952,
+          "audio_end_time": 45.6,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.791118,
+            "coverageSeconds": 2.886,
+            "overlappedSpeakers": [
+              "SPEAKER_01",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.304,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0006",
+          "text": "Um.",
+          "timestamp": "00:00:41.996",
+          "audio_start_time": 41.996,
+          "audio_end_time": 42.95,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.961216,
+            "coverageSeconds": 0.917,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0007",
+          "text": "Yeah.",
+          "timestamp": "00:00:42.950",
+          "audio_start_time": 42.95,
+          "audio_end_time": 43.579,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.629,
+            "overlappedSpeakers": [
+              "SPEAKER_01",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.304,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0008",
+          "text": "Um, well anyway, I don't know, it's just the first animal I can think off the top of my head. Um. Yes. Big reason is 'cause I'm allergic to most animals. Allergic to animal fur, so um fish was a natural choice.",
+          "timestamp": "00:00:48.564",
+          "audio_start_time": 48.564,
+          "audio_end_time": 61.677,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 13.113,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.523,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0007",
+          "text": "Ah.",
+          "timestamp": "00:00:57.744",
+          "audio_start_time": 57.744,
+          "audio_end_time": 58.643,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.899,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.523,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0009",
+          "text": "Um, yeah, and I kind of like whales. They come in and go eat everything in sight.",
+          "timestamp": "00:01:01.677",
+          "audio_start_time": 61.677,
+          "audio_end_time": 68.036,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 6.359,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0008",
+          "text": "",
+          "timestamp": "00:01:05.593",
+          "audio_start_time": 65.593,
+          "audio_end_time": 67.588,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.995,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0004",
+          "text": "",
+          "timestamp": "00:01:05.613",
+          "audio_start_time": 65.613,
+          "audio_end_time": 67.987,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 2.374,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0005",
+          "text": "Alright.",
+          "timestamp": "00:01:07.987",
+          "audio_start_time": 67.987,
+          "audio_end_time": 69.16,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.173,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.354,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0010",
+          "text": "And they're quite harmless and mild and interesting.",
+          "timestamp": "00:01:08.036",
+          "audio_start_time": 68.036,
+          "audio_end_time": 71.735,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 1,
+            "coverageSeconds": 3.699,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.354,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0006",
+          "text": "Mm.",
+          "timestamp": "00:01:11.808",
+          "audio_start_time": 71.808,
+          "audio_end_time": 72.256,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.698661,
+            "coverageSeconds": 0.313,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0008",
+          "text": "Okay. God, I still don't know what I'm gonna write about. Um.",
+          "timestamp": "00:01:12.400",
+          "audio_start_time": 72.4,
+          "audio_end_time": 76.88,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.837946,
+            "coverageSeconds": 3.754,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0007",
+          "text": "Superb sketch, by the way.",
+          "timestamp": "00:01:19.632",
+          "audio_start_time": 79.632,
+          "audio_end_time": 80.896,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.974684,
+            "coverageSeconds": 1.232,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0011",
+          "text": "Tail's a bit big, I think.",
+          "timestamp": "00:01:21.686",
+          "audio_start_time": 81.686,
+          "audio_end_time": 85.385,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_02",
+            "coverageRatio": 0.26007,
+            "coverageSeconds": 0.962,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0009",
+          "text": "I was gonna choose a dog as well. But I'll just draw a different kind of dog. M my favourite animal is my own dog at home. Um",
+          "timestamp": "00:01:24.256",
+          "audio_start_time": 84.256,
+          "audio_end_time": 94.96,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.935538,
+            "coverageSeconds": 10.014,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01",
+              "SPEAKER_02"
+            ],
+            "overlapSeconds": 0.304,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0008",
+          "text": "",
+          "timestamp": "00:01:24.929",
+          "audio_start_time": 84.929,
+          "audio_end_time": 85.715,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.978372,
+            "coverageSeconds": 0.769,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0009",
+          "text": "Yep.",
+          "timestamp": "00:01:29.600",
+          "audio_start_time": 89.6,
+          "audio_end_time": 90,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.4,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.304,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0010",
+          "text": "That doesn't really look like him, actually.",
+          "timestamp": "00:01:36.992",
+          "audio_start_time": 96.992,
+          "audio_end_time": 98.672,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.998214,
+            "coverageSeconds": 1.677,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0011",
+          "text": "He looks more like a pig, actually.",
+          "timestamp": "00:01:42.922",
+          "audio_start_time": 102.922,
+          "audio_end_time": 104.752,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.790164,
+            "coverageSeconds": 1.446,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0012",
+          "text": "Ah well.",
+          "timestamp": "00:01:45.609",
+          "audio_start_time": 105.609,
+          "audio_end_time": 106.512,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.700997,
+            "coverageSeconds": 0.633,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0010",
+          "text": "I see a dog in there. Yep.",
+          "timestamp": "00:01:48.432",
+          "audio_start_time": 108.432,
+          "audio_end_time": 110.176,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.997706,
+            "coverageSeconds": 1.74,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.677,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0009",
+          "text": "",
+          "timestamp": "00:01:49.357",
+          "audio_start_time": 109.357,
+          "audio_end_time": 110.833,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.903794,
+            "coverageSeconds": 1.334,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.709,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0013",
+          "text": "Do you? Oh that's very good of you.",
+          "timestamp": "00:01:49.504",
+          "audio_start_time": 109.504,
+          "audio_end_time": 111.008,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.995346,
+            "coverageSeconds": 1.497,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.704,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0011",
+          "text": "",
+          "timestamp": "00:01:50.621",
+          "audio_start_time": 110.621,
+          "audio_end_time": 111.176,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.684685,
+            "coverageSeconds": 0.38,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-D-0012",
+          "text": "Now I see a rooster.",
+          "timestamp": "00:01:52.800",
+          "audio_start_time": 112.8,
+          "audio_end_time": 113.712,
+          "sourceSpeaker": "AMI_D",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.912,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-C-0010",
+          "text": "",
+          "timestamp": "00:01:53.968",
+          "audio_start_time": 113.968,
+          "audio_end_time": 114.896,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.367457,
+            "coverageSeconds": 0.341,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-A-0012",
+          "text": "",
+          "timestamp": "00:01:54.112",
+          "audio_start_time": 114.112,
+          "audio_end_time": 114.881,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.256177,
+            "coverageSeconds": 0.197,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0014",
+          "text": "",
+          "timestamp": "00:01:54.213",
+          "audio_start_time": 114.213,
+          "audio_end_time": 115.76,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.062056,
+            "coverageSeconds": 0.096,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "ES2002a-B-0015",
+          "text": "Uh.",
+          "timestamp": "00:01:58.224",
+          "audio_start_time": 118.224,
+          "audio_end_time": 119.14,
+          "sourceSpeaker": "AMI_B",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.958515,
+            "coverageSeconds": 0.878,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        }
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 266.4375,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 35.194213625,
+        "runtimeFactor": 3.4096514068653234
+      }
+    }
+  ],
+  "decision": {
+    "status": "no_candidate_passed",
+    "defaultCandidate": null,
+    "optionalCandidate": null,
+    "blockers": [
+      "sherpa-onnx::n4-threshold-0.50:der_above_default_gate",
+      "sherpa-onnx::n4-threshold-0.50:jer_above_default_gate"
+    ]
+  }
+}

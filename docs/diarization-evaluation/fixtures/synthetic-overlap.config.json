@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-06-21T12:00:00.000Z",
+  "corpusItem": {
+    "id": "synthetic-overlap",
+    "category": "overlap-heavy",
+    "audioPath": "docs/diarization-evaluation/fixtures/synthetic-overlap.wav"
+  },
+  "gates": {
+    "maxDefaultDer": 0.18,
+    "maxDefaultJer": 0.2,
+    "minDefaultRuntimeFactor": 1
+  },
+  "reference": {
+    "engine": "human-rttm",
+    "format": "rttm",
+    "path": "synthetic-overlap.reference.rttm"
+  },
+  "transcripts": {
+    "path": "synthetic-overlap.transcripts.json"
+  },
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "format": "rttm",
+      "path": "synthetic-overlap.sherpa-onnx.rttm",
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2.4
+      }
+    },
+    {
+      "engine": "pyannote-community-1",
+      "format": "rttm",
+      "path": "synthetic-overlap.pyannote-community-1.rttm",
+      "practical": {
+        "integration": "python-sidecar",
+        "localProcessing": true,
+        "licenseUse": "gated_model_notice_required",
+        "runtimeFactor": 0.8
+      }
+    }
+  ]
+}

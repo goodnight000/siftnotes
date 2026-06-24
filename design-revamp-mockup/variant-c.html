@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SiftNotes — Meeting</title><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./variant-c.css"></head>
+<body>
+<div class="win">
+  <div class="titlebar">
+    <div class="lights"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+    <div class="name">SiftNotes</div>
+  </div>
+  <div class="body">
+    <nav class="rail">
+      <div class="brand">S</div>
+      <div class="ri active" title="Home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M9 20v-6h6v6"/></svg></div>
+      <div class="ri" title="Import audio"><svg viewBox="0 0 24 24"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></div>
+      <div class="spacer"></div>
+      <div class="ri" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a1 1 0 0 0 .2 1.1l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1 1 0 0 0-1.7.7v.2a2 2 0 1 1-4 0v-.1a1 1 0 0 0-1.7-.7l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1 1 0 0 0-.7-1.7H4a2 2 0 1 1 0-4h.1a1 1 0 0 0 .7-1.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1 1 0 0 0 1.7-.7V4a2 2 0 1 1 4 0v.1a1 1 0 0 0 1.7.7l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1 1 0 0 0-.2 1.1"/></svg></div>
+    </nav>
+    <div class="main">
+      <div class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+
+      <!-- ONE calm header: title + primary action + Save + overflow. Nothing clips. -->
+      <div class="mhead">
+        <div>
+          <div class="title">Project kickoff</div>
+          <div class="sub">Jun 21, 2026 · 24 min</div>
+        </div>
+        <div class="acts">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg>Regenerate summary</button>
+          <button class="btn btn-ghost"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 21v-7h8v7"/><path d="M8 3v4h6"/></svg>Save</button>
+          <div class="iconbtn"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></div>
+        </div>
+      </div>
+
+      <!-- overflow menu shown open (where the old crammed buttons now live) -->
+      <div class="cols">
+        <!-- transcript -->
+        <section class="tcol">
+          <div class="colbar">
+            <span class="lbl">Transcript</span>
+            <div class="tools"><div class="iconbtn"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></div></div>
+          </div>
+          <div class="tscroll">
+            <div class="tline"><div class="tstamp">00:01</div><div class="ttext">什麼</div></div>
+            <div class="tline"><div class="tstamp">00:03</div><div class="ttext">The objective for today's meeting is X, Y, and Z. We have to do X before we can do Y. Is this clear?</div></div>
+            <div class="tline"><div class="tstamp">00:14</div><div class="ttext">Yes, that's clear. Let's start with the first item and work through them in order.</div></div>
+            <div class="tline"><div class="tstamp">00:22</div><div class="ttext">Sounds good. I'll share my screen so everyone can follow along.</div></div>
+          </div>
+          <div class="ctx">Add context for AI summary. For example people involved, meeting overview, objective etc…</div>
+        </section>
+
+        <!-- summary -->
+        <section class="scol">
+          <div class="colbar"><span class="lbl">Summary</span></div>
+          <div class="sscroll">
+            <div class="sec">
+              <h3>Summary</h3>
+              <p>The objective for today's meeting is X, Y, and Z. The team agreed to complete X before moving on to Y, and to work through the agenda items in order.</p>
+            </div>
+            <div class="sec">
+              <h3>Decisions</h3>
+              <ul>
+                <li><span class="mk"></span>Complete X before starting Y.</li>
+                <li><span class="mk"></span>Work through the agenda items in order.</li>
+              </ul>
+            </div>
+            <div class="sec">
+              <h3>Action items</h3>
+              <ul>
+                <li class="task"><span class="box"></span><span><span class="who">Alex</span>Share the screen and walk through item one.</span></li>
+                <li class="task"><span class="box"></span><span><span class="who">Team</span>Confirm the order of the remaining agenda items.</span></li>
+              </ul>
+            </div>
+            <div class="sec">
+              <h3>Follow-ups</h3>
+              <p class="none">None noted in this section.</p>
+            </div>
+            <div class="sec">
+              <h3>Discussion notes</h3>
+              <p>Brief alignment on objectives and sequencing. No blockers raised.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

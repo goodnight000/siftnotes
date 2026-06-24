@@ -832,7 +832,7 @@ export function ModelSettingsModal({
       <div className="space-y-4">
         <div>
           <Label>Provider</Label>
-          <div className="flex space-x-2 mt-1">
+          <div className="flex flex-wrap gap-2 mt-1">
             <Select
               value={modelConfig.provider}
               onValueChange={(value) => {
@@ -923,7 +923,7 @@ export function ModelSettingsModal({
                     variant="outline"
                     role="combobox"
                     aria-expanded={modelComboboxOpen}
-                    className="flex-1 max-w-[200px] justify-between font-normal"
+                    className="flex-1 min-w-0 max-w-[200px] justify-between font-normal"
                   >
                     <span className="truncate">
                       {modelConfig.model || "Select model..."}
@@ -1237,12 +1237,12 @@ export function ModelSettingsModal({
 
         {modelConfig.provider === 'ollama' && (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-bold">Available Ollama Models</h4>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <h4 className="text-sm font-bold shrink-0">Available Ollama Models</h4>
               {lastFetchedEndpoint && models.length > 0 && (
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-muted-foreground">Using:</span>
-                  <code className="px-2 py-1 bg-muted rounded text-xs">
+                <div className="flex min-w-0 items-center gap-2 text-sm">
+                  <span className="text-muted-foreground shrink-0">Using:</span>
+                  <code className="min-w-0 truncate px-2 py-1 bg-muted rounded text-xs">
                     {lastFetchedEndpoint || 'http://localhost:11434'}
                   </code>
                 </div>
@@ -1370,7 +1370,7 @@ export function ModelSettingsModal({
                             }
                           }}
                         >
-                          <div>
+                          <div className="break-words">
                             <b className="font-bold">{model.name}&nbsp;</b>
                             <span className="text-muted-foreground">with a size of </span>
                             <span className="font-mono font-bold text-sm">{model.size}</span>

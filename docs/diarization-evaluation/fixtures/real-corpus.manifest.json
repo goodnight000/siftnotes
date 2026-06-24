@@ -1,0 +1,53 @@
+{
+  "requiredCategories": [
+    "clean-2-speaker",
+    "3-5-speaker-meeting",
+    "noisy-poor-mic",
+    "overlap-heavy",
+    "system-audio-heavy",
+    "similar-voices-backchannels"
+  ],
+  "items": [
+    {
+      "id": "clean-2-speaker-slot-001",
+      "category": "clean-2-speaker",
+      "approvalStatus": "not_requested",
+      "expectedSpeakerCount": 2,
+      "notes": "Replace with an approved local Meetily recording or imported audio file plus transcripts.json and optional human RTTM."
+    },
+    {
+      "id": "3-5-speaker-meeting-slot-001",
+      "category": "3-5-speaker-meeting",
+      "approvalStatus": "not_requested",
+      "expectedSpeakerCount": {
+        "min": 3,
+        "max": 5
+      },
+      "notes": "Use a meeting-like recording with enough turns from each speaker to evaluate clustering stability."
+    },
+    {
+      "id": "noisy-poor-mic-slot-001",
+      "category": "noisy-poor-mic",
+      "approvalStatus": "not_requested",
+      "notes": "Use poor microphone, room noise, compression, or far-field speech to stress missed speech and false alarms."
+    },
+    {
+      "id": "overlap-heavy-slot-001",
+      "category": "overlap-heavy",
+      "approvalStatus": "not_requested",
+      "notes": "Use interruptions, crosstalk, or back-and-forth overlap to test overlap preservation separately from flattened labels."
+    },
+    {
+      "id": "system-audio-heavy-slot-001",
+      "category": "system-audio-heavy",
+      "approvalStatus": "not_requested",
+      "notes": "Use a call where remote participants dominate the mixed system-audio path."
+    },
+    {
+      "id": "similar-voices-backchannels-slot-001",
+      "category": "similar-voices-backchannels",
+      "approvalStatus": "not_requested",
+      "notes": "Use similar-sounding speakers or short acknowledgements to test speaker confusion and turn churn."
+    }
+  ]
+}

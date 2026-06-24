@@ -32,7 +32,9 @@ impl DatabaseManager {
 
         let pool = SqlitePool::connect(tauri_db_path).await?;
 
-        sqlx::migrate!("./migrations").run(&pool).await?;
+        let mut migrator = sqlx::migrate!("./migrations");
+        migrator.set_ignore_missing(true);
+        migrator.run(&pool).await?;
 
         Ok(DatabaseManager { pool })
     }
@@ -104,7 +106,10 @@ impl DatabaseManager {
                             Ok(db_manager)
                         }
                         Err(retry_err) => {
-                            log::error!("Database connection failed even after WAL cleanup: {}", retry_err);
+                            log::error!(
+                                "Database connection failed even after WAL cleanup: {}",
+                                retry_err
+                            );
                             Err(retry_err)
                         }
                     }
@@ -204,5 +209,80 @@ impl DatabaseManager {
         log::info!("Database connection pool closed");
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sqlx::{query, query_scalar, Sqlite};
+
+    #[tokio::test]
+    async fn opens_database_with_applied_migration_missing_from_current_bundle() {
+        let temp_dir = tempfile::tempdir().expect("create temp dir");
+        let db_path = temp_dir.path().join("meeting_minutes.sqlite");
+        let db_path = db_path.to_string_lossy().to_string();
+        let legacy_db_path = temp_dir
+            .path()
+            .join("meeting_minutes.db")
+            .to_string_lossy()
+            .to_string();
+
+        Sqlite::create_database(&db_path)
+            .await
+            .expect("create sqlite database");
+
+        let pool = SqlitePool::connect(&db_path)
+            .await
+            .expect("connect temp database");
+
+        query(
+            r#"
+            CREATE TABLE _sqlx_migrations (
+                version BIGINT PRIMARY KEY,
+                description TEXT NOT NULL,
+                installed_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                success BOOLEAN NOT NULL,
+                checksum BLOB NOT NULL,
+                execution_time BIGINT NOT NULL
+            )
+            "#,
+        )
+        .execute(&pool)
+        .await
+        .expect("create migrations table");
+
+        query(
+            r#"
+            INSERT INTO _sqlx_migrations
+                (version, description, success, checksum, execution_time)
+            VALUES (?, ?, true, ?, 0)
+            "#,
+        )
+        .bind(20990101000000_i64)
+        .bind("future_app_migration")
+        .bind(vec![0_u8; 32])
+        .execute(&pool)
+        .await
+        .expect("insert missing applied migration");
+
+        pool.close().await;
+
+        let manager = DatabaseManager::new(&db_path, &legacy_db_path)
+            .await
+            .expect("database should open even if a newer app applied an unknown migration");
+
+        let organization_index_count: i64 = query_scalar(
+            r#"
+            SELECT COUNT(*)
+            FROM sqlite_master
+            WHERE type = 'index' AND name = 'idx_meetings_organization'
+            "#,
+        )
+        .fetch_one(manager.pool())
+        .await
+        .expect("query organization index");
+
+        assert_eq!(organization_index_count, 1);
     }
 }

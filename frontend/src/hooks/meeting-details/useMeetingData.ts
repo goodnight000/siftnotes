@@ -18,6 +18,11 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
   const [meetingTitle, setMeetingTitle] = useState(meeting.title || '+ New Call');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isTitleDirty, setIsTitleDirty] = useState(false);
+  const [project, setProject] = useState<string>(meeting.project || '');
+  const [tagsText, setTagsText] = useState<string>((meeting.tags || []).join(', '));
+  const [isPinned, setIsPinned] = useState<boolean>(Boolean(meeting.is_pinned));
+  const [isArchived, setIsArchived] = useState<boolean>(Boolean(meeting.is_archived));
+  const [isOrganizationSaving, setIsOrganizationSaving] = useState(false);
   const [aiSummary, setAiSummary] = useState<Summary | null>(summaryData);
   const [isSaving, setIsSaving] = useState(false);
   const [, setIsSummaryDirty] = useState(false);
@@ -34,6 +39,13 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
     console.log('[useMeetingData] Syncing summary data from prop:', summaryData ? 'present' : 'null');
     setAiSummary(summaryData);
   }, [summaryData]); // Only trigger when parent prop changes, not when aiSummary changes
+
+  useEffect(() => {
+    setProject(meeting.project || '');
+    setTagsText((meeting.tags || []).join(', '));
+    setIsPinned(Boolean(meeting.is_pinned));
+    setIsArchived(Boolean(meeting.is_archived));
+  }, [meeting.id, meeting.project, meeting.tags, meeting.is_pinned, meeting.is_archived]);
 
   // Handlers
   const handleTitleChange = useCallback((newTitle: string) => {
@@ -57,10 +69,14 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
 
       // Update meetings with new title
       const updatedMeetings = sidebarMeetings.map((m: CurrentMeeting) =>
-        m.id === meeting.id ? { id: m.id, title: meetingTitle } : m
+        m.id === meeting.id ? { ...m, title: meetingTitle } : m
       );
       setMeetings(updatedMeetings);
-      setCurrentMeeting({ id: meeting.id, title: meetingTitle });
+      setCurrentMeeting({
+        ...(sidebarMeetings.find((m: CurrentMeeting) => m.id === meeting.id) || meeting),
+        id: meeting.id,
+        title: meetingTitle,
+      });
       return true;
     } catch (error) {
       console.error('Failed to save meeting title:', error);
@@ -71,7 +87,7 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
       }
       return false;
     }
-  }, [meeting.id, meetingTitle, sidebarMeetings, setMeetings, setCurrentMeeting]);
+  }, [meeting, meetingTitle, sidebarMeetings, setMeetings, setCurrentMeeting]);
 
   const handleSaveSummary = useCallback(async (summary: Summary | { markdown?: string; summary_json?: any[] }) => {
     console.log('📄 handleSaveSummary called with:', {
@@ -141,16 +157,72 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
     }
   }, [isTitleDirty, handleSaveMeetingTitle, aiSummary, handleSaveSummary]);
 
+  const handleSaveMeetingOrganization = useCallback(async () => {
+    setIsOrganizationSaving(true);
+    try {
+      const tags = tagsText
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(Boolean);
+
+      const updated = await invokeTauri('api_update_meeting_organization', {
+        meetingId: meeting.id,
+        project: project.trim() || null,
+        tags,
+        isPinned,
+        isArchived,
+      }) as CurrentMeeting;
+
+      const updatedMeeting = {
+        ...updated,
+        project: updated.project ?? null,
+        tags: updated.tags ?? [],
+        is_pinned: Boolean(updated.is_pinned),
+        is_archived: Boolean(updated.is_archived),
+      };
+
+      setMeetings(sidebarMeetings.map((m: CurrentMeeting) =>
+        m.id === meeting.id ? { ...m, ...updatedMeeting } : m
+      ));
+      setCurrentMeeting(updatedMeeting);
+      setProject(updatedMeeting.project || '');
+      setTagsText((updatedMeeting.tags || []).join(', '));
+      setIsPinned(Boolean(updatedMeeting.is_pinned));
+      setIsArchived(Boolean(updatedMeeting.is_archived));
+      toast.success('Meeting organization saved');
+      return true;
+    } catch (error) {
+      console.error('Failed to save meeting organization:', error);
+      toast.error('Failed to save meeting organization', { description: String(error) });
+      return false;
+    } finally {
+      setIsOrganizationSaving(false);
+    }
+  }, [
+    meeting.id,
+    project,
+    tagsText,
+    isPinned,
+    isArchived,
+    sidebarMeetings,
+    setMeetings,
+    setCurrentMeeting,
+  ]);
+
   // Update meeting title from external source (e.g., AI summary)
   const updateMeetingTitle = useCallback((newTitle: string) => {
     console.log('📝 Updating meeting title to:', newTitle);
     setMeetingTitle(newTitle);
     const updatedMeetings = sidebarMeetings.map((m: CurrentMeeting) =>
-      m.id === meeting.id ? { id: m.id, title: newTitle } : m
+      m.id === meeting.id ? { ...m, title: newTitle } : m
     );
     setMeetings(updatedMeetings);
-    setCurrentMeeting({ id: meeting.id, title: newTitle });
-  }, [meeting.id, sidebarMeetings, setMeetings, setCurrentMeeting]);
+    setCurrentMeeting({
+      ...(sidebarMeetings.find((m: CurrentMeeting) => m.id === meeting.id) || meeting),
+      id: meeting.id,
+      title: newTitle,
+    });
+  }, [meeting, sidebarMeetings, setMeetings, setCurrentMeeting]);
 
   return {
     // State
@@ -158,6 +230,11 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
     meetingTitle,
     isEditingTitle,
     isTitleDirty,
+    project,
+    tagsText,
+    isPinned,
+    isArchived,
+    isOrganizationSaving,
     aiSummary,
     isSaving,
     blockNoteSummaryRef,
@@ -167,6 +244,10 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
     setIsEditingTitle,
     setAiSummary,
     setIsSummaryDirty,
+    setProject,
+    setTagsText,
+    setIsPinned,
+    setIsArchived,
 
     // Handlers
     handleTitleChange,
@@ -174,6 +255,7 @@ export function useMeetingData({ meeting, summaryData, onMeetingUpdated }: UseMe
     handleSaveSummary,
     handleSaveMeetingTitle,
     saveAllChanges,
+    handleSaveMeetingOrganization,
     updateMeetingTitle,
   };
 }

@@ -61,14 +61,14 @@ export function AudioLevelMeter({
   const sizes = sizeClasses[size];
 
   return (
-    <div className={`flex items-center space-x-2 ${className}`}>
+    <div className={`flex items-center space-x-2 min-w-0 ${className}`}>
       {/* Device activity indicator */}
-      <div className={`w-2 h-2 rounded-full ${
+      <div className={`w-2 h-2 shrink-0 rounded-full ${
         isActive ? 'bg-green-400 animate-pulse' : 'bg-gray-300'
       }`} title={`${deviceName} - ${isActive ? 'Active' : 'Inactive'}`} />
 
       {/* Level meter container */}
-      <div className={`flex-1 ${sizes.container} relative`}>
+      <div className={`flex-1 min-w-0 ${sizes.container} relative`}>
         {/* Background */}
         <div className="w-full h-full bg-gray-200 rounded-sm overflow-hidden">
           {/* RMS level bar (main level) */}
@@ -98,7 +98,7 @@ export function AudioLevelMeter({
       </div>
 
       {/* Level percentage display */}
-      <div className={`${sizes.text} text-gray-600 font-mono min-w-[3rem] text-right`}>
+      <div className={`${sizes.text} text-gray-600 font-mono min-w-[3rem] shrink-0 text-right`}>
         {rmsPercent}%
       </div>
     </div>

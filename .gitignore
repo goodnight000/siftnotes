@@ -5,6 +5,7 @@
 # dependencies
 /node_modules
 **/models
+/.venv-diarization
 /.pnp
 .pnp.*
 .yarn/*
@@ -77,3 +78,12 @@ experiments/
 target/
 
 frontend/src-tauri/binaries/
+
+# build / tool caches
+/.cache/
+
+# macOS Finder duplicate artifacts (e.g. "logo 2.png", "icon_16x16 2.png")
+* [2-9].png
+* [2-9].ico
+* [2-9].icns
+* [2-9].jpg

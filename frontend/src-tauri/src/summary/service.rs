@@ -1,14 +1,16 @@
 use crate::database::repositories::{
     meeting::MeetingsRepository, setting::SettingsRepository, summary::SummaryProcessesRepository,
 };
-use crate::summary::llm_client::LLMProvider;
+use crate::ollama::metadata::ModelMetadataCache;
+use crate::summary::context::{MeetingFolderSummaryMetadata, MeetingSummaryContext};
 use crate::summary::language_detection::detect_summary_language;
+use crate::summary::llm_client::LLMProvider;
 use crate::summary::metadata::read_detected_summary_language_from_metadata;
 use crate::summary::processor::{
     extract_meeting_name_from_markdown, generate_meeting_summary, language_name_from_code,
 };
 use crate::summary::templates::{self, Template};
-use crate::ollama::metadata::ModelMetadataCache;
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use std::collections::HashMap;
@@ -18,12 +20,10 @@ use std::time::{Duration, Instant};
 use tauri::{AppHandle, Manager};
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info, warn};
-use once_cell::sync::Lazy;
 
 // Global cache for model metadata (5 minute TTL)
-static METADATA_CACHE: Lazy<ModelMetadataCache> = Lazy::new(|| {
-    ModelMetadataCache::new(Duration::from_secs(300))
-});
+static METADATA_CACHE: Lazy<ModelMetadataCache> =
+    Lazy::new(|| ModelMetadataCache::new(Duration::from_secs(300)));
 
 // Global registry for cancellation tokens (thread-safe)
 static CANCELLATION_REGISTRY: Lazy<Arc<Mutex<HashMap<String, CancellationToken>>>> =
@@ -54,11 +54,14 @@ fn strip_title_if_present(markdown: &str) -> String {
 }
 
 const ENGLISH_CACHE_FIELD: &str = "english_cache";
+const SUMMARY_PIPELINE_VERSION: &str = "evidence-ledger-v1";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct SummaryCacheSource {
+    pipeline_version: String,
     transcript_fingerprint: String,
     custom_prompt_fingerprint: String,
+    summary_context_fingerprint: String,
     template_id: String,
     template_fingerprint: String,
     token_threshold: usize,
@@ -94,6 +97,7 @@ fn stable_text_fingerprint(text: &str) -> String {
 fn build_summary_cache_source(
     text: &str,
     custom_prompt: &str,
+    summary_context: Option<&MeetingSummaryContext>,
     template_id: &str,
     template_fingerprint: &str,
     token_threshold: usize,
@@ -105,9 +109,15 @@ fn build_summary_cache_source(
     temperature: Option<f32>,
     top_p: Option<f32>,
 ) -> SummaryCacheSource {
+    let summary_context_prompt = summary_context
+        .map(MeetingSummaryContext::to_prompt_block)
+        .unwrap_or_default();
+
     SummaryCacheSource {
+        pipeline_version: SUMMARY_PIPELINE_VERSION.to_string(),
         transcript_fingerprint: stable_text_fingerprint(text),
         custom_prompt_fingerprint: stable_text_fingerprint(custom_prompt),
+        summary_context_fingerprint: stable_text_fingerprint(&summary_context_prompt),
         template_id: template_id.to_string(),
         template_fingerprint: template_fingerprint.to_string(),
         token_threshold,
@@ -212,7 +222,10 @@ impl SummaryService {
                 return true;
             }
         }
-        warn!("No active summary generation found for meeting: {}", meeting_id);
+        warn!(
+            "No active summary generation found for meeting: {}",
+            meeting_id
+        );
         false
     }
 
@@ -225,14 +238,14 @@ impl SummaryService {
         }
     }
 
-    async fn read_detected_summary_language(
-        pool: &SqlitePool,
-        meeting_id: &str,
-    ) -> Option<String> {
+    async fn read_detected_summary_language(pool: &SqlitePool, meeting_id: &str) -> Option<String> {
         let meeting = match MeetingsRepository::get_meeting_metadata(pool, meeting_id).await {
             Ok(Some(meeting)) => meeting,
             Ok(None) => {
-                warn!("Meeting not found while reading detected summary language: {}", meeting_id);
+                warn!(
+                    "Meeting not found while reading detected summary language: {}",
+                    meeting_id
+                );
                 return None;
             }
             Err(e) => {
@@ -265,7 +278,10 @@ impl SummaryService {
         let detection = detect_summary_language(&transcript_texts);
         match &detection.language {
             Some(language) => {
-                info!("Detected transcript summary language for normalization: {}", language);
+                info!(
+                    "Detected transcript summary language for normalization: {}",
+                    language
+                );
             }
             None => {
                 info!(
@@ -275,6 +291,101 @@ impl SummaryService {
             }
         }
         detection.language
+    }
+
+    async fn build_meeting_summary_context(
+        pool: &SqlitePool,
+        meeting_id: &str,
+        model_provider: &str,
+        model_name: &str,
+        template_id: &str,
+    ) -> Option<MeetingSummaryContext> {
+        let meeting = match MeetingsRepository::get_meeting(pool, meeting_id).await {
+            Ok(Some(meeting)) => meeting,
+            Ok(None) => {
+                warn!(
+                    "Meeting not found while building summary context: {}",
+                    meeting_id
+                );
+                return None;
+            }
+            Err(e) => {
+                warn!(
+                    "Failed to load meeting while building summary context (meeting_id={}): {}",
+                    meeting_id, e
+                );
+                return None;
+            }
+        };
+
+        let folder_metadata = meeting
+            .folder_path
+            .as_deref()
+            .and_then(|folder| match MeetingFolderSummaryMetadata::read_from_folder(Path::new(folder)) {
+                Ok(metadata) => metadata,
+                Err(e) => {
+                    warn!(
+                        "Failed to read meeting folder metadata for summary context (meeting_id={}): {}",
+                        meeting_id, e
+                    );
+                    None
+                }
+            });
+
+        let transcript_config = match SettingsRepository::get_transcript_config(pool).await {
+            Ok(config) => config,
+            Err(e) => {
+                warn!(
+                    "Failed to load transcription config for summary context (meeting_id={}): {}",
+                    meeting_id, e
+                );
+                None
+            }
+        };
+
+        let duration_seconds = folder_metadata
+            .as_ref()
+            .and_then(|metadata| metadata.duration_seconds)
+            .or_else(|| {
+                meeting
+                    .transcripts
+                    .iter()
+                    .filter_map(|transcript| transcript.audio_end_time)
+                    .filter(|seconds| seconds.is_finite() && *seconds > 0.0)
+                    .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            });
+
+        Some(MeetingSummaryContext {
+            meeting_id: meeting.id,
+            title: Some(meeting.title),
+            happened_at: folder_metadata
+                .as_ref()
+                .and_then(|metadata| metadata.created_at.clone())
+                .or(Some(meeting.created_at)),
+            updated_at: Some(meeting.updated_at),
+            completed_at: folder_metadata
+                .as_ref()
+                .and_then(|metadata| metadata.completed_at.clone()),
+            duration_seconds,
+            transcript_count: meeting.transcripts.len(),
+            project: meeting.project,
+            tags: meeting.tags,
+            source: folder_metadata
+                .as_ref()
+                .and_then(|metadata| metadata.source.clone()),
+            audio_file: folder_metadata
+                .as_ref()
+                .and_then(|metadata| metadata.audio_file.clone()),
+            transcription_provider: transcript_config
+                .as_ref()
+                .map(|config| config.provider.clone()),
+            transcription_model: transcript_config
+                .as_ref()
+                .map(|config| config.model.clone()),
+            summary_provider: Some(model_provider.to_string()),
+            summary_model: Some(model_name.to_string()),
+            summary_template: Some(template_id.to_string()),
+        })
     }
 
     /// Processes transcript in the background and generates summary
@@ -321,7 +432,10 @@ impl SummaryService {
         };
 
         // Validate and setup api_key, Flexible for Ollama, BuiltInAI, and CustomOpenAI
-        let api_key = if provider == LLMProvider::Ollama || provider == LLMProvider::BuiltInAI || provider == LLMProvider::CustomOpenAI {
+        let api_key = if provider == LLMProvider::Ollama
+            || provider == LLMProvider::BuiltInAI
+            || provider == LLMProvider::CustomOpenAI
+        {
             // These providers don't require API keys from the standard database column
             String::new()
         } else {
@@ -333,7 +447,8 @@ impl SummaryService {
                     return;
                 }
                 Err(e) => {
-                    let err_msg = format!("Failed to retrieve API key for {}: {}", &model_provider, e);
+                    let err_msg =
+                        format!("Failed to retrieve API key for {}: {}", &model_provider, e);
                     Self::update_process_failed(&pool, &meeting_id, &err_msg).await;
                     return;
                 }
@@ -355,33 +470,38 @@ impl SummaryService {
         };
 
         // Get CustomOpenAI config if provider is CustomOpenAI
-        let (custom_openai_endpoint, custom_openai_api_key, custom_openai_max_tokens, custom_openai_temperature, custom_openai_top_p) =
-            if provider == LLMProvider::CustomOpenAI {
-                match SettingsRepository::get_custom_openai_config(&pool).await {
-                    Ok(Some(config)) => {
-                        info!("✓ Using custom OpenAI endpoint: {}", config.endpoint);
-                        (
-                            Some(config.endpoint),
-                            config.api_key,
-                            config.max_tokens.map(|t| t as u32),
-                            config.temperature,
-                            config.top_p,
-                        )
-                    }
-                    Ok(None) => {
-                        let err_msg = "Custom OpenAI provider selected but no configuration found";
-                        Self::update_process_failed(&pool, &meeting_id, err_msg).await;
-                        return;
-                    }
-                    Err(e) => {
-                        let err_msg = format!("Failed to retrieve custom OpenAI config: {}", e);
-                        Self::update_process_failed(&pool, &meeting_id, &err_msg).await;
-                        return;
-                    }
+        let (
+            custom_openai_endpoint,
+            custom_openai_api_key,
+            custom_openai_max_tokens,
+            custom_openai_temperature,
+            custom_openai_top_p,
+        ) = if provider == LLMProvider::CustomOpenAI {
+            match SettingsRepository::get_custom_openai_config(&pool).await {
+                Ok(Some(config)) => {
+                    info!("✓ Using custom OpenAI endpoint: {}", config.endpoint);
+                    (
+                        Some(config.endpoint),
+                        config.api_key,
+                        config.max_tokens.map(|t| t as u32),
+                        config.temperature,
+                        config.top_p,
+                    )
                 }
-            } else {
-                (None, None, None, None, None)
-            };
+                Ok(None) => {
+                    let err_msg = "Custom OpenAI provider selected but no configuration found";
+                    Self::update_process_failed(&pool, &meeting_id, err_msg).await;
+                    return;
+                }
+                Err(e) => {
+                    let err_msg = format!("Failed to retrieve custom OpenAI config: {}", e);
+                    Self::update_process_failed(&pool, &meeting_id, &err_msg).await;
+                    return;
+                }
+            }
+        } else {
+            (None, None, None, None, None)
+        };
 
         // For CustomOpenAI, use its API key (if any) instead of the empty string
         let final_api_key = if provider == LLMProvider::CustomOpenAI {
@@ -392,7 +512,10 @@ impl SummaryService {
 
         // Dynamically fetch context size based on provider and model
         let token_threshold = if provider == LLMProvider::Ollama {
-            match METADATA_CACHE.get_or_fetch(&model_name, ollama_endpoint.as_deref()).await {
+            match METADATA_CACHE
+                .get_or_fetch(&model_name, ollama_endpoint.as_deref())
+                .await
+            {
                 Ok(metadata) => {
                     // Reserve 300 tokens for prompt overhead
                     let optimal = metadata.context_size.saturating_sub(300);
@@ -407,7 +530,7 @@ impl SummaryService {
                         "Failed to fetch context for {}: {}. Using default 4000",
                         model_name, e
                     );
-                    4000  // Fallback to safe default
+                    4000 // Fallback to safe default
                 }
             }
         } else if provider == LLMProvider::BuiltInAI {
@@ -428,12 +551,12 @@ impl SummaryService {
                 }
                 Err(e) => {
                     warn!("{}, using default 2048", e);
-                    1748  // 2048 - 300 for overhead
+                    1748 // 2048 - 300 for overhead
                 }
             }
         } else {
             // Cloud providers (OpenAI, Claude, Groq, CustomOpenAI) handle large contexts automatically
-            100000  // Effectively unlimited for single-pass processing
+            100000 // Effectively unlimited for single-pass processing
         };
 
         // Get app data directory for BuiltInAI provider
@@ -443,10 +566,9 @@ impl SummaryService {
             info!("📝 Summary language preference: {}", code);
         }
 
-        let detected_summary_language =
-            Self::read_detected_summary_language(&pool, &meeting_id)
-                .await
-                .or_else(|| Self::detect_summary_language_from_text(&text));
+        let detected_summary_language = Self::read_detected_summary_language(&pool, &meeting_id)
+            .await
+            .or_else(|| Self::detect_summary_language_from_text(&text));
 
         if let Some(code) = &detected_summary_language {
             info!("📝 Detected transcript summary language: {}", code);
@@ -461,10 +583,44 @@ impl SummaryService {
             }
         };
         let template_fingerprint = template_cache_fingerprint(&template);
+        let template_sections = template
+            .sections
+            .iter()
+            .map(|section| section.title.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        info!(
+            "Summary template '{}' loaded with sections: {}",
+            template_id, template_sections
+        );
+
+        let meeting_context = Self::build_meeting_summary_context(
+            &pool,
+            &meeting_id,
+            &model_provider,
+            &model_name,
+            &template_id,
+        )
+        .await;
+        match &meeting_context {
+            Some(context) => info!(
+                "Summary metadata context built for meeting_id={} with happened_at={:?}, transcript_count={}, source={:?}, audio_file={:?}",
+                meeting_id,
+                context.happened_at,
+                context.transcript_count,
+                context.source,
+                context.audio_file
+            ),
+            None => warn!(
+                "Summary metadata context unavailable for meeting_id={}",
+                meeting_id
+            ),
+        }
 
         let cache_source = build_summary_cache_source(
             &text,
             &custom_prompt,
+            meeting_context.as_ref(),
             &template_id,
             &template_fingerprint,
             token_threshold,
@@ -525,6 +681,7 @@ impl SummaryService {
             summary_language.as_deref(),
             detected_summary_language.as_deref(),
             cached_english.as_deref(),
+            meeting_context.as_ref(),
         )
         .await;
 
@@ -541,8 +698,8 @@ impl SummaryService {
                 );
                 info!("Final markdown generated ({} chars)", final_markdown.len());
 
-                if let Some(name) = extract_meeting_name_from_markdown(&final_markdown)
-                    .filter(|n| !n.is_empty())
+                if let Some(name) =
+                    extract_meeting_name_from_markdown(&final_markdown).filter(|n| !n.is_empty())
                 {
                     info!("Extracted meeting name from summary: '{}'", name);
                     if let Err(e) =
@@ -571,23 +728,26 @@ impl SummaryService {
                 )
                 .await
                 {
-                    error!(
-                        "Failed to save completed process for {}: {}",
-                        meeting_id, e
-                    );
+                    error!("Failed to save completed process for {}: {}", meeting_id, e);
                 } else {
-                    info!(
-                        "Summary saved successfully for meeting_id: {}",
-                        meeting_id
-                    );
+                    info!("Summary saved successfully for meeting_id: {}", meeting_id);
                 }
             }
             Err(e) => {
                 // Check if error is due to cancellation
                 if e.contains("cancelled") {
-                    info!("Summary generation was cancelled for meeting_id: {}", meeting_id);
-                    if let Err(db_err) = SummaryProcessesRepository::update_process_cancelled(&pool, &meeting_id).await {
-                        error!("Failed to update DB status to cancelled for {}: {}", meeting_id, db_err);
+                    info!(
+                        "Summary generation was cancelled for meeting_id: {}",
+                        meeting_id
+                    );
+                    if let Err(db_err) =
+                        SummaryProcessesRepository::update_process_cancelled(&pool, &meeting_id)
+                            .await
+                    {
+                        error!(
+                            "Failed to update DB status to cancelled for {}: {}",
+                            meeting_id, db_err
+                        );
                     }
                 } else {
                     Self::update_process_failed(&pool, &meeting_id, &e).await;
@@ -621,6 +781,8 @@ impl SummaryService {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::summary::CustomOpenAIConfig;
+    use std::time::Instant;
 
     #[test]
     fn test_strip_leading_title_with_body() {
@@ -666,12 +828,18 @@ mod tests {
 
     #[test]
     fn test_strip_title_if_present_preserves_already_stripped() {
-        assert_eq!(strip_title_if_present("## Action Items\nfoo"), "## Action Items\nfoo");
+        assert_eq!(
+            strip_title_if_present("## Action Items\nfoo"),
+            "## Action Items\nfoo"
+        );
     }
 
     #[test]
     fn test_strip_title_if_present_strips_leading_h1() {
-        assert_eq!(strip_title_if_present("# Meeting Title\n## Action Items\nfoo"), "## Action Items\nfoo");
+        assert_eq!(
+            strip_title_if_present("# Meeting Title\n## Action Items\nfoo"),
+            "## Action Items\nfoo"
+        );
     }
 
     #[test]
@@ -707,6 +875,7 @@ mod tests {
         build_summary_cache_source(
             "transcript body",
             "custom prompt",
+            None,
             "standard_meeting",
             &template_fingerprint,
             3700,
@@ -718,6 +887,27 @@ mod tests {
             None,
             None,
         )
+    }
+
+    fn sample_summary_context(happened_at: &str) -> MeetingSummaryContext {
+        MeetingSummaryContext {
+            meeting_id: "meeting-123".to_string(),
+            title: Some("Planning Review".to_string()),
+            happened_at: Some(happened_at.to_string()),
+            transcript_count: 8,
+            summary_provider: Some("ollama".to_string()),
+            summary_model: Some("gemma3:1b".to_string()),
+            summary_template: Some("standard_meeting".to_string()),
+            ..MeetingSummaryContext::default()
+        }
+    }
+
+    #[test]
+    fn test_cache_source_includes_summary_pipeline_version() {
+        assert_eq!(
+            sample_cache_source().pipeline_version,
+            SUMMARY_PIPELINE_VERSION
+        );
     }
 
     fn test_template(section_title: &str) -> Template {
@@ -757,6 +947,39 @@ mod tests {
     }
 
     #[test]
+    fn test_cache_without_pipeline_version_is_cache_miss() {
+        let source = sample_cache_source();
+        let raw = serde_json::json!({
+            "markdown": "translated",
+            ENGLISH_CACHE_FIELD: {
+                "markdown": "# Old English\nBody",
+                "source": {
+                    "transcript_fingerprint": source.transcript_fingerprint,
+                    "custom_prompt_fingerprint": source.custom_prompt_fingerprint,
+                    "summary_context_fingerprint": source.summary_context_fingerprint,
+                    "template_id": source.template_id,
+                    "template_fingerprint": source.template_fingerprint,
+                    "token_threshold": source.token_threshold,
+                    "model_provider": source.model_provider,
+                    "model_name": source.model_name,
+                    "ollama_endpoint": source.ollama_endpoint,
+                    "custom_openai_endpoint": source.custom_openai_endpoint,
+                    "max_tokens": source.max_tokens,
+                    "temperature": source.temperature,
+                    "top_p": source.top_p
+                },
+                "output_language": "French"
+            }
+        })
+        .to_string();
+
+        assert_eq!(
+            extract_cached_english_markdown(&raw, &sample_cache_source(), Some("de")).unwrap(),
+            None
+        );
+    }
+
+    #[test]
     fn test_matching_source_changed_translation_target_reuses_cache() {
         let source = sample_cache_source();
         let raw = build_summary_result_json(
@@ -770,6 +993,61 @@ mod tests {
         assert_eq!(
             extract_cached_english_markdown(&raw, &source, Some("de")).unwrap(),
             Some("# Meeting\n## Points\nHello".to_string())
+        );
+    }
+
+    #[test]
+    fn test_changed_summary_context_rejects_cache() {
+        let template_fingerprint = stable_text_fingerprint("standard template prompt");
+        let original_context = sample_summary_context("2026-06-24T18:10:00Z");
+        let changed_context = sample_summary_context("2026-06-24T19:10:00Z");
+        let source = build_summary_cache_source(
+            "transcript body",
+            "custom prompt",
+            Some(&original_context),
+            "standard_meeting",
+            &template_fingerprint,
+            3700,
+            "ollama",
+            "gemma3:1b",
+            Some("http://localhost:11434"),
+            None,
+            None,
+            None,
+            None,
+        );
+        let raw = build_summary_result_json(
+            "# Reunion\n## Points\nBonjour",
+            "# Meeting\n## Points\nHello",
+            source.clone(),
+            Some("fr"),
+        )
+        .to_string();
+
+        assert_eq!(
+            extract_cached_english_markdown(&raw, &source, Some("de")).unwrap(),
+            Some("# Meeting\n## Points\nHello".to_string())
+        );
+
+        let changed_source = build_summary_cache_source(
+            "transcript body",
+            "custom prompt",
+            Some(&changed_context),
+            "standard_meeting",
+            &template_fingerprint,
+            3700,
+            "ollama",
+            "gemma3:1b",
+            Some("http://localhost:11434"),
+            None,
+            None,
+            None,
+            None,
+        );
+
+        assert_eq!(
+            extract_cached_english_markdown(&raw, &changed_source, Some("de")).unwrap(),
+            None
         );
     }
 
@@ -806,6 +1084,7 @@ mod tests {
             build_summary_cache_source(
                 "changed transcript",
                 "custom prompt",
+                None,
                 "standard_meeting",
                 &template_fingerprint,
                 3700,
@@ -820,6 +1099,7 @@ mod tests {
             build_summary_cache_source(
                 "transcript body",
                 "changed prompt",
+                None,
                 "standard_meeting",
                 &template_fingerprint,
                 3700,
@@ -834,6 +1114,7 @@ mod tests {
             build_summary_cache_source(
                 "transcript body",
                 "custom prompt",
+                None,
                 "daily_standup",
                 &template_fingerprint,
                 3700,
@@ -848,6 +1129,7 @@ mod tests {
             build_summary_cache_source(
                 "transcript body",
                 "custom prompt",
+                None,
                 "standard_meeting",
                 &template_fingerprint,
                 3700,
@@ -862,6 +1144,7 @@ mod tests {
             build_summary_cache_source(
                 "transcript body",
                 "custom prompt",
+                None,
                 "standard_meeting",
                 &template_fingerprint,
                 3700,
@@ -876,6 +1159,7 @@ mod tests {
             build_summary_cache_source(
                 "transcript body",
                 "custom prompt",
+                None,
                 "standard_meeting",
                 &template_fingerprint,
                 3700,
@@ -890,6 +1174,7 @@ mod tests {
             build_summary_cache_source(
                 "transcript body",
                 "custom prompt",
+                None,
                 "standard_meeting",
                 &template_fingerprint,
                 3700,
@@ -975,5 +1260,145 @@ mod tests {
     fn test_extract_cached_english_from_malformed_json_errors() {
         let raw = r#"{ not valid json"#;
         assert!(extract_cached_english_markdown(raw, &sample_cache_source(), Some("de")).is_err());
+    }
+
+    #[tokio::test]
+    #[ignore = "live harness: requires SIFTNOTES_LIVE_REGENERATE=1 and mutates the local app DB"]
+    async fn live_regenerate_standard_meeting_summary_writes_db() {
+        if std::env::var("SIFTNOTES_LIVE_REGENERATE").as_deref() != Ok("1") {
+            panic!("set SIFTNOTES_LIVE_REGENERATE=1 to run this live DB/API harness");
+        }
+
+        let meeting_id = std::env::var("SIFTNOTES_LIVE_MEETING_ID")
+            .unwrap_or_else(|_| "meeting-76be51c7-78e5-4810-a9dc-3adcb8cd5ea1".to_string());
+        let db_path = std::env::var("SIFTNOTES_LIVE_DB").unwrap_or_else(|_| {
+            "/Users/charleszheng/Library/Application Support/com.siftnotes.desktop/meeting_minutes.sqlite"
+                .to_string()
+        });
+        let db_url = format!("sqlite://{}", db_path);
+        let pool = SqlitePool::connect(&db_url)
+            .await
+            .expect("connect to live SiftNotes DB");
+
+        let (text,): (String,) =
+            sqlx::query_as("SELECT transcript_text FROM transcript_chunks WHERE meeting_id = ?")
+                .bind(&meeting_id)
+                .fetch_one(&pool)
+                .await
+                .expect("load transcript text");
+
+        let (provider, model_name, custom_openai_config): (String, String, Option<String>) =
+            sqlx::query_as("SELECT provider, model, customOpenAIConfig FROM settings LIMIT 1")
+                .fetch_one(&pool)
+                .await
+                .expect("load model settings");
+        assert_eq!(
+            provider, "custom-openai",
+            "live harness currently supports the custom-openai provider used by this fixture"
+        );
+
+        let custom_config: CustomOpenAIConfig = serde_json::from_str(
+            custom_openai_config
+                .as_deref()
+                .expect("customOpenAIConfig must be set"),
+        )
+        .expect("parse customOpenAIConfig");
+        let api_key = custom_config.api_key.clone().unwrap_or_default();
+        assert!(
+            !api_key.trim().is_empty(),
+            "custom OpenAI API key must be set"
+        );
+
+        let (title, created_at, updated_at): (String, String, String) =
+            sqlx::query_as("SELECT title, created_at, updated_at FROM meetings WHERE id = ?")
+                .bind(&meeting_id)
+                .fetch_one(&pool)
+                .await
+                .expect("load meeting metadata");
+        let (transcript_count, duration_seconds): (i64, Option<f64>) = sqlx::query_as(
+            "SELECT COUNT(*), MAX(audio_end_time) FROM transcripts WHERE meeting_id = ?",
+        )
+        .bind(&meeting_id)
+        .fetch_one(&pool)
+        .await
+        .expect("load transcript metadata");
+
+        let meeting_context = MeetingSummaryContext {
+            meeting_id: meeting_id.clone(),
+            title: Some(title),
+            happened_at: Some(created_at),
+            updated_at: Some(updated_at),
+            duration_seconds,
+            transcript_count: transcript_count as usize,
+            transcription_provider: Some("live-db".to_string()),
+            summary_provider: Some(provider.clone()),
+            summary_model: Some(model_name.clone()),
+            summary_template: Some("standard_meeting".to_string()),
+            ..MeetingSummaryContext::default()
+        };
+
+        let template = templates::get_template("standard_meeting").expect("standard template");
+        let provider_enum = LLMProvider::from_str(&provider).expect("provider enum");
+        let client = reqwest::Client::new();
+        let started = Instant::now();
+        let (final_markdown, english_markdown, chunk_count) = generate_meeting_summary(
+            &client,
+            &provider_enum,
+            &model_name,
+            &api_key,
+            &text,
+            "",
+            "standard_meeting",
+            &template,
+            100_000,
+            None,
+            Some(custom_config.endpoint.as_str()),
+            custom_config.max_tokens.map(|value| value as u32),
+            custom_config.temperature,
+            custom_config.top_p,
+            None,
+            None,
+            Some("en"),
+            Some("en"),
+            None,
+            Some(&meeting_context),
+        )
+        .await
+        .expect("generate live summary");
+
+        assert!(final_markdown.contains("**Timeline**"));
+        assert!(final_markdown.contains("**Metadata**"));
+        assert!(
+            final_markdown.rfind("**Metadata**") > final_markdown.rfind("**Discussion Notes**")
+        );
+
+        let template_fingerprint = template_cache_fingerprint(&template);
+        let cache_source = build_summary_cache_source(
+            &text,
+            "",
+            Some(&meeting_context),
+            "standard_meeting",
+            &template_fingerprint,
+            100_000,
+            &provider,
+            &model_name,
+            None,
+            Some(custom_config.endpoint.as_str()),
+            custom_config.max_tokens.map(|value| value as u32),
+            custom_config.temperature,
+            custom_config.top_p,
+        );
+        let result_json =
+            build_summary_result_json(&final_markdown, &english_markdown, cache_source, Some("en"));
+
+        SummaryProcessesRepository::update_process_completed(
+            &pool,
+            &meeting_id,
+            result_json,
+            chunk_count,
+            started.elapsed().as_secs_f64(),
+        )
+        .await
+        .expect("write generated summary to DB");
     }
 }

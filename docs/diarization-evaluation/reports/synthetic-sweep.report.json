@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-06-21T13:30:00.000Z",
+  "baseConfig": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/synthetic-overlap.config.json",
+  "outputDir": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output",
+  "bestDefaultVariant": {
+    "id": "cluster-threshold-0.35",
+    "candidate": "sherpa-onnx",
+    "engine": "sherpa-onnx::cluster-threshold-0.35",
+    "parameters": {
+      "clusterThreshold": "0.35",
+      "minDurationOn": "0.20",
+      "minDurationOff": "0.30"
+    },
+    "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output/configs/cluster-threshold-0.35.config.json",
+    "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output/reports/cluster-threshold-0.35.report.json",
+    "der": 0,
+    "jer": 0,
+    "gate": "default_candidate",
+    "gateReasons": [],
+    "practical": {
+      "integration": "native",
+      "localProcessing": true,
+      "licenseUse": "app_default_ok",
+      "runtimeFactor": 2.1
+    }
+  },
+  "bestOptionalVariant": null,
+  "variants": [
+    {
+      "id": "cluster-threshold-0.35",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::cluster-threshold-0.35",
+      "parameters": {
+        "clusterThreshold": "0.35",
+        "minDurationOn": "0.20",
+        "minDurationOff": "0.30"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output/configs/cluster-threshold-0.35.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output/reports/cluster-threshold-0.35.report.json",
+      "der": 0,
+      "jer": 0,
+      "gate": "default_candidate",
+      "gateReasons": [],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2.1
+      }
+    },
+    {
+      "id": "cluster-threshold-0.50",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::cluster-threshold-0.50",
+      "parameters": {
+        "clusterThreshold": "0.50",
+        "minDurationOn": "0.30",
+        "minDurationOff": "0.50"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output/configs/cluster-threshold-0.50.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/synthetic-sweep-output/reports/cluster-threshold-0.50.report.json",
+      "der": 0.125,
+      "jer": 0.125,
+      "gate": "default_candidate",
+      "gateReasons": [],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2.4
+      }
+    }
+  ]
+}

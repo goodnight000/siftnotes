@@ -193,25 +193,25 @@ export function UpdateDialog({ open, onOpenChange, updateInfo, onBeforeInstall }
           {!isDownloading && !error && (
             <>
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Current Version:</span>
-                  <span className="font-medium">{updateInfo.currentVersion}</span>
+                <div className="flex justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground flex-shrink-0">Current Version:</span>
+                  <span className="font-medium truncate">{updateInfo.currentVersion}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">New Version:</span>
-                  <span className="font-medium text-blue-600">{updateInfo.version}</span>
+                <div className="flex justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground flex-shrink-0">New Version:</span>
+                  <span className="font-medium text-blue-600 truncate">{updateInfo.version}</span>
                 </div>
                 {updateInfo.date && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Release Date:</span>
-                    <span className="font-medium">{formatDate(updateInfo.date)}</span>
+                  <div className="flex justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground flex-shrink-0">Release Date:</span>
+                    <span className="font-medium truncate">{formatDate(updateInfo.date)}</span>
                   </div>
                 )}
               </div>
 
               {updateInfo.body && (
                 <div className="bg-gray-50 rounded-lg p-3 max-h-40 overflow-y-auto">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
                     {updateInfo.body}
                   </p>
                 </div>

@@ -38,15 +38,15 @@ export const SwitchInput = ({
       name={name}
       render={({ field }) => (
         <FormItem
-          className={`flex flex-row items-center justify-between rounded-lg border p-4 ${formStyle}`}
+          className={`flex flex-row items-center justify-between gap-4 rounded-lg border p-4 ${formStyle}`}
         >
-          <div className="space-y-0.5">
-            <FormLabel className="text-base">{label}</FormLabel>
+          <div className="space-y-0.5 min-w-0">
+            <FormLabel className="text-base break-words">{label}</FormLabel>
             {isFormDescription && (
-              <FormDescription>{description}</FormDescription>
+              <FormDescription className="break-words">{description}</FormDescription>
             )}
           </div>
-          <FormControl>
+          <FormControl className="flex-shrink-0">
             <Switch
               checked={field.value}
               onCheckedChange={field.onChange}

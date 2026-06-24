@@ -1,0 +1,23 @@
+[
+  {
+    "id": "t1",
+    "text": "Alice starts the point.",
+    "timestamp": "10:00:01",
+    "audio_start_time": 0.5,
+    "audio_end_time": 2.5
+  },
+  {
+    "id": "t2",
+    "text": "Both speakers overlap briefly.",
+    "timestamp": "10:00:03",
+    "audio_start_time": 3.25,
+    "audio_end_time": 3.75
+  },
+  {
+    "id": "t3",
+    "text": "Bob continues after the overlap.",
+    "timestamp": "10:00:05",
+    "audio_start_time": 5.2,
+    "audio_end_time": 6.2
+  }
+]

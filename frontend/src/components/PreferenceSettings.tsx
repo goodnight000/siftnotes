@@ -150,12 +150,12 @@ export function PreferenceSettings() {
     <div className="space-y-6">
       {/* Notifications Section */}
       <div className="bg-surface rounded-lg border border-border p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
             <h3 className="text-lg font-semibold text-ink mb-2">Notifications</h3>
             <p className="text-sm text-ink-2">Enable or disable notifications of start and end of meeting</p>
           </div>
-          <Switch checked={notificationsEnabledValue} onCheckedChange={setNotificationsEnabled} />
+          <Switch checked={notificationsEnabledValue} onCheckedChange={setNotificationsEnabled} className="shrink-0" />
         </div>
       </div>
 

@@ -126,12 +126,12 @@ export function SummaryModelSettings({ refetchTrigger }: SummaryModelSettingsPro
   return (
     <div className='flex flex-col gap-4'>
       <div className="bg-surface rounded-lg border border-border p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
             <h3 className="text-lg font-semibold text-ink mb-2">Auto Summary</h3>
             <p className="text-sm text-ink-2">Automatically generate a summary after a meeting stops.</p>
           </div>
-          <Switch checked={isAutoSummary} onCheckedChange={toggleIsAutoSummary} />
+          <Switch checked={isAutoSummary} onCheckedChange={toggleIsAutoSummary} className="shrink-0" />
         </div>
       </div>
 

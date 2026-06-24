@@ -36,7 +36,7 @@ export const EditableTitle: React.FC<EditableTitleProps> = ({
   }, [title, isEditing]);
 
   return isEditing ? (
-    <div className="flex-1">
+    <div className="flex-1 min-w-0">
       <textarea
         ref={titleInputRef}
         value={title}
@@ -50,15 +50,15 @@ export const EditableTitle: React.FC<EditableTitleProps> = ({
           }
         }}
         className="text-2xl font-bold bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-3 py-1 w-full resize-none overflow-hidden"
-        style={{ minWidth: '300px', minHeight: '40px' }}
+        style={{ minHeight: '40px' }}
         autoFocus
         rows={1}
       />
     </div>
   ) : (
-    <div className="group flex items-center space-x-2 flex-1">
+    <div className="group flex items-center space-x-2 flex-1 min-w-0">
       <h1
-        className="text-2xl font-bold cursor-pointer hover:bg-gray-50 rounded px-1 flex-1 whitespace-pre-wrap"
+        className="text-2xl font-bold cursor-pointer hover:bg-gray-50 rounded px-1 flex-1 min-w-0 whitespace-pre-wrap break-words"
         onClick={onStartEditing}
       >
         {title}

@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-06-21T12:30:00.000Z",
+  "corpusItem": {
+    "id": "synthetic-unlabeled",
+    "category": "overlap-heavy-unlabeled",
+    "audioPath": "docs/diarization-evaluation/fixtures/synthetic-unlabeled.wav",
+    "durationSeconds": 10
+  },
+  "referenceEngine": null,
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "metrics": null,
+      "gate": {
+        "status": "fail",
+        "reasons": [
+          "missing_reference_labels"
+        ]
+      },
+      "practicalMetrics": {
+        "speakerCount": 2,
+        "turnCount": 3,
+        "rejectedTurnCount": 0,
+        "speechSeconds": 7,
+        "speakerSeconds": 8,
+        "overlapRegionSeconds": 1,
+        "overlapSpeakerSeconds": 2,
+        "overlapRatio": 0.1,
+        "turnsPerMinute": 18
+      },
+      "transcriptReconciliationMetrics": {
+        "totalSegments": 0,
+        "timedSegments": 0,
+        "assignedSegments": 0,
+        "unassignedSegments": 0,
+        "missingTimingSegments": 0,
+        "noOverlapSegments": 0,
+        "lowCoverageAssignedSegments": 0,
+        "overlapSegmentCount": 0,
+        "tieSegmentCount": 0,
+        "totalTimedSegmentSeconds": 0,
+        "totalAssignedCoverageSeconds": 0,
+        "meanCoverageRatio": null,
+        "assignmentReasonCounts": {
+          "dominant_overlap": 0,
+          "overlap_tie_earliest_turn": 0,
+          "missing_audio_timestamps": 0,
+          "no_diarization_overlap": 0
+        }
+      },
+      "assignedTranscripts": [],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2,
+        "peakMemoryMb": 512,
+        "installComplexity": "native_binary_with_models"
+      }
+    }
+  ],
+  "decision": {
+    "status": "no_candidate_passed",
+    "defaultCandidate": null,
+    "optionalCandidate": null,
+    "blockers": [
+      "sherpa-onnx:missing_reference_labels"
+    ]
+  }
+}

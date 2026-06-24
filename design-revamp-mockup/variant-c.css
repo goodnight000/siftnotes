@@ -1,0 +1,10 @@
+/* Variant C — Cool & licensing-safe fonts.
+   Cooler near-white surfaces, deeper clay accent, Inter body instead of (commercial) Avio Sans.
+   Headings stay Space Grotesk, data stays Commit Mono. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+:root{
+  --paper:#fbfbfa; --surface:#ffffff; --sunken:#f1f1ef; --border:#e4e3df;
+  --ink:#1a1a18; --ink-2:#54524d; --ink-3:#83817a;
+  --accent:#9a3412; --wash:#f1e7e2;
+  --font-sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}

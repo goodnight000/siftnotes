@@ -1,0 +1,99 @@
+{
+  "generatedAt": "2026-06-21T14:30:00.000Z",
+  "ready": false,
+  "blockers": [
+    "pyannote-community-1-model-access:command_failed:1"
+  ],
+  "checks": [
+    {
+      "id": "pyannote-community-1-python-dependencies",
+      "kind": "command",
+      "required": true,
+      "status": "pass",
+      "command": ".venv-diarization/bin/python",
+      "args": [
+        "scripts/diarization-adapters/pyannote-community-1.py",
+        "--check-dependencies"
+      ],
+      "cwd": "/Users/charleszheng/Desktop/Ideas/sift-notes",
+      "exitCode": 0,
+      "signal": null,
+      "stdoutTail": "{\"ok\": true, \"adapter\": \"pyannote-community-1\"}\n",
+      "stderrTail": "/Users/charleszheng/.matplotlib is not a writable directory\nMatplotlib created a temporary cache directory at /var/folders/d2/_p1s9p9d5tj1px2hdt2j07sw0000gn/T/matplotlib-2t5fnd96 because there was an issue with the default path ({configdir}); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.\nMatplotlib is building the font cache; this may take a moment.\n"
+    },
+    {
+      "id": "sherpa-onnx-python-dependencies",
+      "kind": "command",
+      "required": true,
+      "status": "pass",
+      "command": ".venv-diarization/bin/python",
+      "args": [
+        "scripts/diarization-adapters/sherpa-onnx.py",
+        "--check-dependencies"
+      ],
+      "cwd": "/Users/charleszheng/Desktop/Ideas/sift-notes",
+      "exitCode": 0,
+      "signal": null,
+      "stdoutTail": "{\"ok\": true, \"adapter\": \"sherpa-onnx\"}\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "pyannote-community-1-model-access",
+      "kind": "command",
+      "required": true,
+      "status": "fail",
+      "command": ".venv-diarization/bin/python",
+      "args": [
+        "scripts/diarization-adapters/pyannote-community-1.py",
+        "--check-model-access"
+      ],
+      "cwd": "/Users/charleszheng/Desktop/Ideas/sift-notes",
+      "exitCode": 1,
+      "signal": null,
+      "stdoutTail": "",
+      "stderrTail": "/Users/charleszheng/.matplotlib is not a writable directory\nMatplotlib created a temporary cache directory at /var/folders/d2/_p1s9p9d5tj1px2hdt2j07sw0000gn/T/matplotlib-fanfvuw1 because there was an issue with the default path ({configdir}); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.\nMatplotlib is building the font cache; this may take a moment.\n'[Errno 8] nodename nor servname provided, or not known' thrown while requesting HEAD https://huggingface.co/pyannote/speaker-diarization-community-1/resolve/main/config.yaml\nRetrying in 1s [Retry 1/5].\nUnable to load pyannote Community-1 model. Accept the model terms on Hugging Face and provide HF_TOKEN, HUGGINGFACE_TOKEN, or --hf-token. Model: pyannote/speaker-diarization-community-1. Error: Cannot send a request, as the client has been closed.\n"
+    },
+    {
+      "id": "pyannote-community-1-local-model-mirror",
+      "kind": "file",
+      "required": false,
+      "status": "fail",
+      "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/models/pyannote/speaker-diarization-community-1",
+      "exists": false
+    },
+    {
+      "id": "sherpa-onnx-segmentation-model",
+      "kind": "file",
+      "required": true,
+      "status": "pass",
+      "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+      "exists": true,
+      "bytes": 5992913
+    },
+    {
+      "id": "sherpa-onnx-embedding-model",
+      "kind": "file",
+      "required": true,
+      "status": "pass",
+      "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+      "exists": true,
+      "bytes": 39593761
+    },
+    {
+      "id": "sherpa-onnx-command",
+      "kind": "command",
+      "required": false,
+      "status": "fail",
+      "command": "sherpa-onnx",
+      "args": [
+        "--help"
+      ],
+      "cwd": "/Users/charleszheng/Desktop/Ideas/sift-notes",
+      "exitCode": "ENOENT",
+      "signal": null,
+      "error": "spawnSync sherpa-onnx ENOENT",
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  ]
+}

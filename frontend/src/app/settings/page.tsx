@@ -63,26 +63,26 @@ export default function SettingsPage() {
     <div className="h-screen bg-paper flex flex-col">
       {/* Fixed Header */}
       <div className="sticky top-0 z-10 bg-paper border-b border-border">
-        <div className="max-w-6xl mx-auto px-8 py-6">
-          <div className="flex items-center gap-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6">
+          <div className="flex items-center gap-4 min-w-0">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-ink-2 hover:text-ink transition-colors"
+              className="flex items-center gap-2 text-ink-2 hover:text-ink transition-colors shrink-0"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Back</span>
             </button>
-            <h1 className="text-3xl font-bold">Settings</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Settings</h1>
           </div>
         </div>
       </div>
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-6xl mx-auto p-8 pt-6">
+        <div className="max-w-6xl mx-auto p-4 pt-6 sm:p-8 sm:pt-6 min-w-0">
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="bg-transparent relative rounded-none border-b border-border p-0 h-auto">
+            <TabsList className="bg-transparent relative rounded-none border-b border-border p-0 h-auto w-full max-w-full justify-start overflow-x-auto overflow-y-hidden">
               {TABS.map((tab, index) => {
                 const Icon = tab.icon;
                 return (
@@ -90,9 +90,9 @@ export default function SettingsPage() {
                     key={tab.value}
                     value={tab.value}
                     ref={el => { tabRefs.current[index] = el }}
-                    className="flex items-center gap-2 px-6 py-4 bg-transparent rounded-none border-0 data-[state=active]:bg-transparent data-[state=active]:text-clay data-[state=active]:shadow-none text-ink-2 hover:text-ink relative z-10"
+                    className="flex shrink-0 items-center gap-2 px-4 py-4 sm:px-6 bg-transparent rounded-none border-0 data-[state=active]:bg-transparent data-[state=active]:text-clay data-[state=active]:shadow-none text-ink-2 hover:text-ink relative z-10"
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 shrink-0" />
                     {tab.label}
                   </TabsTrigger>
                 );

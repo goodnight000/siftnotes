@@ -52,15 +52,15 @@ export function PermissionWarning({
   };
 
   return (
-    <div className="max-w-md mb-4 space-y-3">
+    <div className="w-full max-w-md min-w-0 mb-4 space-y-3">
       {/* Combined Permission Warning - Show when either permission is missing */}
       {(!hasMicrophone || !hasSystemAudio) && (
         <Alert variant="destructive" className="border-amber-400 bg-amber-50">
           <AlertTriangle className="h-5 w-5 text-amber-600" />
           <AlertTitle className="text-amber-900 font-semibold">
-            <div className="flex items-center gap-2">
-              {!hasMicrophone && <Mic className="h-4 w-4" />}
-              {!hasSystemAudio && <Speaker className="h-4 w-4" />}
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
+              {!hasMicrophone && <Mic className="h-4 w-4 shrink-0" />}
+              {!hasSystemAudio && <Speaker className="h-4 w-4 shrink-0" />}
               {!hasMicrophone && !hasSystemAudio ? 'Permissions Required' : !hasMicrophone ? 'Microphone Permission Required' : 'System Audio Permission Required'}
             </div>
           </AlertTitle>

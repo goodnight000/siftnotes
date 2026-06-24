@@ -1,0 +1,10 @@
+/* Variant B — Warm & amber-forward.
+   Warmer paper, amber brand + amber primary action + amber section ticks. */
+:root{
+  --paper:#fbf5ea; --surface:#fffdf8; --sunken:#f3ebda; --border:#e8ddc8;
+  --accent:#b45309; --wash:#f7e6c5;
+}
+.brand{background:var(--accent); color:#fff;}
+.btn-primary{background:var(--accent); color:#fff;}
+.sec h3{padding-left:13px; position:relative;}
+.sec h3::before{content:""; position:absolute; left:0; top:.16em; bottom:.16em; width:3px; border-radius:2px; background:var(--accent);}

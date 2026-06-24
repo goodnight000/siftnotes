@@ -68,9 +68,9 @@ export function BluetoothPlaybackWarning({
       role="alert"
       aria-live="polite"
     >
-      <Speaker className="h-4 w-4 text-yellow-600" />
-      <div className="flex items-start justify-between w-full">
-        <div className="flex-1">
+      <Speaker className="h-4 w-4 text-yellow-600 shrink-0" />
+      <div className="flex items-start justify-between w-full min-w-0">
+        <div className="flex-1 min-w-0">
           <AlertTitle className="text-yellow-900 font-semibold">
             Bluetooth Playback Detected
           </AlertTitle>
@@ -94,7 +94,7 @@ export function BluetoothPlaybackWarning({
           variant="ghost"
           size="icon"
           onClick={() => setIsDismissed(true)}
-          className="ml-4 h-6 w-6 text-yellow-700 hover:text-yellow-900 hover:bg-yellow-100"
+          className="ml-4 h-6 w-6 shrink-0 text-yellow-700 hover:text-yellow-900 hover:bg-yellow-100"
           aria-label="Dismiss warning"
         >
           <X className="h-4 w-4" />

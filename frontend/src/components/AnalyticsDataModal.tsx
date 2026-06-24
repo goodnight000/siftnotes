@@ -16,14 +16,14 @@ export default function AnalyticsDataModal({ isOpen, onClose, onConfirmDisable }
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900">What Analytics Collects</h2>
+        <div className="flex items-center justify-between gap-3 p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3 min-w-0">
+            <Shield className="w-6 h-6 text-blue-600 flex-shrink-0" />
+            <h2 className="text-xl font-semibold text-gray-900 break-words min-w-0">What Analytics Collects</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -139,7 +139,7 @@ export default function AnalyticsDataModal({ isOpen, onClose, onConfirmDisable }
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-4 p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-6 border-t border-gray-200 bg-gray-50">
           <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"

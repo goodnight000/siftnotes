@@ -231,7 +231,7 @@ export const BlockComponent: React.FC<BlockProps> = ({
         <div className="flex-shrink-0 mr-2 select-none mt-[2px]">•</div>
       )}
 
-      <div className="relative flex-1 py-0.5 px-1">
+      <div className="relative flex-1 min-w-0 py-0.5 px-1">
         <textarea
           ref={textareaRef}
           value={block.content}

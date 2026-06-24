@@ -1,0 +1,232 @@
+{
+  "generatedAt": "2026-06-21T12:00:00.000Z",
+  "corpusItem": {
+    "id": "synthetic-overlap",
+    "category": "overlap-heavy",
+    "audioPath": "docs/diarization-evaluation/fixtures/synthetic-overlap.wav"
+  },
+  "referenceEngine": "human-rttm",
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "metrics": {
+        "speakerMapping": {
+          "Alice": "Alice",
+          "Bob": "Bob"
+        },
+        "totalReferenceSpeakerSeconds": 8,
+        "overlapReferenceSeconds": 1,
+        "missedSpeechSeconds": 1,
+        "falseAlarmSeconds": 0,
+        "speakerConfusionSeconds": 0,
+        "diarizationErrorRate": 0.125,
+        "jaccardErrorRate": 0.125
+      },
+      "gate": {
+        "status": "default_candidate",
+        "reasons": []
+      },
+      "practicalMetrics": {
+        "speakerCount": 2,
+        "turnCount": 2,
+        "rejectedTurnCount": 0,
+        "speechSeconds": 7,
+        "speakerSeconds": 7,
+        "overlapRegionSeconds": 0,
+        "overlapSpeakerSeconds": 0,
+        "overlapRatio": 0,
+        "turnsPerMinute": null
+      },
+      "transcriptReconciliationMetrics": {
+        "totalSegments": 3,
+        "timedSegments": 3,
+        "assignedSegments": 3,
+        "unassignedSegments": 0,
+        "missingTimingSegments": 0,
+        "noOverlapSegments": 0,
+        "lowCoverageAssignedSegments": 0,
+        "overlapSegmentCount": 0,
+        "tieSegmentCount": 0,
+        "totalTimedSegmentSeconds": 3.5,
+        "totalAssignedCoverageSeconds": 3.5,
+        "meanCoverageRatio": 1,
+        "assignmentReasonCounts": {
+          "dominant_overlap": 3,
+          "overlap_tie_earliest_turn": 0,
+          "missing_audio_timestamps": 0,
+          "no_diarization_overlap": 0
+        }
+      },
+      "assignedTranscripts": [
+        {
+          "id": "t1",
+          "text": "Alice starts the point.",
+          "timestamp": "10:00:01",
+          "audio_start_time": 0.5,
+          "audio_end_time": 2.5,
+          "diarization": {
+            "speaker": "Alice",
+            "coverageRatio": 1,
+            "coverageSeconds": 2,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "t2",
+          "text": "Both speakers overlap briefly.",
+          "timestamp": "10:00:03",
+          "audio_start_time": 3.25,
+          "audio_end_time": 3.75,
+          "diarization": {
+            "speaker": "Alice",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.5,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "t3",
+          "text": "Bob continues after the overlap.",
+          "timestamp": "10:00:05",
+          "audio_start_time": 5.2,
+          "audio_end_time": 6.2,
+          "diarization": {
+            "speaker": "Bob",
+            "coverageRatio": 1,
+            "coverageSeconds": 1,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        }
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2.4
+      }
+    },
+    {
+      "engine": "pyannote-community-1",
+      "metrics": {
+        "speakerMapping": {
+          "Alice": "Alice",
+          "Bob": "Bob"
+        },
+        "totalReferenceSpeakerSeconds": 8,
+        "overlapReferenceSeconds": 1,
+        "missedSpeechSeconds": 0,
+        "falseAlarmSeconds": 0,
+        "speakerConfusionSeconds": 0,
+        "diarizationErrorRate": 0,
+        "jaccardErrorRate": 0
+      },
+      "gate": {
+        "status": "optional_candidate",
+        "reasons": [
+          "integration_not_native",
+          "license_notice_required",
+          "runtime_factor_below_default_gate"
+        ]
+      },
+      "practicalMetrics": {
+        "speakerCount": 2,
+        "turnCount": 2,
+        "rejectedTurnCount": 0,
+        "speechSeconds": 7,
+        "speakerSeconds": 8,
+        "overlapRegionSeconds": 1,
+        "overlapSpeakerSeconds": 2,
+        "overlapRatio": 0.142857,
+        "turnsPerMinute": null
+      },
+      "transcriptReconciliationMetrics": {
+        "totalSegments": 3,
+        "timedSegments": 3,
+        "assignedSegments": 3,
+        "unassignedSegments": 0,
+        "missingTimingSegments": 0,
+        "noOverlapSegments": 0,
+        "lowCoverageAssignedSegments": 0,
+        "overlapSegmentCount": 1,
+        "tieSegmentCount": 1,
+        "totalTimedSegmentSeconds": 3.5,
+        "totalAssignedCoverageSeconds": 3.5,
+        "meanCoverageRatio": 1,
+        "assignmentReasonCounts": {
+          "dominant_overlap": 2,
+          "overlap_tie_earliest_turn": 1,
+          "missing_audio_timestamps": 0,
+          "no_diarization_overlap": 0
+        }
+      },
+      "assignedTranscripts": [
+        {
+          "id": "t1",
+          "text": "Alice starts the point.",
+          "timestamp": "10:00:01",
+          "audio_start_time": 0.5,
+          "audio_end_time": 2.5,
+          "diarization": {
+            "speaker": "Alice",
+            "coverageRatio": 1,
+            "coverageSeconds": 2,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "t2",
+          "text": "Both speakers overlap briefly.",
+          "timestamp": "10:00:03",
+          "audio_start_time": 3.25,
+          "audio_end_time": 3.75,
+          "diarization": {
+            "speaker": "Alice",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.5,
+            "overlappedSpeakers": [
+              "Alice",
+              "Bob"
+            ],
+            "overlapSeconds": 0.5,
+            "assignmentReason": "overlap_tie_earliest_turn"
+          }
+        },
+        {
+          "id": "t3",
+          "text": "Bob continues after the overlap.",
+          "timestamp": "10:00:05",
+          "audio_start_time": 5.2,
+          "audio_end_time": 6.2,
+          "diarization": {
+            "speaker": "Bob",
+            "coverageRatio": 1,
+            "coverageSeconds": 1,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        }
+      ],
+      "practical": {
+        "integration": "python-sidecar",
+        "localProcessing": true,
+        "licenseUse": "gated_model_notice_required",
+        "runtimeFactor": 0.8
+      }
+    }
+  ],
+  "decision": {
+    "status": "native_default_candidate_available",
+    "defaultCandidate": "sherpa-onnx",
+    "optionalCandidate": "pyannote-community-1",
+    "blockers": []
+  }
+}

@@ -151,18 +151,18 @@ export function AudioBackendSelector({
                 disabled={isDisabled}
                 className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
               />
-              <div className="ml-3 flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-900">
+              <div className="ml-3 flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 truncate text-sm font-medium text-gray-900">
                     {backend.name}
                   </span>
                   {currentBackend === backend.id && (
-                    <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
+                    <span className="shrink-0 text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
                       Active
                     </span>
                   )}
                   {isCoreAudio && (
-                    <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                    <span className="shrink-0 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
                       Disabled
                     </span>
                   )}

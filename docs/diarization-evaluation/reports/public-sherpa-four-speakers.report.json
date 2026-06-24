@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-06-21T15:00:00.000Z",
+  "corpusItem": {
+    "id": "public-sherpa-four-speakers",
+    "category": "public-runtime-smoke",
+    "audioPath": "public-sherpa-four-speakers.wav",
+    "durationSeconds": 56.861,
+    "sampleRate": 16000
+  },
+  "referenceEngine": null,
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "metrics": null,
+      "gate": {
+        "status": "fail",
+        "reasons": [
+          "missing_reference_labels"
+        ]
+      },
+      "practicalMetrics": {
+        "speakerCount": 4,
+        "turnCount": 10,
+        "rejectedTurnCount": 0,
+        "speechSeconds": 30.594,
+        "speakerSeconds": 30.594,
+        "overlapRegionSeconds": 0,
+        "overlapSpeakerSeconds": 0,
+        "overlapRatio": 0,
+        "turnsPerMinute": 10.552048
+      },
+      "transcriptReconciliationMetrics": {
+        "totalSegments": 0,
+        "timedSegments": 0,
+        "assignedSegments": 0,
+        "unassignedSegments": 0,
+        "missingTimingSegments": 0,
+        "noOverlapSegments": 0,
+        "lowCoverageAssignedSegments": 0,
+        "overlapSegmentCount": 0,
+        "tieSegmentCount": 0,
+        "totalTimedSegmentSeconds": 0,
+        "totalAssignedCoverageSeconds": 0,
+        "meanCoverageRatio": null,
+        "assignmentReasonCounts": {
+          "dominant_overlap": 0,
+          "overlap_tie_earliest_turn": 0,
+          "missing_audio_timestamps": 0,
+          "no_diarization_overlap": 0
+        }
+      },
+      "assignedTranscripts": [],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 185.671875,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 13.884086584,
+        "runtimeFactor": 4.095408052664157
+      }
+    }
+  ],
+  "decision": {
+    "status": "no_candidate_passed",
+    "defaultCandidate": null,
+    "optionalCandidate": null,
+    "blockers": [
+      "sherpa-onnx:missing_reference_labels"
+    ]
+  }
+}

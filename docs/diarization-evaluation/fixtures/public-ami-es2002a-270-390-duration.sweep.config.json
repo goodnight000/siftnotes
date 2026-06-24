@@ -1,0 +1,187 @@
+{
+  "generatedAt": "2026-06-21T19:00:00.000Z",
+  "baseConfig": "public-ami-es2002a-270-390.config.json",
+  "outputDir": "../reports/public-ami-es2002a-270-390-duration-sweep-output",
+  "variants": [
+    {
+      "id": "n4-on0.10-off0.20",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "4",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.20"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "0.5",
+            "--min-duration-on",
+            "{param.minDurationOn}",
+            "--min-duration-off",
+            "{param.minDurationOff}",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n4-on0.10-off0.80",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "4",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.80"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "0.5",
+            "--min-duration-on",
+            "{param.minDurationOn}",
+            "--min-duration-off",
+            "{param.minDurationOff}",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n4-on0.05-off0.10",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "4",
+        "minDurationOn": "0.05",
+        "minDurationOff": "0.10"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "0.5",
+            "--min-duration-on",
+            "{param.minDurationOn}",
+            "--min-duration-off",
+            "{param.minDurationOff}",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n5-on0.10-off0.20",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "5",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.20"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "0.5",
+            "--min-duration-on",
+            "{param.minDurationOn}",
+            "--min-duration-off",
+            "{param.minDurationOff}",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n6-on0.10-off0.20",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "6",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.20"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "0.5",
+            "--min-duration-on",
+            "{param.minDurationOn}",
+            "--min-duration-off",
+            "{param.minDurationOff}",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    }
+  ]
+}

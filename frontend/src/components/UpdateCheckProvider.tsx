@@ -24,6 +24,7 @@ interface UpdateCheckContextType {
 }
 
 const UpdateCheckContext = createContext<UpdateCheckContextType | undefined>(undefined);
+const STARTUP_UPDATE_WATCHDOG_MS = 12_000;
 
 export function UpdateCheckProvider({ children }: { children: React.ReactNode }) {
   const [showDialog, setShowDialog] = useState(false);
@@ -109,13 +110,31 @@ export function UpdateCheckProvider({ children }: { children: React.ReactNode })
     startupCheckStartedRef.current = true;
 
     let cancelled = false;
+    let watchdog: ReturnType<typeof window.setTimeout> | undefined;
 
     const runStartupCheck = async () => {
+      if (process.env.NODE_ENV === 'development') {
+        console.info('Skipping startup update check in development');
+        setStartupPhase('ready');
+        return;
+      }
+
       setStartupPhase('checking');
+      watchdog = window.setTimeout(() => {
+        if (!cancelled) {
+          console.warn('Startup update check timed out; continuing with current version');
+          setStartupPhase('ready');
+        }
+      }, STARTUP_UPDATE_WATCHDOG_MS);
+
       const info = await checkForUpdates(false, 'startup', 10_000);
 
       if (cancelled) {
         return;
+      }
+
+      if (watchdog) {
+        window.clearTimeout(watchdog);
       }
 
       if (!info?.available) {
@@ -127,6 +146,9 @@ export function UpdateCheckProvider({ children }: { children: React.ReactNode })
 
     return () => {
       cancelled = true;
+      if (watchdog) {
+        window.clearTimeout(watchdog);
+      }
     };
   }, [checkForUpdates]);
 

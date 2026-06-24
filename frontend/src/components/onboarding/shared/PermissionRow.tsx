@@ -18,7 +18,7 @@ export function PermissionRow({ icon, title, description, status, isPending = fa
   return (
     <div
       className={cn(
-        'flex items-center justify-between rounded-2xl border px-6 py-5',
+        'flex items-center justify-between gap-3 rounded-2xl border px-4 py-4 sm:px-6 sm:py-5',
         'transition-all duration-200',
         isAuthorized ? 'border-ink bg-sunken' : isDenied ? 'border-red-300 bg-red-50' : 'bg-surface border-border'
       )}
@@ -38,26 +38,26 @@ export function PermissionRow({ icon, title, description, status, isPending = fa
         {/* Title + Description */}
         <div className="min-w-0 flex-1">
           <div className="font-medium truncate text-neutral-900">{title}</div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground min-w-0">
             {isAuthorized ? (
-              <span className="text-green-600 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                Access Granted
+              <span className="text-green-600 flex items-center gap-1 min-w-0">
+                <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">Access Granted</span>
               </span>
             ) : isDenied ? (
-              <span className="text-red-500 flex items-center gap-1">
-                <XCircle className="w-3.5 h-3.5" />
-                Access Denied - Please grant in System Settings
+              <span className="text-red-500 flex items-start gap-1 min-w-0">
+                <XCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                <span className="break-words">Access Denied - Please grant in System Settings</span>
               </span>
             ) : (
-              <span>{description}</span>
+              <span className="break-words">{description}</span>
             )}
           </div>
         </div>
       </div>
 
       {/* Right side: Action button or checkmark */}
-      <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+      <div className="flex items-center gap-2 flex-shrink-0">
         {!isAuthorized && (
           <Button
             variant={isDenied ? "destructive" : "outline"}

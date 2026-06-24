@@ -90,9 +90,9 @@ export function SettingsModals({
                   <label className="block text-sm font-medium text-ink-2 mb-1">
                     Provider
                   </label>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     <select
-                      className="px-3 py-2 text-sm bg-surface border border-border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-clay focus:border-clay"
+                      className="min-w-0 px-3 py-2 text-sm bg-surface border border-border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-clay focus:border-clay"
                       value={modelConfig.provider}
                       onChange={(e) => {
                         const provider = e.target.value as ModelConfig['provider'];
@@ -112,7 +112,7 @@ export function SettingsModals({
                     </select>
 
                     <select
-                      className="flex-1 px-3 py-2 text-sm bg-surface border border-border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-clay focus:border-clay"
+                      className="flex-1 min-w-0 px-3 py-2 text-sm bg-surface border border-border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-clay focus:border-clay"
                       value={modelConfig.model}
                       onChange={(e) => setModelConfig((prev: ModelConfig) => ({ ...prev, model: e.target.value }))}
                     >
@@ -270,10 +270,10 @@ export function SettingsModals({
           </div>
 
           {/* Fixed Footer */}
-          <div className="p-6 pt-4 border-t border-border flex items-center justify-between">
+          <div className="p-6 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3">
             {/* Confidence Indicator Toggle */}
-            <div className="flex items-center gap-3">
-              <label className="relative inline-flex items-center cursor-pointer">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
                 <input
                   type="checkbox"
                   checked={showConfidenceIndicator}
@@ -282,7 +282,7 @@ export function SettingsModals({
                 />
                 <div className="w-11 h-6 bg-sunken peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-clay rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-clay"></div>
               </label>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-ink-2">Show Confidence Indicators</p>
                 <p className="text-xs text-ink-3">Display colored dots showing transcription confidence quality</p>
               </div>
@@ -290,7 +290,7 @@ export function SettingsModals({
 
             <button
               onClick={() => onClose('modelSelector')}
-              className="px-4 py-2 text-sm font-medium text-ink-2 bg-sunken rounded-md hover:bg-wash focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clay"
+              className="shrink-0 px-4 py-2 text-sm font-medium text-ink-2 bg-sunken rounded-md hover:bg-wash focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clay"
             >
               {messages.modelSelector ? 'Cancel' : 'Done'}
             </button>

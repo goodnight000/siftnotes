@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-06-21T22:05:00.000Z",
+  "corpusItem": {
+    "id": "public-ami-es2002a-270-390-separated-energy",
+    "category": "public-ami-4-speaker-overlap-separated-channel",
+    "audioPath": "../public-data/ami/ES2002a/ES2002a.270-390.Mix-Headset.16k.wav",
+    "durationSeconds": 120,
+    "sampleRate": 16000
+  },
+  "gates": {
+    "maxDefaultDer": 0.18,
+    "maxDefaultJer": 0.2,
+    "minDefaultRuntimeFactor": 1
+  },
+  "reference": {
+    "engine": "ami-manual-nxt",
+    "format": "rttm",
+    "path": "public-ami-es2002a-270-390.reference.rttm"
+  },
+  "transcripts": {
+    "path": "public-ami-es2002a-270-390.transcripts.json"
+  },
+  "candidates": [
+    {
+      "engine": "ami-separated-channel-energy",
+      "engineVersion": "threshold-0.015",
+      "format": "rttm",
+      "path": "../reports/public-ami-es2002a-270-390-separated-energy-output/ami-separated-channel-energy.rttm",
+      "run": {
+        "command": ".venv-diarization/bin/python",
+        "cwd": "../../..",
+        "args": [
+          "scripts/diarization-adapters/separated-channel-energy.py",
+          "--channel",
+          "AMI_A=docs/diarization-evaluation/public-data/ami/ES2002a/ES2002a.Headset-0.270-390.16k.wav",
+          "--channel",
+          "AMI_B=docs/diarization-evaluation/public-data/ami/ES2002a/ES2002a.Headset-1.270-390.16k.wav",
+          "--channel",
+          "AMI_C=docs/diarization-evaluation/public-data/ami/ES2002a/ES2002a.Headset-2.270-390.16k.wav",
+          "--channel",
+          "AMI_D=docs/diarization-evaluation/public-data/ami/ES2002a/ES2002a.Headset-3.270-390.16k.wav",
+          "--output",
+          "{outputPath}",
+          "--file-id",
+          "ES2002a",
+          "--threshold-ratio",
+          "0.015",
+          "--window-seconds",
+          "0.05",
+          "--min-duration",
+          "0.15",
+          "--min-gap",
+          "0.10",
+          "--stats-output",
+          "{statsPath}"
+        ]
+      },
+      "practical": {
+        "integration": "external-command",
+        "localProcessing": true,
+        "licenseUse": "unknown",
+        "installComplexity": "external_command"
+      }
+    }
+  ]
+}

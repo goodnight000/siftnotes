@@ -1,0 +1,119 @@
+{
+  "generatedAt": "2026-06-21T13:00:00.000Z",
+  "requiredCategories": [
+    "clean-2-speaker",
+    "3-5-speaker-meeting",
+    "noisy-poor-mic",
+    "overlap-heavy",
+    "system-audio-heavy",
+    "similar-voices-backchannels"
+  ],
+  "reportCount": 2,
+  "categoryCoverage": [
+    {
+      "category": "clean-2-speaker",
+      "status": "missing",
+      "itemIds": []
+    },
+    {
+      "category": "3-5-speaker-meeting",
+      "status": "missing",
+      "itemIds": []
+    },
+    {
+      "category": "noisy-poor-mic",
+      "status": "missing",
+      "itemIds": []
+    },
+    {
+      "category": "overlap-heavy",
+      "status": "labeled",
+      "itemIds": [
+        "synthetic-overlap"
+      ]
+    },
+    {
+      "category": "system-audio-heavy",
+      "status": "missing",
+      "itemIds": []
+    },
+    {
+      "category": "similar-voices-backchannels",
+      "status": "missing",
+      "itemIds": []
+    }
+  ],
+  "candidates": [
+    {
+      "engine": "pyannote-community-1",
+      "status": "fail",
+      "itemCount": 1,
+      "labeledItemCount": 1,
+      "unlabeledItemCount": 0,
+      "defaultPassCount": 0,
+      "optionalPassCount": 1,
+      "failCount": 0,
+      "meanDer": 0,
+      "maxDer": 0,
+      "meanJer": 0,
+      "maxJer": 0,
+      "meanRuntimeFactor": 0.8,
+      "maxModelSizeMb": null,
+      "maxPeakMemoryMb": null,
+      "blockers": [
+        "corpus:missing_category:clean-2-speaker",
+        "corpus:missing_category:3-5-speaker-meeting",
+        "corpus:missing_category:noisy-poor-mic",
+        "corpus:missing_category:system-audio-heavy",
+        "corpus:missing_category:similar-voices-backchannels",
+        "pyannote-community-1:missing_labeled_category:clean-2-speaker",
+        "pyannote-community-1:missing_labeled_category:3-5-speaker-meeting",
+        "pyannote-community-1:missing_labeled_category:noisy-poor-mic",
+        "pyannote-community-1:missing_labeled_category:system-audio-heavy",
+        "pyannote-community-1:missing_labeled_category:similar-voices-backchannels"
+      ]
+    },
+    {
+      "engine": "sherpa-onnx",
+      "status": "fail",
+      "itemCount": 2,
+      "labeledItemCount": 1,
+      "unlabeledItemCount": 1,
+      "defaultPassCount": 1,
+      "optionalPassCount": 0,
+      "failCount": 1,
+      "meanDer": 0.125,
+      "maxDer": 0.125,
+      "meanJer": 0.125,
+      "maxJer": 0.125,
+      "meanRuntimeFactor": 2.2,
+      "maxModelSizeMb": null,
+      "maxPeakMemoryMb": 512,
+      "blockers": [
+        "corpus:missing_category:clean-2-speaker",
+        "corpus:missing_category:3-5-speaker-meeting",
+        "corpus:missing_category:noisy-poor-mic",
+        "corpus:missing_category:system-audio-heavy",
+        "corpus:missing_category:similar-voices-backchannels",
+        "sherpa-onnx:missing_labeled_category:clean-2-speaker",
+        "sherpa-onnx:missing_labeled_category:3-5-speaker-meeting",
+        "sherpa-onnx:missing_labeled_category:noisy-poor-mic",
+        "sherpa-onnx:missing_labeled_category:system-audio-heavy",
+        "sherpa-onnx:missing_labeled_category:similar-voices-backchannels",
+        "sherpa-onnx:synthetic-unlabeled:missing_reference_labels"
+      ]
+    }
+  ],
+  "decision": {
+    "status": "no_candidate_passed",
+    "defaultCandidate": null,
+    "optionalCandidate": null,
+    "blockers": [
+      "corpus:missing_category:clean-2-speaker",
+      "corpus:missing_category:3-5-speaker-meeting",
+      "corpus:missing_category:noisy-poor-mic",
+      "corpus:missing_category:system-audio-heavy",
+      "corpus:missing_category:similar-voices-backchannels"
+    ]
+  }
+}

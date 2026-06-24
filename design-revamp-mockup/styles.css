@@ -1,0 +1,128 @@
+/* SiftNotes revamp mockup v2 — restrained re-skin of the CURRENT app.
+   Ports the Sift v3 token layer (warm paper, fonts, one accent). Throwaway. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap");
+
+@font-face { font-family:"Avio Sans"; src:url("./fonts/AvioSans-Regular.woff2") format("woff2"); font-weight:400; }
+@font-face { font-family:"Avio Sans"; src:url("./fonts/AvioSans-Medium.woff2") format("woff2"); font-weight:500; }
+@font-face { font-family:"Avio Sans"; src:url("./fonts/AvioSans-SemiBold.woff2") format("woff2"); font-weight:600; }
+@font-face { font-family:"Avio Sans"; src:url("./fonts/AvioSans-Bold.woff2") format("woff2"); font-weight:700; }
+@font-face { font-family:"Commit Mono"; src:url("./fonts/CommitMono-Regular.woff2") format("woff2"); font-weight:400; }
+@font-face { font-family:"Commit Mono"; src:url("./fonts/CommitMono-Medium.woff2") format("woff2"); font-weight:500; }
+
+:root{
+  /* Cool + clay (chosen direction C) with Avio Sans body */
+  --paper:#fbfbfa; --surface:#ffffff; --sunken:#f1f1ef; --border:#e4e3df;
+  --ink:#1a1a18; --ink-2:#54524d; --ink-3:#83817a;
+  --accent:#9a3412; --accent-ink:#fff; --wash:#f1e7e2; --marker:#f3d9a6;
+  --rec:#e0564b;
+  --font-display:"Space Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-sans:"Avio Sans",-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:"Commit Mono",ui-monospace,SFMono-Regular,monospace;
+  --shadow-sm:0 1px 2px rgba(28,25,22,.05);
+  --shadow-pill:0 4px 16px -4px rgba(28,25,22,.18), 0 1px 3px rgba(28,25,22,.08);
+  --shadow-pop:0 8px 30px -8px rgba(28,25,22,.22), 0 1px 2px rgba(28,25,22,.08);
+}
+[data-theme="dark"]{
+  --paper:#16140f; --surface:#1e1b15; --sunken:#262219; --border:#322d24;
+  --ink:#ece6db; --ink-2:#b3ab9c; --ink-3:#8e8676;
+  --accent:#e0922f; --accent-ink:#1c1916; --wash:rgba(224,146,47,.16); --marker:rgba(246,206,107,.3);
+  --rec:#e0675e; --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box; border-color:var(--border);}
+html,body{margin:0;padding:0;}
+body{font-family:var(--font-sans); font-size:15px; line-height:1.55; background:var(--paper); color:var(--ink); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; letter-spacing:-.02em; color:var(--ink); margin:0;}
+
+/* window chrome */
+.win{width:1280px; height:820px; background:var(--paper); display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--shadow-sm);}
+.titlebar{height:38px; flex:none; display:flex; align-items:center; gap:8px; padding:0 16px; border-bottom:1px solid var(--border); background:var(--paper);}
+.lights{display:flex; gap:8px;}
+.lights i{width:12px;height:12px;border-radius:50%;display:block;}
+.lights .r{background:#ff5f57;} .lights .y{background:#febc2e;} .lights .g{background:#28c840;}
+.titlebar .name{font-weight:600; font-size:13px; color:var(--ink); margin-left:6px; font-family:var(--font-display);}
+.body{flex:1; display:flex; min-height:0;}
+
+/* slim rail (matches current: brand, home, import, settings) */
+.rail{width:74px; flex:none; border-right:1px solid var(--border); background:var(--paper); display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 0;}
+.brand{width:42px; height:42px; border-radius:11px; background:#1f2430; color:#fff; display:grid; place-items:center; font-family:var(--font-display); font-weight:700; font-size:22px; margin-bottom:10px;}
+.ri{width:44px; height:44px; border-radius:11px; display:grid; place-items:center; color:var(--ink-3); cursor:pointer;}
+.ri:hover{background:var(--sunken); color:var(--ink-2);}
+.ri.active{background:var(--wash); color:var(--accent);}
+.ri svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.rail .spacer{flex:1;}
+
+/* content area */
+.main{flex:1; position:relative; display:flex; flex-direction:column; min-width:0; background:var(--paper);}
+/* collapse chevron sitting on the content edge, like current */
+.chev{position:absolute; left:-14px; top:18px; width:30px;height:30px;border-radius:50%; background:var(--surface); border:1px solid var(--border); display:grid; place-items:center; color:var(--ink-3); box-shadow:var(--shadow-sm); z-index:5;}
+.chev svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;}
+
+/* ---------- Home / empty ---------- */
+.empty{flex:1; display:grid; place-items:center; text-align:center;}
+.empty h1{font-size:30px; margin-bottom:10px;}
+.empty p{color:var(--ink-3); font-size:16px; margin:0;}
+
+/* bottom record pill */
+.pillwrap{position:absolute; left:0; right:0; bottom:42px; display:flex; justify-content:center;}
+.pill{background:var(--surface); border:1px solid var(--border); border-radius:999px; box-shadow:var(--shadow-pill); display:flex; align-items:center; gap:14px; padding:9px 18px 9px 9px;}
+.recbtn{width:52px;height:52px;border-radius:50%;background:var(--rec); display:grid; place-items:center; box-shadow:0 2px 8px -2px rgba(224,86,75,.6);}
+.recbtn svg{width:22px;height:22px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.recbtn.square svg rect{fill:#fff;stroke:none;}
+.pill .dots{color:var(--ink-3); font-size:22px; letter-spacing:2px; padding-right:6px; cursor:pointer;}
+.pill .timer{font-family:var(--font-mono); font-size:15px; color:var(--ink); min-width:54px;}
+.pill .live{width:9px;height:9px;border-radius:50%;background:var(--rec);}
+
+/* ---------- live transcript (home recording) ---------- */
+.stream{flex:1; overflow:auto; padding:34px 0 120px;}
+.stream-inner{max-width:720px; margin:0 auto; padding:0 24px;}
+.tline{display:flex; gap:16px; padding:9px 0; align-items:baseline;}
+.tstamp{font-family:var(--font-mono); font-size:12px; color:var(--ink-3); flex:none; width:48px; padding-top:2px;}
+.ttext{font-size:16.5px; line-height:1.7; color:var(--ink);}
+
+/* ---------- Meeting view ---------- */
+/* one calm header — nothing clips: title left, few actions right */
+.mhead{flex:none; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:16px 26px; border-bottom:1px solid var(--border);}
+.mhead .title{font-family:var(--font-display); font-weight:600; font-size:21px; letter-spacing:-.02em;}
+.mhead .sub{font-size:12.5px; color:var(--ink-3); margin-top:3px;}
+.mhead .acts{display:flex; align-items:center; gap:8px; flex:none;}
+
+.btn{font-family:var(--font-sans); font-size:13px; font-weight:500; border-radius:9px; padding:8px 13px; cursor:pointer; display:inline-flex; align-items:center; gap:7px; border:1px solid transparent; line-height:1; white-space:nowrap;}
+.btn svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.btn-primary{background:var(--ink); color:var(--paper);}
+.btn-ghost{background:transparent; color:var(--ink-2);}
+.btn-ghost:hover{background:var(--sunken);}
+.btn-out{background:var(--surface); color:var(--ink-2); border-color:var(--border);}
+.iconbtn{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:var(--ink-3);cursor:pointer;border:1px solid transparent;}
+.iconbtn:hover{background:var(--sunken); color:var(--ink-2);}
+.iconbtn svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+.cols{flex:1; display:flex; min-height:0;}
+.tcol{width:42%; min-width:0; border-right:1px solid var(--border); display:flex; flex-direction:column;}
+.scol{flex:1; min-width:0; display:flex; flex-direction:column;}
+.colbar{flex:none; display:flex; align-items:center; justify-content:space-between; padding:13px 24px 11px;}
+.colbar .lbl{font-size:13px; font-weight:600; color:var(--ink-2);}
+.colbar .tools{display:flex; align-items:center; gap:4px;}
+
+.tscroll{flex:1; overflow:auto; padding:2px 24px 16px;}
+.tscroll .tline{gap:13px;}
+.tscroll .ttext{font-size:15px; line-height:1.6;}
+.ctx{flex:none; margin:0 18px 18px; border:1px solid var(--border); border-radius:11px; background:var(--surface); padding:13px 14px; color:var(--ink-3); font-size:13.5px; line-height:1.5;}
+
+.sscroll{flex:1; overflow:auto; padding:6px 30px 40px;}
+.sec{margin:0 0 22px;}
+.sec h3{font-size:17px; margin-bottom:7px;}
+.sec p{font-size:16px; line-height:1.7; color:var(--ink-2); margin:0;}
+.sec p.none{color:var(--ink-3); font-style:normal;}
+.sec ul{margin:0; padding:0; list-style:none;}
+.sec li{font-size:16px; line-height:1.7; color:var(--ink); display:flex; gap:11px; padding:3px 0;}
+.sec li .mk{flex:none; margin-top:.62em; width:5px;height:5px;border-radius:50%; background:var(--ink-3);}
+.sec li.task .box{width:16px;height:16px;border:1.5px solid var(--border); border-radius:5px; flex:none; margin-top:2px;}
+.sec li .who{font-weight:600; margin-right:5px;}
+
+/* overflow menu (shown open in mock) */
+.menu{position:absolute; right:26px; top:60px; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-pop); padding:6px; width:208px; z-index:10;}
+.menu .mi{display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:8px; font-size:13.5px; color:var(--ink-2); cursor:pointer;}
+.menu .mi:hover{background:var(--sunken);}
+.menu .mi svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.menu .sep{height:1px; background:var(--border); margin:5px 8px;}

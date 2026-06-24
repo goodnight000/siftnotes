@@ -34,14 +34,14 @@ export function BetaSettings() {
           key={featureKey}
           className="bg-surface rounded-lg border border-border p-6 shadow-sm"
         >
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <FlaskConical className="h-5 w-5 text-ink-2" />
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <FlaskConical className="h-5 w-5 text-ink-2 shrink-0" />
                 <h3 className="text-lg font-semibold text-ink">
                   {BETA_FEATURE_NAMES[featureKey]}
                 </h3>
-                <span className="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                <span className="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full shrink-0">
                   BETA
                 </span>
               </div>
@@ -50,7 +50,7 @@ export function BetaSettings() {
               </p>
             </div>
 
-            <div className="ml-6">
+            <div className="shrink-0">
               <Switch
                 checked={betaFeatures[featureKey]}
                 onCheckedChange={(checked) => toggleBetaFeature(featureKey, checked)}

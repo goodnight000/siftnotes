@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-06-21T12:00:00.000Z",
+  "corpusItem": {
+    "id": "synthetic-overlap",
+    "category": "overlap-heavy",
+    "audioPath": "docs/diarization-evaluation/fixtures/synthetic-overlap.wav"
+  },
+  "gates": {
+    "maxDefaultDer": 0.18,
+    "maxDefaultJer": 0.2,
+    "minDefaultRuntimeFactor": 1
+  },
+  "reference": {
+    "engine": "human-rttm",
+    "format": "rttm",
+    "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/synthetic-overlap.reference.rttm"
+  },
+  "transcripts": {
+    "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/synthetic-overlap.transcripts.json"
+  },
+  "candidates": [
+    {
+      "engine": "sherpa-onnx::cluster-threshold-0.35",
+      "format": "rttm",
+      "path": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/synthetic-overlap.sherpa-onnx-preserve-overlap.rttm",
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2.1
+      }
+    }
+  ]
+}

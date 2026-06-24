@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-06-21T18:10:00.000Z",
+  "baseConfig": "public-ami-es2002a-270-390.config.json",
+  "outputDir": "../reports/public-ami-es2002a-270-390-sweep-output",
+  "variants": [
+    {
+      "id": "n4-threshold-0.35",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "4",
+        "clusterThreshold": "0.35"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "{param.clusterThreshold}",
+            "--min-duration-on",
+            "0.3",
+            "--min-duration-off",
+            "0.5",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n4-threshold-0.50",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "4",
+        "clusterThreshold": "0.50"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "{param.clusterThreshold}",
+            "--min-duration-on",
+            "0.3",
+            "--min-duration-off",
+            "0.5",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n0-threshold-0.30",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "0",
+        "clusterThreshold": "0.30"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "{param.clusterThreshold}",
+            "--min-duration-on",
+            "0.3",
+            "--min-duration-off",
+            "0.5",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n0-threshold-0.50",
+      "candidate": "sherpa-onnx",
+      "parameters": {
+        "numSpeakers": "0",
+        "clusterThreshold": "0.50"
+      },
+      "patch": {
+        "engine": "sherpa-onnx::{variantId}",
+        "path": "../rttm/{variantId}.rttm",
+        "run": {
+          "args": [
+            "scripts/diarization-adapters/sherpa-onnx.py",
+            "--audio",
+            "{audioPath}",
+            "--output",
+            "{outputPath}",
+            "--segmentation-model",
+            "models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+            "--embedding-model",
+            "models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+            "--num-speakers",
+            "{param.numSpeakers}",
+            "--cluster-threshold",
+            "{param.clusterThreshold}",
+            "--min-duration-on",
+            "0.3",
+            "--min-duration-off",
+            "0.5",
+            "--stats-output",
+            "{statsPath}"
+          ]
+        }
+      }
+    }
+  ]
+}

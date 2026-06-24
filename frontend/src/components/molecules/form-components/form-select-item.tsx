@@ -43,7 +43,7 @@ export const FormSelectItem = ({
   defaultValue,
 }: ISelectItemProps) => {
   return (
-    <div>
+    <div className="min-w-0">
       <FormField
         control={control} // Use the control prop passed from the parent
         name={name}

@@ -1,0 +1,154 @@
+{
+  "generatedAt": "2026-06-21T19:00:00.000Z",
+  "baseConfig": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/public-ami-es2002a-270-390.config.json",
+  "outputDir": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output",
+  "bestDefaultVariant": null,
+  "bestOptionalVariant": null,
+  "variants": [
+    {
+      "id": "n4-on0.10-off0.80",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n4-on0.10-off0.80",
+      "parameters": {
+        "numSpeakers": "4",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.80"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/configs/n4-on0.10-off0.80.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/reports/n4-on0.10-off0.80.report.json",
+      "der": 0.388921,
+      "jer": 0.521543,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 268.859375,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 38.0592155,
+        "runtimeFactor": 3.1529814375706193
+      }
+    },
+    {
+      "id": "n4-on0.10-off0.20",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n4-on0.10-off0.20",
+      "parameters": {
+        "numSpeakers": "4",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.20"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/configs/n4-on0.10-off0.20.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/reports/n4-on0.10-off0.20.report.json",
+      "der": 0.397124,
+      "jer": 0.526916,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 263,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 35.634779583,
+        "runtimeFactor": 3.367496625606952
+      }
+    },
+    {
+      "id": "n4-on0.05-off0.10",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n4-on0.05-off0.10",
+      "parameters": {
+        "numSpeakers": "4",
+        "minDurationOn": "0.05",
+        "minDurationOff": "0.10"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/configs/n4-on0.05-off0.10.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/reports/n4-on0.05-off0.10.report.json",
+      "der": 0.397732,
+      "jer": 0.527623,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 263.953125,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 38.545867,
+        "runtimeFactor": 3.1131742347370213
+      }
+    },
+    {
+      "id": "n5-on0.10-off0.20",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n5-on0.10-off0.20",
+      "parameters": {
+        "numSpeakers": "5",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.20"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/configs/n5-on0.10-off0.20.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/reports/n5-on0.10-off0.20.report.json",
+      "der": 0.407953,
+      "jer": 0.528931,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 292.53125,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 34.55605175,
+        "runtimeFactor": 3.472618945826182
+      }
+    },
+    {
+      "id": "n6-on0.10-off0.20",
+      "candidate": "sherpa-onnx",
+      "engine": "sherpa-onnx::n6-on0.10-off0.20",
+      "parameters": {
+        "numSpeakers": "6",
+        "minDurationOn": "0.10",
+        "minDurationOff": "0.20"
+      },
+      "configPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/configs/n6-on0.10-off0.20.config.json",
+      "reportPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/public-ami-es2002a-270-390-duration-sweep-output/reports/n6-on0.10-off0.20.report.json",
+      "der": 0.525807,
+      "jer": 0.605837,
+      "gate": "fail",
+      "gateReasons": [
+        "der_above_default_gate",
+        "jer_above_default_gate"
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 317.828125,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 33.785233541,
+        "runtimeFactor": 3.5518475802268545
+      }
+    }
+  ]
+}

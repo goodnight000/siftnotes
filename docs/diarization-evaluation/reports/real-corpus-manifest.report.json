@@ -1,0 +1,144 @@
+{
+  "requiredCategories": [
+    "clean-2-speaker",
+    "3-5-speaker-meeting",
+    "noisy-poor-mic",
+    "overlap-heavy",
+    "system-audio-heavy",
+    "similar-voices-backchannels"
+  ],
+  "itemCount": 6,
+  "approvedItemCount": 0,
+  "pendingApprovalItemCount": 0,
+  "labeledItemCount": 0,
+  "transcriptReadyItemCount": 0,
+  "categoryCoverage": [
+    {
+      "category": "clean-2-speaker",
+      "status": "pending_approval",
+      "itemIds": [
+        "clean-2-speaker-slot-001"
+      ],
+      "approvedItemIds": [],
+      "labeledItemIds": [],
+      "transcriptItemIds": [],
+      "blockers": [
+        "category:clean-2-speaker:no_approved_audio",
+        "category:clean-2-speaker:no_labeled_reference",
+        "category:clean-2-speaker:no_approved_transcripts",
+        "item:clean-2-speaker-slot-001:approval_not_requested"
+      ]
+    },
+    {
+      "category": "3-5-speaker-meeting",
+      "status": "pending_approval",
+      "itemIds": [
+        "3-5-speaker-meeting-slot-001"
+      ],
+      "approvedItemIds": [],
+      "labeledItemIds": [],
+      "transcriptItemIds": [],
+      "blockers": [
+        "category:3-5-speaker-meeting:no_approved_audio",
+        "category:3-5-speaker-meeting:no_labeled_reference",
+        "category:3-5-speaker-meeting:no_approved_transcripts",
+        "item:3-5-speaker-meeting-slot-001:approval_not_requested"
+      ]
+    },
+    {
+      "category": "noisy-poor-mic",
+      "status": "pending_approval",
+      "itemIds": [
+        "noisy-poor-mic-slot-001"
+      ],
+      "approvedItemIds": [],
+      "labeledItemIds": [],
+      "transcriptItemIds": [],
+      "blockers": [
+        "category:noisy-poor-mic:no_approved_audio",
+        "category:noisy-poor-mic:no_labeled_reference",
+        "category:noisy-poor-mic:no_approved_transcripts",
+        "item:noisy-poor-mic-slot-001:approval_not_requested"
+      ]
+    },
+    {
+      "category": "overlap-heavy",
+      "status": "pending_approval",
+      "itemIds": [
+        "overlap-heavy-slot-001"
+      ],
+      "approvedItemIds": [],
+      "labeledItemIds": [],
+      "transcriptItemIds": [],
+      "blockers": [
+        "category:overlap-heavy:no_approved_audio",
+        "category:overlap-heavy:no_labeled_reference",
+        "category:overlap-heavy:no_approved_transcripts",
+        "item:overlap-heavy-slot-001:approval_not_requested"
+      ]
+    },
+    {
+      "category": "system-audio-heavy",
+      "status": "pending_approval",
+      "itemIds": [
+        "system-audio-heavy-slot-001"
+      ],
+      "approvedItemIds": [],
+      "labeledItemIds": [],
+      "transcriptItemIds": [],
+      "blockers": [
+        "category:system-audio-heavy:no_approved_audio",
+        "category:system-audio-heavy:no_labeled_reference",
+        "category:system-audio-heavy:no_approved_transcripts",
+        "item:system-audio-heavy-slot-001:approval_not_requested"
+      ]
+    },
+    {
+      "category": "similar-voices-backchannels",
+      "status": "pending_approval",
+      "itemIds": [
+        "similar-voices-backchannels-slot-001"
+      ],
+      "approvedItemIds": [],
+      "labeledItemIds": [],
+      "transcriptItemIds": [],
+      "blockers": [
+        "category:similar-voices-backchannels:no_approved_audio",
+        "category:similar-voices-backchannels:no_labeled_reference",
+        "category:similar-voices-backchannels:no_approved_transcripts",
+        "item:similar-voices-backchannels-slot-001:approval_not_requested"
+      ]
+    }
+  ],
+  "readiness": {
+    "unlabeledBakeoffReady": false,
+    "labeledDecisionReady": false,
+    "transcriptReconciliationReady": false,
+    "blockers": [
+      "category:clean-2-speaker:no_approved_audio",
+      "category:clean-2-speaker:no_labeled_reference",
+      "category:clean-2-speaker:no_approved_transcripts",
+      "item:clean-2-speaker-slot-001:approval_not_requested",
+      "category:3-5-speaker-meeting:no_approved_audio",
+      "category:3-5-speaker-meeting:no_labeled_reference",
+      "category:3-5-speaker-meeting:no_approved_transcripts",
+      "item:3-5-speaker-meeting-slot-001:approval_not_requested",
+      "category:noisy-poor-mic:no_approved_audio",
+      "category:noisy-poor-mic:no_labeled_reference",
+      "category:noisy-poor-mic:no_approved_transcripts",
+      "item:noisy-poor-mic-slot-001:approval_not_requested",
+      "category:overlap-heavy:no_approved_audio",
+      "category:overlap-heavy:no_labeled_reference",
+      "category:overlap-heavy:no_approved_transcripts",
+      "item:overlap-heavy-slot-001:approval_not_requested",
+      "category:system-audio-heavy:no_approved_audio",
+      "category:system-audio-heavy:no_labeled_reference",
+      "category:system-audio-heavy:no_approved_transcripts",
+      "item:system-audio-heavy-slot-001:approval_not_requested",
+      "category:similar-voices-backchannels:no_approved_audio",
+      "category:similar-voices-backchannels:no_labeled_reference",
+      "category:similar-voices-backchannels:no_approved_transcripts",
+      "item:similar-voices-backchannels-slot-001:approval_not_requested"
+    ]
+  }
+}

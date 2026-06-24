@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-06-21T16:00:00.000Z",
+  "manifestPath": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/fixtures/real-corpus.manifest.json",
+  "outputDir": "/Users/charleszheng/Desktop/Ideas/sift-notes/docs/diarization-evaluation/reports/real-corpus-configs",
+  "includePyannote": true,
+  "generated": [],
+  "skipped": [
+    {
+      "id": "clean-2-speaker-slot-001",
+      "category": "clean-2-speaker",
+      "reason": "approval_not_requested"
+    },
+    {
+      "id": "3-5-speaker-meeting-slot-001",
+      "category": "3-5-speaker-meeting",
+      "reason": "approval_not_requested"
+    },
+    {
+      "id": "noisy-poor-mic-slot-001",
+      "category": "noisy-poor-mic",
+      "reason": "approval_not_requested"
+    },
+    {
+      "id": "overlap-heavy-slot-001",
+      "category": "overlap-heavy",
+      "reason": "approval_not_requested"
+    },
+    {
+      "id": "system-audio-heavy-slot-001",
+      "category": "system-audio-heavy",
+      "reason": "approval_not_requested"
+    },
+    {
+      "id": "similar-voices-backchannels-slot-001",
+      "category": "similar-voices-backchannels",
+      "reason": "approval_not_requested"
+    }
+  ]
+}

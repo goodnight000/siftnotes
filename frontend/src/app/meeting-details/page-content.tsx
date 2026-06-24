@@ -256,14 +256,14 @@ export default function PageContent({
           value={meetingData.project}
           onChange={(event) => meetingData.setProject(event.target.value)}
           placeholder="Project / folder"
-          className="h-8 w-48 text-sm"
+          className="h-8 min-w-0 flex-1 basis-40 text-sm sm:max-w-48"
           aria-label="Meeting project or folder"
         />
         <Input
           value={meetingData.tagsText}
           onChange={(event) => meetingData.setTagsText(event.target.value)}
           placeholder="Tags, comma separated"
-          className="h-8 min-w-64 flex-1 text-sm"
+          className="h-8 min-w-0 flex-[2] basis-48 text-sm"
           aria-label="Meeting tags"
         />
         <Button

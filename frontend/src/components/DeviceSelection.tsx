@@ -225,9 +225,9 @@ export function DeviceSelection({ selectedDevices, onDeviceChange, disabled = fa
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-900">Audio Devices</h4>
-        <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <h4 className="text-sm font-medium text-gray-900 min-w-0 truncate">Audio Devices</h4>
+        <div className="flex items-center space-x-2 shrink-0">
           {/* TODO: Monitoring */}
           {/* <button */}
           {/*   onClick={toggleAudioLevelMonitoring} */}
@@ -297,9 +297,9 @@ export function DeviceSelection({ selectedDevices, onDeviceChange, disabled = fa
               {inputDevices.map((device) => {
                 const levelData = audioLevels.get(device.name);
                 return (
-                  <div key={`level-${device.name}`} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600 truncate max-w-[200px]">
+                  <div key={`level-${device.name}`} className="space-y-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                      <span className="text-xs text-gray-600 truncate min-w-0 flex-1">
                         {device.name}
                       </span>
                       {levelData && (

@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-06-21T14:30:00.000Z",
+  "checks": [
+    {
+      "id": "pyannote-community-1-python-dependencies",
+      "kind": "command",
+      "command": ".venv-diarization/bin/python",
+      "args": [
+        "scripts/diarization-adapters/pyannote-community-1.py",
+        "--check-dependencies"
+      ],
+      "cwd": "../../..",
+      "required": true
+    },
+    {
+      "id": "sherpa-onnx-python-dependencies",
+      "kind": "command",
+      "command": ".venv-diarization/bin/python",
+      "args": [
+        "scripts/diarization-adapters/sherpa-onnx.py",
+        "--check-dependencies"
+      ],
+      "cwd": "../../..",
+      "required": true
+    },
+    {
+      "id": "pyannote-community-1-model-access",
+      "kind": "command",
+      "command": ".venv-diarization/bin/python",
+      "args": [
+        "scripts/diarization-adapters/pyannote-community-1.py",
+        "--check-model-access"
+      ],
+      "cwd": "../../..",
+      "required": true
+    },
+    {
+      "id": "pyannote-community-1-local-model-mirror",
+      "kind": "file",
+      "path": "../../../models/pyannote/speaker-diarization-community-1",
+      "required": false
+    },
+    {
+      "id": "sherpa-onnx-segmentation-model",
+      "kind": "file",
+      "path": "../../../models/sherpa-onnx-pyannote-segmentation-3-0/model.onnx",
+      "required": true
+    },
+    {
+      "id": "sherpa-onnx-embedding-model",
+      "kind": "file",
+      "path": "../../../models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx",
+      "required": true
+    },
+    {
+      "id": "sherpa-onnx-command",
+      "kind": "command",
+      "command": "sherpa-onnx",
+      "args": [
+        "--help"
+      ],
+      "cwd": "../../..",
+      "required": false
+    }
+  ]
+}

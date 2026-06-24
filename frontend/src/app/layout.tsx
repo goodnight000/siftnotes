@@ -298,7 +298,7 @@ export default function RootLayout({
                               {showOnboarding ? (
                                 <OnboardingFlow onComplete={handleOnboardingComplete} />
                               ) : (
-                                <div className="flex">
+                                <div className="flex w-screen max-w-full overflow-x-hidden">
                                   <Sidebar />
                                   <MainContent>{children}</MainContent>
                                 </div>

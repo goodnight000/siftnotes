@@ -1,11 +1,17 @@
 {
   "name": "Standard Meeting Notes",
-  "description": "General meeting notes focused on outcomes, decisions, action items, and follow-ups.",
+  "description": "Detailed meeting brief focused on timeline, discussion depth, decisions, action items, and follow-ups.",
   "sections": [
     {
       "title": "Summary",
-      "instruction": "Provide a concise executive summary of the meeting, emphasizing outcomes and unresolved context.",
+      "instruction": "Provide a detailed executive summary of what was discussed, why it mattered, important context, outcomes, and unresolved context. Prefer 2-4 substantive paragraphs over generic bullets.",
       "format": "paragraph"
+    },
+    {
+      "title": "Timeline",
+      "instruction": "List the major discussion moments chronologically using recording-relative timestamps from transcript prefixes such as [03:14]. Capture topic shifts, decisions as they emerged, notable disagreements, risks raised, and transitions between agenda items.",
+      "format": "list",
+      "item_format": "| **Time** | **Topic** | **What Happened** | **Why It Mattered** |\n| --- | --- | --- | --- |"
     },
     {
       "title": "Decisions",

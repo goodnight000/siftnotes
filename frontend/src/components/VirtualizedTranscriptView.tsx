@@ -96,13 +96,13 @@ const TranscriptSegment = memo(function TranscriptSegment({
                         )}
                     </TooltipContent>
                 </Tooltip>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     {isStreaming ? (
                         <div className="bg-sunken border border-border rounded-lg px-3 py-2">
-                            <p className="text-base text-ink leading-relaxed">{displayText}</p>
+                            <p className="text-base text-ink leading-relaxed break-words">{displayText}</p>
                         </div>
                     ) : (
-                        <p className="text-base text-ink leading-relaxed">{displayText}</p>
+                        <p className="text-base text-ink leading-relaxed break-words">{displayText}</p>
                     )}
                 </div>
             </div>

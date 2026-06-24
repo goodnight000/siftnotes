@@ -273,7 +273,7 @@ export function SummaryPanel({
   const isDirty = isTitleDirty || (summaryRef.current?.isDirty || false);
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col bg-paper overflow-hidden">
+    <div className="flex-1 min-w-0 md:min-w-[360px] flex flex-col bg-paper overflow-hidden">
       {/* Header / toolbar - only show when summary exists */}
       {aiSummary && !isSummaryLoading && (
         <div className="no-drag flex items-center justify-between gap-6 border-b border-border px-6 py-4">
@@ -501,7 +501,7 @@ export function SummaryPanel({
           />
         </div>
       ) : transcripts?.length > 0 && (
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden min-h-0">
           {summaryResponse && (
             <div className="fixed bottom-0 left-0 right-0 bg-surface shadow-lg p-4 max-h-1/3 overflow-y-auto">
               <h3 className="text-lg font-display text-ink mb-2">Meeting Summary</h3>
@@ -547,7 +547,7 @@ export function SummaryPanel({
               ) : null}
             </div>
           )}
-          <div className="p-6 w-full">
+          <div className="p-6 w-full min-w-0">
             <BlockNoteSummaryView
               ref={summaryRef}
               summaryData={aiSummary}

@@ -17,6 +17,10 @@ interface MeetingDetailsResponse {
   updated_at: string;
   transcripts: Transcript[];
   folder_path?: string;
+  project?: string | null;
+  tags: string[];
+  is_pinned: boolean;
+  is_archived: boolean;
 }
 
 function MeetingDetailsContent() {
@@ -134,10 +138,23 @@ function MeetingDetailsContent() {
         updated_at: metadata.updated_at,
         transcripts: transcripts, // Paginated transcripts from hook
         folder_path: metadata.folder_path, // For retranscription feature
+        project: metadata.project ?? null,
+        tags: metadata.tags ?? [],
+        is_pinned: metadata.is_pinned,
+        is_archived: metadata.is_archived,
       });
 
       // Sync with sidebar context
-      setCurrentMeeting({ id: metadata.id, title: metadata.title });
+      setCurrentMeeting({
+        id: metadata.id,
+        title: metadata.title,
+        created_at: metadata.created_at,
+        updated_at: metadata.updated_at,
+        project: metadata.project ?? null,
+        tags: metadata.tags ?? [],
+        is_pinned: metadata.is_pinned,
+        is_archived: metadata.is_archived,
+      });
     }
   }, [metadata, transcripts, meetingId, setCurrentMeeting]);
 

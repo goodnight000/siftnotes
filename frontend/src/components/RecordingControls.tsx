@@ -341,12 +341,12 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col space-y-2">
-        <div className="flex items-center space-x-2 bg-surface rounded-full shadow-lg px-4 py-2">
+      <div className="flex flex-col space-y-2 min-w-0 max-w-full">
+        <div className="flex items-center space-x-2 bg-surface rounded-full shadow-lg px-4 py-2 min-w-0 max-w-full">
           {isProcessing && !isParentProcessing ? (
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-ink"></div>
-              <span className="text-sm text-ink-2">Processing recording...</span>
+            <div className="flex items-center space-x-2 min-w-0">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-ink shrink-0"></div>
+              <span className="text-sm text-ink-2 min-w-0 truncate">Processing recording...</span>
             </div>
           ) : (
             <>
@@ -354,32 +354,32 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                 <>
                   <button
                     onClick={handleStartRecording}
-                    className="w-10 h-10 flex items-center justify-center bg-rec rounded-full text-white hover:opacity-90 transition-opacity"
+                    className="w-10 h-10 shrink-0 flex items-center justify-center bg-rec rounded-full text-white hover:opacity-90 transition-opacity"
                   >
                     <Mic size={16} />
                   </button>
 
-                  <div className="w-px h-6 bg-border mx-1" />
+                  <div className="w-px h-6 bg-border mx-1 shrink-0" />
 
-                  <div className="flex items-center space-x-1 mx-2">
-                    <div className="font-mono text-sm text-ink min-w-[40px]">
+                  <div className="flex items-center space-x-1 mx-2 min-w-0">
+                    <div className="font-mono text-sm text-ink min-w-[40px] shrink-0">
                       {formatTime(currentTime)}
                     </div>
                     <div
-                      className="relative w-24 h-1 bg-sunken rounded-full"
+                      className="relative w-24 min-w-0 flex-1 h-1 bg-sunken rounded-full"
                     >
                       <div
                         className="absolute h-full bg-clay rounded-full"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
-                    <div className="font-mono text-sm text-ink min-w-[40px]">
+                    <div className="font-mono text-sm text-ink min-w-[40px] shrink-0">
                       {formatTime(duration)}
                     </div>
                   </div>
 
                   <button
-                    className="w-10 h-10 flex items-center justify-center bg-sunken rounded-full text-ink-3 cursor-not-allowed"
+                    className="w-10 h-10 shrink-0 flex items-center justify-center bg-sunken rounded-full text-ink-3 cursor-not-allowed"
                     disabled
                   >
                     <Play size={16} />
@@ -397,7 +397,7 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                             handleStartRecording();
                           }}
                           disabled={isStarting || isProcessing || isRecordingDisabled || isValidatingModel}
-                          className={`w-12 h-12 flex items-center justify-center ${isStarting || isProcessing || isValidatingModel ? 'bg-ink-3' : 'bg-rec hover:opacity-90'
+                          className={`w-12 h-12 shrink-0 flex items-center justify-center ${isStarting || isProcessing || isValidatingModel ? 'bg-ink-3' : 'bg-rec hover:opacity-90'
                             } rounded-full text-white transition-opacity relative`}
                         >
                           {isValidatingModel ? (
@@ -427,7 +427,7 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                               }
                             }}
                             disabled={isPausing || isResuming || isStopping}
-                            className={`w-10 h-10 flex items-center justify-center ${isPausing || isResuming || isStopping
+                            className={`w-10 h-10 shrink-0 flex items-center justify-center ${isPausing || isResuming || isStopping
                               ? 'bg-sunken border-2 border-border text-ink-3'
                               : 'bg-surface border-2 border-border text-ink-2 hover:bg-sunken'
                               } rounded-full transition-colors relative`}
@@ -453,7 +453,7 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                               handleStopRecording();
                             }}
                             disabled={isStopping || isPausing || isResuming}
-                            className={`w-10 h-10 flex items-center justify-center ${isStopping || isPausing || isResuming ? 'bg-ink-3' : 'bg-rec hover:opacity-90'
+                            className={`w-10 h-10 shrink-0 flex items-center justify-center ${isStopping || isPausing || isResuming ? 'bg-ink-3' : 'bg-rec hover:opacity-90'
                               } rounded-full text-white transition-opacity relative`}
                           >
                             <Square size={16} />
@@ -471,7 +471,7 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                     </>
                   )}
 
-                  <div className="flex items-center space-x-1 mx-4">
+                  <div className="flex items-center space-x-1 mx-4 shrink-0">
                     {barHeights.map((height, index) => (
                       <div
                         key={index}

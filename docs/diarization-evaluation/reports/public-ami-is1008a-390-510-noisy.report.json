@@ -1,0 +1,321 @@
+{
+  "generatedAt": "2026-06-21T18:35:00.000Z",
+  "corpusItem": {
+    "id": "public-ami-is1008a-390-510-noisy",
+    "category": "public-ami-noisy-2-speaker",
+    "audioPath": "../public-data/ami/IS1008a/IS1008a.390-510.Mix-Headset.16k.noisy.wav",
+    "durationSeconds": 120,
+    "sampleRate": 16000
+  },
+  "referenceEngine": "ami-manual-nxt",
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "metrics": {
+        "speakerMapping": {
+          "SPEAKER_00": "AMI_A",
+          "SPEAKER_01": "AMI_C"
+        },
+        "totalReferenceSpeakerSeconds": 119.199,
+        "overlapReferenceSeconds": 3.454,
+        "missedSpeechSeconds": 10.684,
+        "falseAlarmSeconds": 0.179,
+        "speakerConfusionSeconds": 0,
+        "diarizationErrorRate": 0.091133,
+        "jaccardErrorRate": 0.090791
+      },
+      "gate": {
+        "status": "default_candidate",
+        "reasons": []
+      },
+      "practicalMetrics": {
+        "speakerCount": 2,
+        "turnCount": 15,
+        "rejectedTurnCount": 0,
+        "speechSeconds": 107.225,
+        "speakerSeconds": 108.694,
+        "overlapRegionSeconds": 1.469,
+        "overlapSpeakerSeconds": 2.938,
+        "overlapRatio": 0.012242,
+        "turnsPerMinute": 7.5
+      },
+      "transcriptReconciliationMetrics": {
+        "totalSegments": 14,
+        "timedSegments": 14,
+        "assignedSegments": 14,
+        "unassignedSegments": 0,
+        "missingTimingSegments": 0,
+        "noOverlapSegments": 0,
+        "lowCoverageAssignedSegments": 0,
+        "overlapSegmentCount": 5,
+        "tieSegmentCount": 0,
+        "totalTimedSegmentSeconds": 119.199,
+        "totalAssignedCoverageSeconds": 109.811,
+        "meanCoverageRatio": 0.924412,
+        "assignmentReasonCounts": {
+          "dominant_overlap": 14,
+          "overlap_tie_earliest_turn": 0,
+          "missing_audio_timestamps": 0,
+          "no_diarization_overlap": 0
+        }
+      },
+      "assignedTranscripts": [
+        {
+          "id": "IS1008a-A-0001",
+          "text": "Yeah, but uh before we talk about uh the finance, okay, uh do you have some idea how we can uh sell this product or project in the market and how much is going to benefit to the company and uh of course it's to the individual also.",
+          "timestamp": "00:00:00.000",
+          "audio_start_time": 0,
+          "audio_end_time": 9.808,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.996228,
+            "coverageSeconds": 9.771,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-C-0001",
+          "text": "Well, you know um, I kind of think that in general you have to do uh um y you have to have something that's very fashionable, that's uh very attractive that um people see and recognize uh its goal, and uh they immediately wanna have it uh have one of their own. So it would really would need to um something like the iPod would be good, seems to have caught on fairly well, so um d uh you know, I don't care what it does, just so it looks cool.",
+          "timestamp": "00:00:11.536",
+          "audio_start_time": 11.536,
+          "audio_end_time": 46.528,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.896033,
+            "coverageSeconds": 31.354,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0002",
+          "text": "Mm-hmm.",
+          "timestamp": "00:00:41.565",
+          "audio_start_time": 41.565,
+          "audio_end_time": 42.079,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.514,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0003",
+          "text": "Okay, but uh uh when you think you can give me like a kind of design on the functional design or the technical design?",
+          "timestamp": "00:00:46.864",
+          "audio_start_time": 46.864,
+          "audio_end_time": 56.498,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.889246,
+            "coverageSeconds": 8.567,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-C-0002",
+          "text": "Well, uh I've got a lot of other projects I'm doing right now um and so I'll have to wait and see how those uh how those go. If they uh go quickly then uh it could be a month. If um if I run into any problems in my other projects it might be six months.",
+          "timestamp": "00:00:56.200",
+          "audio_start_time": 56.2,
+          "audio_end_time": 74.194,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.838446,
+            "coverageSeconds": 15.087,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0004",
+          "text": "Yeah, but uh I need something in the writing, so like uh what's your functional design, what's your technical design, and uh how many people you need for this project, and what's the time frame you're looking, okay, and what is the budget, maybe uh initial budget you're looking,",
+          "timestamp": "00:01:14.304",
+          "audio_start_time": 74.304,
+          "audio_end_time": 88.988,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.999251,
+            "coverageSeconds": 14.673,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.878,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-C-0003",
+          "text": "Mm-hmm.",
+          "timestamp": "00:01:23.200",
+          "audio_start_time": 83.2,
+          "audio_end_time": 83.618,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.418,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.396,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-C-0004",
+          "text": "Mm-hmm.",
+          "timestamp": "00:01:25.202",
+          "audio_start_time": 85.202,
+          "audio_end_time": 86.164,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 0.962,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.456,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0005",
+          "text": "okay, and uh how is going to the market, okay, so you've you've had to meet with the marketing team and how they're going to market and what are the marketing strategic plan,",
+          "timestamp": "00:01:28.988",
+          "audio_start_time": 88.988,
+          "audio_end_time": 98.193,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 9.205,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0006",
+          "text": "okay, when are you going to introduce, okay, and by the time you introduce the product and uh you know there there would be a competition, okay, so I need some kind of uh uh the plan in the writing from you.",
+          "timestamp": "00:01:38.193",
+          "audio_start_time": 98.193,
+          "audio_end_time": 111.162,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 12.969,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0007",
+          "text": "Okay, and it's po",
+          "timestamp": "00:01:51.162",
+          "audio_start_time": 111.162,
+          "audio_end_time": 112.448,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 1,
+            "coverageSeconds": 1.286,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.468,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-C-0005",
+          "text": "And when would you like that?",
+          "timestamp": "00:01:51.186",
+          "audio_start_time": 111.186,
+          "audio_end_time": 113.402,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.625,
+            "coverageSeconds": 1.385,
+            "overlappedSpeakers": [
+              "SPEAKER_00",
+              "SPEAKER_01"
+            ],
+            "overlapSeconds": 0.591,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-A-0008",
+          "text": "B as soon as possible.",
+          "timestamp": "00:01:54.099",
+          "audio_start_time": 114.099,
+          "audio_end_time": 115.33,
+          "sourceSpeaker": "AMI_A",
+          "diarization": {
+            "speaker": "SPEAKER_00",
+            "coverageRatio": 0.952884,
+            "coverageSeconds": 1.173,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        },
+        {
+          "id": "IS1008a-C-0006",
+          "text": "Uh well if uh if we have enough time uh then d do you think um two weeks is a is close enough?",
+          "timestamp": "00:01:56.714",
+          "audio_start_time": 116.714,
+          "audio_end_time": 120,
+          "sourceSpeaker": "AMI_C",
+          "diarization": {
+            "speaker": "SPEAKER_01",
+            "coverageRatio": 0.744674,
+            "coverageSeconds": 2.447,
+            "overlappedSpeakers": [],
+            "overlapSeconds": 0,
+            "assignmentReason": "dominant_overlap"
+          }
+        }
+      ],
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "installComplexity": "native_binary_with_models",
+        "peakMemoryMb": 292.96875,
+        "modelSizeMb": 43.47484,
+        "runtimeSeconds": 50.678323041,
+        "runtimeFactor": 2.367876298963505
+      }
+    }
+  ],
+  "decision": {
+    "status": "native_default_candidate_available",
+    "defaultCandidate": "sherpa-onnx",
+    "optionalCandidate": null,
+    "blockers": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-21T12:30:00.000Z",
+  "corpusItem": {
+    "id": "synthetic-unlabeled",
+    "category": "overlap-heavy-unlabeled",
+    "audioPath": "docs/diarization-evaluation/fixtures/synthetic-unlabeled.wav",
+    "durationSeconds": 10
+  },
+  "gates": {
+    "maxDefaultDer": 0.18,
+    "maxDefaultJer": 0.2,
+    "minDefaultRuntimeFactor": 1
+  },
+  "candidates": [
+    {
+      "engine": "sherpa-onnx",
+      "format": "rttm",
+      "path": "synthetic-unlabeled.sherpa-onnx.rttm",
+      "practical": {
+        "integration": "native",
+        "localProcessing": true,
+        "licenseUse": "app_default_ok",
+        "runtimeFactor": 2,
+        "peakMemoryMb": 512,
+        "installComplexity": "native_binary_with_models"
+      }
+    }
+  ]
+}

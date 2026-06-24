@@ -157,12 +157,23 @@
     @apply border-border;
   }
 
-  /* html, */
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    overflow: hidden;
-    height: 100%;
+    /* Hide vertical overflow (each pane scrolls internally) and clamp any
+       horizontal spill as a last-resort floor. The shrink-chain below
+       (min-w-0 on the content column + contained BlockNote tables) should
+       mean nothing ever reaches this clamp, but it guarantees no content is
+       ever sliced off the right edge of the window. */
+    overflow-y: hidden;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4 {
@@ -205,35 +216,71 @@
     scrollbar-color: #d1d5db transparent;
   }
 
-  /* BlockNote Editor - Override fixed dimensions for responsive layout */
+  /* BlockNote Editor - CONTAIN width so the summary can never push the
+     content column (and therefore the window) past the viewport edge.
+     The previous rules forced `overflow: visible !important`, which let a
+     wide table set the editor's intrinsic width and spill off-screen.
+     Instead we clamp width to the available space and let wide tables
+     scroll horizontally inside their own wrapper. */
   .bn-container {
     width: 100% !important;
-    max-width: none !important;
-    overflow: visible !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
   }
 
   .bn-editor {
     width: 100% !important;
-    max-width: none !important;
-    overflow: visible !important;
-  }
-
-  /* Disable internal scrolling - let parent handle all scrolling */
-  .ProseMirror {
-    overflow: visible !important;
-  }
-
-  /* Ensure BlockNote content area is responsive */
-  .bn-block-outer {
     max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  /* The ProseMirror surface must stay within the editor width; it should not
+     grow to fit wide content. Wide content (tables) scrolls in its own
+     wrapper, see below. */
+  .ProseMirror {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Ensure BlockNote content blocks shrink and wrap rather than overflow. */
+  .bn-block-outer,
+  .bn-block,
+  .bn-block-content,
+  .bn-inline-content {
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
 
   .bn-default-styles {
-    max-width: none !important;
+    max-width: 100% !important;
   }
 
-  /* Disable scrolling on any BlockNote wrapper elements */
-  [data-node-type] {
-    overflow: visible !important;
+  /* Long words / URLs in paragraphs wrap instead of forcing a wider column. */
+  .bn-inline-content {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Wide tables scroll horizontally INSIDE the editor instead of overflowing
+     the window. BlockNote's own `.tableWrapper` is the scroll region; its
+     inner <table> uses `width:auto` so it can exceed the wrapper and trigger
+     the scrollbar. We keep the wrapper clamped to the editor width and force
+     horizontal auto-scroll. */
+  .ProseMirror .tableWrapper,
+  .bn-editor [data-content-type="table"] .tableWrapper {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
+
+  /* Cells wrap their text so the table only widens when it genuinely needs
+     more columns, and the wrapper scrolls rather than the window. */
+  .bn-editor [data-content-type="table"] th,
+  .bn-editor [data-content-type="table"] td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 }

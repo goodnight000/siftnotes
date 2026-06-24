@@ -57,6 +57,19 @@ The archived FastAPI service had unauthenticated, development-oriented CORS beha
 ### Service Endpoints
 - **Frontend Dev**: http://localhost:3118
 
+## Release & Auto-Update (READ before committing to `main`)
+
+The desktop app ships updates to users via the in-app auto-updater (`tauri-plugin-updater`), **not** by users rebuilding from source. The updater checks the GitHub Releases endpoint (`https://github.com/charleszheng/siftnotes/releases/latest/download/latest.json`) on startup and installs a newer **published, signed release**. It only offers a release whose version is **strictly higher** than the installed one — a same-version rebuild will not trigger an update.
+
+**Whenever you make a commit that is pushed to `origin main` (i.e. a change intended to reach users):**
+
+1. **Bump the version** in `frontend/src-tauri/tauri.conf.json` (keep `frontend/package.json` in sync) to a value **strictly higher than the latest published release** (currently `0.4.0`). If you don't bump it, the updater will never offer the build to existing installs.
+2. **Run the release pipeline** — trigger `.github/workflows/release.yml` (it is `workflow_dispatch` / manual). It reads the version from `tauri.conf.json`, builds macOS/Windows, **signs the updater artifacts** (matching the embedded `updater.pubkey`), and publishes `latest.json` to the GitHub Release. Only after this runs do installed clients auto-update on their next launch.
+
+**Implications for local work:**
+- Local/uncommitted source edits never reach the installed app or the auto-updater. To *see* your own changes, run the dev build (`pnpm run tauri:dev`) or a local production build — do not expect the installed `/Applications` app or the updater to reflect them.
+- Verify a change locally **before** cutting a release; don't publish unverified builds, and don't sweep unrelated in-progress work into a release commit.
+
 ## High-Level Architecture
 
 ### Tauri Desktop Architecture

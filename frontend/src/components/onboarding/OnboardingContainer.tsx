@@ -44,7 +44,7 @@ export function OnboardingContainer({
 
   return (
     <div className="fixed inset-0 bg-paper flex items-center justify-center z-50 overflow-hidden">
-      <div className={cn('w-full max-w-2xl h-full max-h-screen flex flex-col px-6 py-6', className)}>
+      <div className={cn('w-full max-w-2xl min-w-0 h-full max-h-screen flex flex-col px-4 py-6 sm:px-6', className)}>
         {/* Progress Indicator with Navigation - Fixed */}
         {step && !hideProgress && (
           <div className="mb-2 relative flex-shrink-0">
@@ -85,18 +85,18 @@ export function OnboardingContainer({
         )}
 
         {/* Header - Fixed */}
-        <div className="mb-4 text-center space-y-3 flex-shrink-0">
-          <h1 className="text-4xl font-semibold text-ink animate-fade-in-up">{title}</h1>
+        <div className="mb-4 text-center space-y-3 flex-shrink-0 min-w-0">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-ink animate-fade-in-up break-words">{title}</h1>
           {description && (
-            <p className="text-base text-ink-2 max-w-md mx-auto animate-fade-in-up delay-75">
+            <p className="text-base text-ink-2 max-w-md mx-auto animate-fade-in-up delay-75 break-words">
               {description}
             </p>
           )}
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto pr-2">
-          <div className="space-y-6">{children}</div>
+        <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden pr-2">
+          <div className="space-y-6 min-w-0">{children}</div>
         </div>
       </div>
     </div>
